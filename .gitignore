@@ -114,5 +114,6 @@ backend/**/*.class
 coverage/
 .coverage
 .nyc_output/
+generated 
 
 
