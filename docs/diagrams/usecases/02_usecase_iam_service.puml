@@ -1,0 +1,76 @@
+@startuml
+title IAM Service — Identity & Access Management
+
+top to bottom direction
+
+skinparam actorStyle awesome
+skinparam usecaseBackgroundColor #E8F5E9
+skinparam usecaseBorderColor #2E7D32
+skinparam usecaseFontSize 12
+skinparam packageBackgroundColor #FAFAFA
+skinparam packageBorderColor #A5D6A7
+skinparam ArrowColor #2E7D32
+skinparam ArrowFontColor #C62828
+skinparam ArrowFontStyle bold
+skinparam ArrowFontSize 11
+skinparam ArrowThickness 1.5
+
+actor Customer as C
+actor Employee as E
+actor Admin    as A
+
+rectangle "IAM Service" {
+
+  package "Authentication" {
+    usecase "Register Account"           as UC_REG
+    usecase "Login with Credentials"     as UC_LOGIN
+    usecase "Logout"                     as UC_LOGOUT
+    usecase "Refresh JWT Token"          as UC_REFRESH
+    usecase "Reset Password via Email"   as UC_RESET
+    usecase "Enable Two-Factor Auth"     as UC_2FA
+    usecase "Verify OTP Code"            as UC_OTP
+  }
+
+  package "Authorization" {
+    usecase "Validate JWT Token"         as UC_JWT
+    usecase "Check Role Permissions"     as UC_PERM
+  }
+
+  package "Role Management\n(Admin Only)" {
+    usecase "Assign Role to User"        as UC_ASSIGN
+    usecase "Revoke Role from User"      as UC_REVOKE
+    usecase "View All Users"             as UC_USERS
+    usecase "Deactivate User Account"    as UC_DEACT
+  }
+}
+
+' ── Customer ─────────────────────────────────────────────
+C --> UC_REG
+C --> UC_LOGIN
+C --> UC_LOGOUT
+C --> UC_REFRESH
+C --> UC_RESET
+C --> UC_2FA
+
+' ── Employee ─────────────────────────────────────────────
+E --> UC_LOGIN
+E --> UC_LOGOUT
+E --> UC_REFRESH
+E --> UC_RESET
+
+' ── Admin ────────────────────────────────────────────────
+A --> UC_LOGIN
+A --> UC_LOGOUT
+A --> UC_ASSIGN
+A --> UC_REVOKE
+A --> UC_USERS
+A --> UC_DEACT
+
+' ── Include / Extend ─────────────────────────────────────
+UC_LOGIN    ..> UC_OTP   : <<extend>>
+UC_2FA      ..> UC_OTP   : <<include>>
+UC_LOGIN    ..> UC_JWT   : <<include>>
+UC_REFRESH  ..> UC_JWT   : <<include>>
+UC_JWT      ..> UC_PERM  : <<include>>
+
+@enduml

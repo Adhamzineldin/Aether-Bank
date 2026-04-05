@@ -1,0 +1,95 @@
+@startuml
+title Sequence 04 — Card Payment via External Gateway
+
+skinparam sequenceArrowThickness 2
+skinparam sequenceGroupBorderColor #006064
+skinparam participantBackgroundColor #E0F7FA
+skinparam participantBorderColor #006064
+skinparam participantFontStyle bold
+skinparam sequenceLifeLineBorderColor #80DEEA
+skinparam noteBorderColor #F57F17
+skinparam noteBackgroundColor #FFF9C4
+skinparam responseMessageBelowArrow true
+
+actor        Customer
+actor        "External Merchant"      as Merchant
+participant  "API Gateway"            as GW
+participant  "IAM Service"            as IAM
+participant  "Card & Gateway Service" as CARD
+participant  "Ledger Service"         as LEDGER
+database     "MySQL (Card DB)"        as DB
+participant  "Kafka"                  as KAFKA
+participant  "Notification Service"   as NOTIF
+participant  "Audit Service"          as AUDIT
+participant  "Forex API"              as FOREX
+
+== Merchant Initiates Charge ==
+
+Merchant -> GW : POST /api/gateway/charge\n{ cardToken, amount, currency, merchantId }
+GW -> IAM      : Validate Merchant API Key
+IAM --> GW     : 200 OK { merchantId, authorized }
+GW -> CARD     : Forward charge request
+
+activate CARD
+CARD -> DB     : SELECT card WHERE token = cardToken
+DB --> CARD    : { cardId, accountId, limit, status, currency }
+
+alt Card Blocked or Expired
+    CARD --> GW : 403 Card Not Active
+    GW --> Merchant : 403 Payment Declined
+
+else Card Active
+    alt Foreign Currency Transaction
+        CARD -> FOREX : GET /rates?from={currency}&to=USD
+        FOREX --> CARD : Exchange rate
+        CARD -> CARD   : Convert amount to account currency
+    end
+
+    CARD -> CARD : Check available credit >= convertedAmount
+
+    alt Insufficient Credit
+        CARD --> GW : 422 Insufficient Credit
+        GW --> Merchant : 422 Payment Declined
+
+    else Sufficient Credit
+        CARD -> LEDGER : POST /internal/transactions/debit\n{ accountId, amount }
+        activate LEDGER
+        LEDGER -> LEDGER : Apply double-entry bookkeeping
+        LEDGER --> CARD  : 200 OK { transactionId }
+        deactivate LEDGER
+
+        CARD -> DB : UPDATE card SET used_credit += amount
+        CARD -> DB : INSERT card_transaction { status: APPROVED }
+
+        CARD -> KAFKA : Publish CardPaymentCompletedEvent\n{ txId, cardId, merchantId, amount, timestamp }
+
+        KAFKA -> NOTIF : Consume CardPaymentCompletedEvent
+        KAFKA -> AUDIT : Consume CardPaymentCompletedEvent
+
+        NOTIF -> Customer : SMS: "Card charge $X at [Merchant]\nNot you? Call 1-800-BANK"
+        AUDIT -> AUDIT    : Write audit log entry
+
+        CARD --> GW : 200 OK { authCode, transactionId }
+        GW --> Merchant : 200 Payment Approved
+    end
+end
+
+deactivate CARD
+
+== Customer Requests Refund ==
+
+Customer -> GW : POST /api/gateway/refund\n{ transactionId, reason }
+GW -> IAM      : Validate JWT
+IAM --> GW     : 200 OK
+GW -> CARD     : Process refund
+
+activate CARD
+CARD -> DB     : SELECT transaction WHERE id = transactionId
+CARD -> LEDGER : POST /internal/transactions/credit { accountId, amount }
+LEDGER --> CARD : 200 OK
+CARD -> DB     : UPDATE transaction SET status = REFUNDED
+CARD -> KAFKA  : Publish CardRefundedEvent
+KAFKA -> NOTIF : Consume CardRefundedEvent
+NOTIF -> Customer : Email: "Refund of $X has been processed"
+deactivate CARD
+@enduml

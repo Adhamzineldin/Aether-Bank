@@ -1,0 +1,79 @@
+@startuml
+title Core Ledger & Transaction Service
+
+top to bottom direction
+
+skinparam actorStyle awesome
+skinparam usecaseBackgroundColor #FCE4EC
+skinparam usecaseBorderColor #880E4F
+skinparam usecaseFontSize 12
+skinparam packageBackgroundColor #FAFAFA
+skinparam packageBorderColor #F48FB1
+skinparam ArrowColor #880E4F
+skinparam ArrowFontColor #C62828
+skinparam ArrowFontStyle bold
+skinparam ArrowFontSize 11
+skinparam ArrowThickness 1.5
+
+actor Customer as C
+actor Admin    as A
+actor "Kafka\nEvent Bus" as K
+
+rectangle "Core Ledger & Transaction Service" {
+
+  package "Fund Operations" {
+    usecase "Deposit Funds"              as UC_DEP
+    usecase "Withdraw Funds"             as UC_WD
+    usecase "Internal Transfer"          as UC_INT
+    usecase "External Wire Transfer"     as UC_EXT
+  }
+
+  package "Transaction Records" {
+    usecase "View Transaction History"   as UC_HIST
+    usecase "View Single Transaction"    as UC_SINGLE
+    usecase "Download Statement (PDF)"   as UC_STMT
+    usecase "Search & Filter Transactions" as UC_SRCH
+  }
+
+  package "Ledger Integrity" {
+    usecase "Validate Sufficient Balance"       as UC_CHK
+    usecase "Apply Double-Entry Bookkeeping"    as UC_BOOK
+    usecase "Rollback Failed Transaction"       as UC_ROLL
+    usecase "Publish TransactionCompletedEvent" as UC_PUB
+  }
+}
+
+' ── Customer ─────────────────────────────────────────────
+C --> UC_DEP
+C --> UC_WD
+C --> UC_INT
+C --> UC_EXT
+C --> UC_HIST
+C --> UC_SINGLE
+C --> UC_STMT
+C --> UC_SRCH
+
+' ── Admin ────────────────────────────────────────────────
+A --> UC_HIST
+A --> UC_SRCH
+A --> UC_ROLL
+
+' ── Include / Extend ─────────────────────────────────────
+UC_DEP  ..> UC_CHK  : <<include>>
+UC_WD   ..> UC_CHK  : <<include>>
+UC_INT  ..> UC_CHK  : <<include>>
+UC_EXT  ..> UC_CHK  : <<include>>
+
+UC_DEP  ..> UC_BOOK : <<include>>
+UC_WD   ..> UC_BOOK : <<include>>
+UC_INT  ..> UC_BOOK : <<include>>
+
+UC_DEP  ..> UC_PUB  : <<extend>>
+UC_WD   ..> UC_PUB  : <<extend>>
+UC_INT  ..> UC_PUB  : <<extend>>
+
+UC_CHK  ..> UC_ROLL : <<extend>>
+
+UC_PUB --> K
+
+@enduml

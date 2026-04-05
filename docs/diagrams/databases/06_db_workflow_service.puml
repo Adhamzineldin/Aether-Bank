@@ -1,0 +1,102 @@
+@startuml
+title DB 06 — Workflow, Audit & Notification Service (MongoDB)
+
+skinparam linetype ortho
+skinparam classBackgroundColor #FFF3E0
+skinparam classBorderColor #E65100
+skinparam classHeaderBackgroundColor #FFCC80
+skinparam classFontStyle bold
+skinparam classAttributeFontSize 11
+
+entity "workflow_tasks" as WT {
+  * _id            : ObjectId <<PK>>
+  --
+  * task_type      : String
+  * reference_id   : String
+  * reference_type : String
+  * status         : String
+  * priority       : String
+  * assigned_to    : String
+  * created_at     : Date
+  * updated_at     : Date
+  * due_by         : Date
+  * event_payload  : Object
+}
+
+entity "task_resolutions" as TR {
+  * _id        : ObjectId <<PK>>
+  --
+  * task_id    : ObjectId <<FK>>
+  * decision   : String
+  * notes      : String
+  * decided_by : String
+  * decided_at : Date
+}
+
+entity "audit_logs" as AL {
+  * _id              : ObjectId <<PK>>
+  --
+  * service_name     : String
+  * method_name      : String
+  * action           : String
+  * actor_id         : String
+  * actor_role       : String
+  * target_id        : String
+  * target_type      : String
+  * ip_address       : String
+  * response_status  : Int
+  * duration_ms      : Int
+  * timestamp        : Date
+}
+
+entity "audit_request_payloads" as ARP {
+  * _id        : ObjectId <<PK>>
+  --
+  * log_id     : ObjectId <<FK>>
+  * payload    : Object
+  * recorded_at : Date
+}
+
+entity "notifications" as NOTIF {
+  * _id                : ObjectId <<PK>>
+  --
+  * recipient_id       : String
+  * channel            : String
+  * type               : String
+  * subject            : String
+  * body               : String
+  * status             : String
+  * triggered_by_event : String
+  * event_id           : String
+  * created_at         : Date
+  * sent_at            : Date
+  * failure_reason     : String
+}
+
+entity "notification_preferences" as NP {
+  * _id               : ObjectId <<PK>>
+  --
+  * user_id           : String   <<UNIQUE>>
+  * email_enabled     : Boolean
+  * sms_enabled       : Boolean
+  * push_enabled      : Boolean
+  * transfer_alerts   : Boolean
+  * login_alerts      : Boolean
+  * loan_updates      : Boolean
+  * payment_reminders : Boolean
+  * marketing         : Boolean
+  * updated_at        : Date
+}
+
+WT    ||--o| TR  : "resolved by"
+AL    ||--o| ARP : "has payload"
+NP   "1" --o{ NOTIF : "governs"
+
+note bottom of AL
+  audit_logs is append-only (never updated).
+  Spring AOP intercepts all @Service methods
+  across every microservice and writes here.
+  TTL index auto-expires records after 7 years
+  for data retention compliance.
+end note
+@enduml

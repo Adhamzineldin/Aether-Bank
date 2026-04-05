@@ -1,0 +1,64 @@
+@startuml
+title Sequence 05 — Service Registration & Discovery via Eureka
+
+skinparam sequenceArrowThickness 2
+skinparam sequenceGroupBorderColor #2E7D32
+skinparam participantBackgroundColor #E8F5E9
+skinparam participantBorderColor #2E7D32
+skinparam participantFontStyle bold
+skinparam sequenceLifeLineBorderColor #A5D6A7
+skinparam noteBorderColor #F57F17
+skinparam noteBackgroundColor #FFF9C4
+skinparam responseMessageBelowArrow true
+
+participant "IAM Service\n:8081"      as IAM
+participant "Ledger Service\n:8083"   as LEDGER
+participant "Account Service\n:8082"  as ACC
+participant "Eureka Server\n:8761"    as EUREKA
+participant "API Gateway\n:8080"      as GW
+actor       Customer
+
+== Startup: All Services Register ==
+
+IAM    -> EUREKA : Register { name: iam-service,     host: iam-service,     port: 8081 }
+EUREKA --> IAM   : 204 Registered
+
+LEDGER -> EUREKA : Register { name: ledger-service,  host: ledger-service,  port: 8083 }
+EUREKA --> LEDGER : 204 Registered
+
+ACC    -> EUREKA : Register { name: account-service, host: account-service, port: 8082 }
+EUREKA --> ACC   : 204 Registered
+
+GW     -> EUREKA : Register { name: api-gateway,     host: gateway,         port: 8080 }
+EUREKA --> GW    : 204 Registered
+
+note over EUREKA
+  Heartbeat every 30 seconds.
+  Services evicted after 90 seconds
+  of missing heartbeat.
+end note
+
+== Runtime: Customer Initiates a Transfer ==
+
+Customer -> GW     : POST /api/transactions/transfer
+
+GW -> EUREKA       : Lookup "iam-service"
+EUREKA --> GW      : [{ host: iam-service, port: 8081 }]
+
+GW -> IAM          : Validate JWT (load-balanced)
+IAM --> GW         : 200 OK
+
+GW -> EUREKA       : Lookup "ledger-service"
+EUREKA --> GW      : [{ host: ledger-service, port: 8083 }]
+
+GW -> LEDGER       : POST /internal/transfer
+
+LEDGER -> EUREKA   : Lookup "account-service"
+EUREKA --> LEDGER  : [{ host: account-service, port: 8082 }]
+
+LEDGER -> ACC      : GET /internal/accounts/{id}
+ACC --> LEDGER     : Account details
+
+LEDGER --> GW      : 200 Transfer Completed
+GW --> Customer    : 200 Transfer Successful
+@enduml

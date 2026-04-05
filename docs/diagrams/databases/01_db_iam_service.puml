@@ -1,0 +1,77 @@
+@startuml
+title DB 01 — IAM Service (PostgreSQL)
+
+skinparam linetype ortho
+skinparam classBackgroundColor #E8F5E9
+skinparam classBorderColor #2E7D32
+skinparam classHeaderBackgroundColor #A5D6A7
+skinparam classFontStyle bold
+skinparam classAttributeFontSize 11
+
+entity "users" as USERS {
+  * id           : UUID        <<PK>>
+  --
+  * email        : VARCHAR(255) <<UNIQUE>>
+  * password_hash : VARCHAR(255)
+  * full_name    : VARCHAR(255)
+  * phone_number : VARCHAR(20)
+  * is_active    : BOOLEAN
+  * is_email_verified : BOOLEAN
+  * created_at   : TIMESTAMP
+  * updated_at   : TIMESTAMP
+}
+
+entity "roles" as ROLES {
+  * id          : SERIAL      <<PK>>
+  --
+  * name        : VARCHAR(50) <<UNIQUE>>
+  * description : TEXT
+}
+
+entity "user_roles" as USER_ROLES {
+  * id          : SERIAL      <<PK>>
+  --
+  * user_id     : UUID        <<FK>>
+  * role_id     : INT         <<FK>>
+  * assigned_at : TIMESTAMP
+  * assigned_by : UUID
+}
+
+entity "refresh_tokens" as REFRESH {
+  * id          : UUID        <<PK>>
+  --
+  * user_id     : UUID        <<FK>>
+  * token_hash  : VARCHAR(512)
+  * expires_at  : TIMESTAMP
+  * is_revoked  : BOOLEAN
+  * created_at  : TIMESTAMP
+  * device_info : VARCHAR(255)
+}
+
+entity "otp_codes" as OTP {
+  * id         : UUID       <<PK>>
+  --
+  * user_id    : UUID       <<FK>>
+  * otp_code   : VARCHAR(10)
+  * purpose    : VARCHAR(50)
+  * expires_at : TIMESTAMP
+  * is_used    : BOOLEAN
+  * created_at : TIMESTAMP
+}
+
+entity "login_attempts" as LOGIN {
+  * id           : UUID       <<PK>>
+  --
+  * user_id      : UUID       <<FK>>
+  * ip_address   : VARCHAR(45)
+  * success      : BOOLEAN
+  * attempted_at : TIMESTAMP
+  * user_agent   : TEXT
+}
+
+USERS     ||--o{ USER_ROLES : "has"
+ROLES     ||--o{ USER_ROLES : "assigned to"
+USERS     ||--o{ REFRESH    : "has"
+USERS     ||--o{ OTP        : "generates"
+USERS     ||--o{ LOGIN      : "tracked by"
+@enduml

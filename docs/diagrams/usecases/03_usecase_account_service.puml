@@ -1,0 +1,80 @@
+@startuml
+title Account & Customer Profile Service
+
+top to bottom direction
+
+skinparam actorStyle awesome
+skinparam usecaseBackgroundColor #FFF8E1
+skinparam usecaseBorderColor #F57F17
+skinparam usecaseFontSize 12
+skinparam packageBackgroundColor #FAFAFA
+skinparam packageBorderColor #FFE082
+skinparam ArrowColor #E65100
+skinparam ArrowFontColor #C62828
+skinparam ArrowFontStyle bold
+skinparam ArrowFontSize 11
+skinparam ArrowThickness 1.5
+
+actor Customer as C
+actor Employee as E
+actor Admin    as A
+
+rectangle "Account & Customer Profile Service" {
+
+  package "Account Management" {
+    usecase "Open Checking Account"      as UC_CHK
+    usecase "Open Savings Account"       as UC_SAV
+    usecase "Close Account"              as UC_CLOSE
+    usecase "View Account Details"       as UC_VIEW
+    usecase "View Account Balance"       as UC_BAL
+    usecase "List All Accounts"          as UC_LIST
+    usecase "Freeze / Unfreeze Account"  as UC_FREEZE
+  }
+
+  package "Customer Profile Management" {
+    usecase "View Profile"               as UC_PVIEW
+    usecase "Update Personal Info"       as UC_PUPD
+    usecase "Upload KYC Documents"       as UC_KYC
+    usecase "Submit Support Ticket"      as UC_TICK
+    usecase "View Support Ticket Status" as UC_TVIEW
+  }
+
+  package "Employee / Admin Actions" {
+    usecase "Verify KYC Documents"       as UC_KVERIF
+    usecase "Resolve Support Ticket"     as UC_TRES
+    usecase "View All Customer Profiles" as UC_ALLP
+  }
+}
+
+' ── Customer ─────────────────────────────────────────────
+C --> UC_CHK
+C --> UC_SAV
+C --> UC_CLOSE
+C --> UC_VIEW
+C --> UC_BAL
+C --> UC_LIST
+C --> UC_PVIEW
+C --> UC_PUPD
+C --> UC_KYC
+C --> UC_TICK
+C --> UC_TVIEW
+
+' ── Employee ─────────────────────────────────────────────
+E --> UC_KVERIF
+E --> UC_TRES
+E --> UC_ALLP
+E --> UC_FREEZE
+E --> UC_VIEW
+
+' ── Admin ────────────────────────────────────────────────
+A --> UC_ALLP
+A --> UC_FREEZE
+A --> UC_KVERIF
+
+' ── Include / Extend ─────────────────────────────────────
+UC_CHK   ..> UC_KYC    : <<include>>
+UC_SAV   ..> UC_KYC    : <<include>>
+UC_CLOSE ..> UC_FREEZE : <<extend>>
+UC_TICK  ..> UC_TRES   : <<extend>>
+
+@enduml

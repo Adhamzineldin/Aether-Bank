@@ -1,0 +1,85 @@
+@startuml
+title Card & External Gateway Service
+
+top to bottom direction
+
+skinparam actorStyle awesome
+skinparam usecaseBackgroundColor #E0F7FA
+skinparam usecaseBorderColor #006064
+skinparam usecaseFontSize 12
+skinparam packageBackgroundColor #FAFAFA
+skinparam packageBorderColor #80DEEA
+skinparam ArrowColor #006064
+skinparam ArrowFontColor #C62828
+skinparam ArrowFontStyle bold
+skinparam ArrowFontSize 11
+skinparam ArrowThickness 1.5
+
+actor Customer          as C
+actor Admin             as A
+actor "External\nMerchant" as M
+actor "Forex API"       as FX
+
+rectangle "Card & External Gateway Service" {
+
+  package "Credit Cards" {
+    usecase "Request Credit Card"        as UC_CCREQ
+    usecase "View Credit Card Details"   as UC_CCVIEW
+    usecase "View Credit Limit"          as UC_CCLIM
+    usecase "Pay Credit Card Bill"       as UC_CCPAY
+    usecase "Block / Unblock Credit Card" as UC_CCBLK
+  }
+
+  package "Debit Cards" {
+    usecase "Request Debit Card"         as UC_DCREQ
+    usecase "View Debit Card Details"    as UC_DCVIEW
+    usecase "Block / Unblock Debit Card" as UC_DCBLK
+    usecase "Change PIN"                 as UC_PIN
+  }
+
+  package "Payment Gateway" {
+    usecase "Process Merchant Payment"   as UC_PAY
+    usecase "Authorize Card Transaction" as UC_AUTH
+    usecase "Refund Transaction"         as UC_REF
+    usecase "Void Transaction"           as UC_VOID
+  }
+
+  package "Currency Exchange" {
+    usecase "Get Live Exchange Rates"    as UC_RATES
+    usecase "Convert Currency"           as UC_CONV
+    usecase "International Wire Transfer" as UC_WIRE
+  }
+}
+
+' ── Customer ─────────────────────────────────────────────
+C --> UC_CCREQ
+C --> UC_CCVIEW
+C --> UC_CCLIM
+C --> UC_CCPAY
+C --> UC_CCBLK
+C --> UC_DCREQ
+C --> UC_DCVIEW
+C --> UC_DCBLK
+C --> UC_PIN
+C --> UC_RATES
+C --> UC_CONV
+C --> UC_WIRE
+
+' ── Admin ────────────────────────────────────────────────
+A --> UC_CCBLK
+A --> UC_DCBLK
+A --> UC_REF
+
+' ── Merchant ─────────────────────────────────────────────
+M --> UC_PAY
+M --> UC_REF
+M --> UC_VOID
+
+' ── Include / Extend ─────────────────────────────────────
+UC_PAY  ..> UC_AUTH  : <<include>>
+UC_CONV ..> UC_RATES : <<include>>
+UC_WIRE ..> UC_CONV  : <<include>>
+
+UC_RATES --> FX : <<calls>>
+
+@enduml

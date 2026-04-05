@@ -1,0 +1,142 @@
+@startuml
+title Banking System — Microservices Architecture
+
+top to bottom direction
+
+skinparam linetype ortho
+skinparam nodesep 45
+skinparam ranksep 55
+skinparam defaultTextAlignment center
+skinparam backgroundColor #FFFFFF
+
+skinparam component {
+  BorderThickness 1.5
+  FontStyle bold
+  FontSize 12
+}
+skinparam database {
+  BorderThickness 1.5
+  FontSize 11
+}
+skinparam package {
+  BorderColor #90A4AE
+  BackgroundColor #FAFAFA
+  FontStyle bold
+  FontSize 13
+}
+
+' ══════════════════════════════════════════════
+'  ROW 1 — CLIENTS
+' ══════════════════════════════════════════════
+package "Clients" {
+  together {
+    actor "Customer / Employee / Admin" as USERS
+    actor "External Merchant"           as MERCH
+    component "Frontend\nReact  |  Port 3000" as FE #FFECB3
+  }
+}
+
+' ══════════════════════════════════════════════
+'  ROW 2 — INFRASTRUCTURE
+' ══════════════════════════════════════════════
+package "Infrastructure" {
+  together {
+    component "API Gateway\nPort 8080"    as GW     #C8E6C9
+    component "Eureka Registry\nPort 8761" as EUREKA #A5D6A7
+    component "Config Server\nPort 8888"  as CONFIG  #A5D6A7
+    component "Apache Kafka\nPort 9092"   as KAFKA   #FFE082
+  }
+}
+
+' ══════════════════════════════════════════════
+'  ROW 3 — MICROSERVICES
+' ══════════════════════════════════════════════
+package "Microservices" {
+  together {
+    component "IAM Service\nPort 8081"     as IAM     #E8F5E9
+    component "Account Service\nPort 8082" as ACC     #FFF8E1
+    component "Ledger Service\nPort 8083"  as LEDGER  #FCE4EC
+    component "Lending Service\nPort 8084" as LENDING #EDE7F6
+    component "Card Service\nPort 8085"    as CARD    #E0F7FA
+    component "Workflow Service\nPort 8086" as WF     #FFF3E0
+  }
+}
+
+' ══════════════════════════════════════════════
+'  ROW 4 — DATABASES (one per service)
+' ══════════════════════════════════════════════
+package "Databases  (one per service)" {
+  together {
+    database "PostgreSQL\nIAM DB"    as DB1 #FFF9C4
+    database "MySQL\nAccount DB"     as DB2 #FFF9C4
+    database "PostgreSQL\nLedger DB" as DB3 #FFF9C4
+    database "MongoDB\nLending DB"   as DB4 #FFF9C4
+    database "MySQL\nCard DB"        as DB5 #FFF9C4
+    database "MongoDB\nWorkflow DB"  as DB6 #FFF9C4
+  }
+}
+
+' ══════════════════════════════════════════════
+'  ROW 5 — EXTERNAL SYSTEMS
+' ══════════════════════════════════════════════
+package "External Systems" {
+  together {
+    component "Forex Rate API" as FOREX #ECEFF1
+    component "Email  (SendGrid)" as EMAIL #ECEFF1
+    component "SMS  (Twilio)"     as SMS   #ECEFF1
+  }
+}
+
+' ══════════════════════════════════════════════
+'  CONNECTIONS
+' ══════════════════════════════════════════════
+
+' --- Clients → Entry ---
+USERS --> FE
+MERCH --> GW : API Key
+FE    --> GW
+
+' --- Gateway → Services ---
+GW --> IAM
+GW --> ACC
+GW --> LEDGER
+GW --> LENDING
+GW --> CARD
+GW --> WF
+
+' --- Service Discovery (dashed) ---
+IAM     .up.> EUREKA
+LEDGER  .up.> EUREKA
+CARD    .up.> EUREKA
+
+' --- Config Pull (dashed) ---
+IAM    .up.> CONFIG
+LEDGER .up.> CONFIG
+
+' --- Sync REST ---
+LEDGER --> ACC    : REST
+CARD   --> LEDGER : REST
+
+' --- Kafka Publishing ---
+IAM     --> KAFKA : LoginEvent
+LEDGER  --> KAFKA : TransferEvent
+LENDING --> KAFKA : LoanEvent
+CARD    --> KAFKA : PaymentEvent
+
+' --- Kafka Consumer ---
+KAFKA --> WF : All Domain Events
+
+' --- Each service → its own DB ---
+IAM     --> DB1
+ACC     --> DB2
+LEDGER  --> DB3
+LENDING --> DB4
+CARD    --> DB5
+WF      --> DB6
+
+' --- External ---
+CARD --> FOREX : rates
+WF   --> EMAIL : notify
+WF   --> SMS   : notify
+
+@enduml

@@ -1,0 +1,140 @@
+@startuml
+title DB 04 — Financial Products & Lending Service (MongoDB)
+
+skinparam linetype ortho
+skinparam classBackgroundColor #EDE7F6
+skinparam classBorderColor #4527A0
+skinparam classHeaderBackgroundColor #D1C4E9
+skinparam classFontStyle bold
+skinparam classAttributeFontSize 11
+
+entity "loan_applications" as LA {
+  * _id                  : ObjectId    <<PK>>
+  --
+  * applicant_id         : String
+  * account_id           : String
+  * loan_type            : String
+  * requested_amount     : Decimal128
+  * requested_term_months : Int
+  * annual_income        : Decimal128
+  * employment_status    : String
+  * purpose              : String
+  * status               : String
+  * submitted_at         : Date
+  * reviewed_by          : String
+  * reviewed_at          : Date
+  * rejection_reason     : String
+}
+
+entity "loan_documents" as LD {
+  * _id         : ObjectId <<PK>>
+  --
+  * application_id : ObjectId <<FK>>
+  * doc_type    : String
+  * file_url    : String
+  * uploaded_at : Date
+}
+
+entity "credit_checks" as CC {
+  * _id            : ObjectId <<PK>>
+  --
+  * application_id : ObjectId <<FK>>
+  * score          : Int
+  * checked_at     : Date
+  * provider       : String
+}
+
+entity "loan_accounts" as LACC {
+  * _id                : ObjectId  <<PK>>
+  --
+  * application_id     : ObjectId  <<FK>>
+  * account_id         : String
+  * loan_number        : String    <<UNIQUE>>
+  * principal_amount   : Decimal128
+  * interest_rate      : Decimal128
+  * term_months        : Int
+  * disbursement_date  : Date
+  * maturity_date      : Date
+  * outstanding_balance : Decimal128
+  * status             : String
+}
+
+entity "repayment_installments" as RI {
+  * _id              : ObjectId  <<PK>>
+  --
+  * loan_account_id  : ObjectId  <<FK>>
+  * installment_no   : Int
+  * due_date         : Date
+  * amount           : Decimal128
+  * principal_portion : Decimal128
+  * interest_portion  : Decimal128
+  * status           : String
+  * paid_at          : Date
+}
+
+entity "mortgages" as MORT {
+  * _id                : ObjectId  <<PK>>
+  --
+  * applicant_id       : String
+  * property_address   : String
+  * property_value     : Decimal128
+  * loan_amount        : Decimal128
+  * down_payment       : Decimal128
+  * interest_rate      : Decimal128
+  * term_years         : Int
+  * status             : String
+  * monthly_payment    : Decimal128
+  * outstanding_balance : Decimal128
+  * disbursement_date  : Date
+}
+
+entity "certificates_of_deposit" as CD {
+  * _id             : ObjectId  <<PK>>
+  --
+  * customer_id     : String
+  * account_id      : String
+  * principal       : Decimal128
+  * interest_rate   : Decimal128
+  * term_days       : Int
+  * open_date       : Date
+  * maturity_date   : Date
+  * status          : String
+  * interest_earned : Decimal128
+  * auto_renew      : Boolean
+}
+
+entity "investment_portfolios" as INV {
+  * _id             : ObjectId  <<PK>>
+  --
+  * customer_id     : String
+  * portfolio_name  : String
+  * total_invested  : Decimal128
+  * current_value   : Decimal128
+  * last_updated    : Date
+}
+
+entity "investment_holdings" as IH {
+  * _id              : ObjectId  <<PK>>
+  --
+  * portfolio_id     : ObjectId  <<FK>>
+  * symbol           : String
+  * name             : String
+  * quantity         : Decimal128
+  * purchase_price   : Decimal128
+  * current_price    : Decimal128
+  * purchase_date    : Date
+}
+
+LA   ||--o{ LD   : "has documents"
+LA   ||--o| CC   : "has credit check"
+LA   ||--o| LACC : "approved into"
+LACC ||--o{ RI   : "has installments"
+INV  ||--o{ IH   : "contains holdings"
+
+note bottom of LA
+  Database: MongoDB
+  Flexible document model handles
+  variable loan application schemas
+  per loan type.
+end note
+@enduml

@@ -1,0 +1,90 @@
+@startuml
+title Sequence 02 — Internal Money Transfer (Event-Driven)
+
+skinparam sequenceArrowThickness 2
+skinparam sequenceGroupBorderColor #880E4F
+skinparam participantBackgroundColor #FCE4EC
+skinparam participantBorderColor #880E4F
+skinparam participantFontStyle bold
+skinparam sequenceLifeLineBorderColor #F48FB1
+skinparam noteBorderColor #F57F17
+skinparam noteBackgroundColor #FFF9C4
+skinparam responseMessageBelowArrow true
+
+actor        Customer
+participant  "React Frontend"              as FE
+participant  "API Gateway"                 as GW
+participant  "IAM Service"                 as IAM
+participant  "Account Service"             as ACC
+participant  "Ledger & Transaction Service" as LEDGER
+database     "PostgreSQL (Ledger DB)"      as DB
+participant  "Kafka"                       as KAFKA
+participant  "Notification Service"        as NOTIF
+participant  "Audit Service"               as AUDIT
+
+Customer -> FE : Fill transfer form\n{ fromAccount, toAccount, amount }
+FE -> GW       : POST /api/transactions/transfer\nAuthorization: Bearer <JWT>
+
+GW -> IAM : Validate JWT + ROLE_CUSTOMER
+IAM --> GW : 200 OK { userId, role }
+
+GW -> LEDGER : Forward transfer request
+
+activate LEDGER
+
+LEDGER -> ACC : GET /internal/accounts/{fromAccountId}
+ACC --> LEDGER : { balance, status, ownerId }
+
+alt Account Frozen or Closed
+    LEDGER --> GW : 403 Account Not Eligible
+    GW  --> FE : 403
+    FE  --> Customer : "Account is frozen or closed"
+
+else Account Active
+    LEDGER -> LEDGER : Check balance >= amount
+
+    alt Insufficient Funds
+        LEDGER --> GW : 422 Insufficient Funds
+        GW  --> FE : 422
+        FE  --> Customer : "Insufficient balance"
+
+    else Sufficient Funds
+        LEDGER -> DB : BEGIN TRANSACTION
+        LEDGER -> DB : UPDATE balance − amount (fromAccount)
+        LEDGER -> DB : UPDATE balance + amount (toAccount)
+        LEDGER -> DB : INSERT transaction record { status: COMPLETED }
+
+        alt DB Error — Rollback
+            DB --> LEDGER : Error
+            LEDGER -> DB  : ROLLBACK
+            LEDGER --> GW : 500 Transaction Failed
+            GW  --> FE : 500
+            FE  --> Customer : "Transfer failed, please retry"
+
+        else Commit Success
+            DB --> LEDGER : COMMIT OK
+
+            LEDGER -> KAFKA : Publish TransferCompletedEvent\n{ txId, fromAccount, toAccount, amount, timestamp }
+
+            KAFKA -> NOTIF : Consume TransferCompletedEvent
+            KAFKA -> AUDIT : Consume TransferCompletedEvent
+
+            NOTIF -> Customer : SMS / Email: "Transfer of $X completed"
+            AUDIT -> AUDIT    : Write audit log entry
+
+            LEDGER --> GW : 200 OK { transactionId, status: COMPLETED }
+            GW --> FE : 200 OK
+            FE --> Customer : "Transfer Successful"
+        end
+    end
+end
+
+deactivate LEDGER
+
+note over LEDGER, DB
+  PostgreSQL ACID transaction guarantees
+  atomic double-entry bookkeeping.
+  Both debit and credit post together
+  or neither posts.
+end note
+@enduml

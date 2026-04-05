@@ -1,0 +1,98 @@
+@startuml
+title Workflow, Audit & Notification Service
+
+top to bottom direction
+
+skinparam actorStyle awesome
+skinparam usecaseBackgroundColor #FFF3E0
+skinparam usecaseBorderColor #E65100
+skinparam usecaseFontSize 12
+skinparam packageBackgroundColor #FAFAFA
+skinparam packageBorderColor #FFCC80
+skinparam ArrowColor #E65100
+skinparam ArrowFontColor #C62828
+skinparam ArrowFontStyle bold
+skinparam ArrowFontSize 11
+skinparam ArrowThickness 1.5
+
+actor Customer                   as C
+actor Employee                   as E
+actor Admin                      as A
+actor "Kafka\nEvent Bus"         as K
+actor "Email / SMS\nProvider"    as N
+
+rectangle "Workflow, Audit & Notification Service" {
+
+  package "Approval Workflow" {
+    usecase "Receive LoanAppliedEvent"       as UC_EV_LOAN
+    usecase "Route to Employee Dashboard"    as UC_ROUTE
+    usecase "View Pending Approvals"         as UC_PEND
+    usecase "Approve Application"            as UC_APPR
+    usecase "Reject Application"             as UC_REJ
+    usecase "Publish Approval Decision Event" as UC_PUB
+  }
+
+  package "Notification Service" {
+    usecase "Receive TransactionCompletedEvent" as UC_EV_TX
+    usecase "Receive LoginDetectedEvent"        as UC_EV_LOG
+    usecase "Receive LoanApprovedEvent"         as UC_EV_LAPPR
+    usecase "Send Email Notification"           as UC_EMAIL
+    usecase "Send SMS Notification"             as UC_SMS
+    usecase "View Notification History"         as UC_NHIST
+    usecase "Manage Notification Preferences"   as UC_NPREF
+  }
+
+  package "Audit & Logging (AOP)" {
+    usecase "Intercept All Service Calls"    as UC_AOP
+    usecase "View Centralized Audit Logs"    as UC_AVIEW
+    usecase "Search Logs by Service / Date"  as UC_ASRCH
+    usecase "Export Logs"                    as UC_AEXP
+  }
+}
+
+' ── Kafka publishes into this service ────────────────────
+K --> UC_EV_LOAN
+K --> UC_EV_TX
+K --> UC_EV_LOG
+K --> UC_EV_LAPPR
+
+' ── Employee ─────────────────────────────────────────────
+E --> UC_PEND
+E --> UC_APPR
+E --> UC_REJ
+E --> UC_AVIEW
+
+' ── Admin ────────────────────────────────────────────────
+A --> UC_AVIEW
+A --> UC_ASRCH
+A --> UC_AEXP
+
+' ── Customer ─────────────────────────────────────────────
+C --> UC_NHIST
+C --> UC_NPREF
+
+' ── Include / Extend ─────────────────────────────────────
+UC_EV_LOAN  ..> UC_ROUTE  : <<include>>
+UC_ROUTE    ..> UC_PEND   : <<include>>
+UC_APPR     ..> UC_PUB    : <<include>>
+UC_REJ      ..> UC_PUB    : <<include>>
+
+UC_EV_TX    ..> UC_EMAIL  : <<include>>
+UC_EV_TX    ..> UC_SMS    : <<include>>
+UC_EV_LOG   ..> UC_EMAIL  : <<include>>
+UC_EV_LAPPR ..> UC_EMAIL  : <<include>>
+UC_EV_LAPPR ..> UC_SMS    : <<include>>
+
+UC_EMAIL    --> N
+UC_SMS      --> N
+
+UC_AOP      ..> UC_AVIEW  : <<extend>>
+
+note bottom of UC_AOP
+  Spring AOP intercepts ALL
+  @Service methods across
+  every microservice and writes
+  to the centralized audit log.
+end note
+
+@enduml

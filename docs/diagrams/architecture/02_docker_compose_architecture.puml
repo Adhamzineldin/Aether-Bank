@@ -1,0 +1,90 @@
+@startuml
+title Banking System — Docker Compose Deployment
+
+top to bottom direction
+
+skinparam componentStyle rectangle
+skinparam defaultTextAlignment center
+skinparam backgroundColor #FFFFFF
+skinparam ArrowColor #455A64
+skinparam ArrowThickness 1.5
+
+skinparam component {
+  FontStyle bold
+  FontSize 11
+}
+skinparam database {
+  BackgroundColor #FFF9C4
+  BorderColor #F9A825
+  FontSize 10
+}
+skinparam package {
+  FontStyle bold
+  BackgroundColor #FAFAFA
+  BorderColor #90A4AE
+}
+
+package "docker-compose.yml — bridge network: banking-net" {
+
+  package "Infrastructure Containers" #E8F5E9 {
+    component "zookeeper\nbitnami/zookeeper\nPort: 2181"   as ZK     #C8E6C9
+    component "kafka\nbitnami/kafka\nPort: 9092"           as KAFKA  #FFE082
+    component "eureka-server\ncustom image\nPort: 8761"    as EUREKA #C8E6C9
+    component "config-server\ncustom image\nPort: 8888"    as CONFIG #C8E6C9
+    component "api-gateway\ncustom image\nPort: 8080"      as GW     #C8E6C9
+  }
+
+  package "Microservice Containers" #E3F2FD {
+    component "iam-service\ncustom image\nPort: 8081"      as IAM
+    component "account-service\ncustom image\nPort: 8082"  as ACC
+    component "ledger-service\ncustom image\nPort: 8083"   as LEDGER
+    component "lending-service\ncustom image\nPort: 8084"  as LENDING
+    component "card-service\ncustom image\nPort: 8085"     as CARD
+    component "workflow-service\ncustom image\nPort: 8086" as WF
+  }
+
+  package "Database Containers" #FFF9C4 {
+    database "postgres-iam\npostgres:15\nPort: 5432"        as D_IAM
+    database "mysql-account\nmysql:8\nPort: 3306"           as D_ACC
+    database "postgres-ledger\npostgres:15\nPort: 5433"     as D_LEDGER
+    database "mongo-lending\nmongo:7\nPort: 27017"          as D_LENDING
+    database "mysql-card\nmysql:8\nPort: 3307"              as D_CARD
+    database "mongo-workflow\nmongo:7\nPort: 27018"         as D_WF
+  }
+
+  package "Frontend Container" #FCE4EC {
+    component "frontend\nnginx / node:20\nPort: 3000"      as FE #F8BBD0
+  }
+}
+
+' ── depends_on chain ───────────────────────────────────
+ZK      <-- KAFKA   : depends_on
+EUREKA  <-- GW      : depends_on
+EUREKA  <-- IAM     : depends_on
+EUREKA  <-- ACC     : depends_on
+EUREKA  <-- LEDGER  : depends_on
+EUREKA  <-- LENDING : depends_on
+EUREKA  <-- CARD    : depends_on
+EUREKA  <-- WF      : depends_on
+KAFKA   <-- WF      : depends_on
+CONFIG  <-- IAM     : depends_on
+CONFIG  <-- LEDGER  : depends_on
+
+' ── Service → Database bindings ───────────────────────
+IAM     --> D_IAM
+ACC     --> D_ACC
+LEDGER  --> D_LEDGER
+LENDING --> D_LENDING
+CARD    --> D_CARD
+WF      --> D_WF
+
+' ── Frontend → Gateway ────────────────────────────────
+FE --> GW : Port 8080
+
+note bottom of FE
+  All containers share the Docker
+  bridge network "banking-net".
+  Services resolve each other by
+  container name — no hardcoded IPs.
+end note
+@enduml

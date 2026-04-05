@@ -1,0 +1,81 @@
+@startuml
+title DB 02 — Account & Customer Profile Service (MySQL)
+
+skinparam linetype ortho
+skinparam classBackgroundColor #FFF8E1
+skinparam classBorderColor #F57F17
+skinparam classHeaderBackgroundColor #FFE082
+skinparam classFontStyle bold
+skinparam classAttributeFontSize 11
+
+entity "customers" as CUST {
+  * id             : VARCHAR(36) <<PK>>
+  --
+  * user_id        : VARCHAR(36) <<UNIQUE>>
+  * first_name     : VARCHAR(100)
+  * last_name      : VARCHAR(100)
+  * date_of_birth  : DATE
+  * national_id    : VARCHAR(50) <<UNIQUE>>
+  * address_line1  : VARCHAR(255)
+  * address_line2  : VARCHAR(255)
+  * city           : VARCHAR(100)
+  * country        : VARCHAR(100)
+  * postal_code    : VARCHAR(20)
+  * kyc_status     : ENUM(PENDING, VERIFIED, REJECTED)
+  * created_at     : TIMESTAMP
+  * updated_at     : TIMESTAMP
+}
+
+entity "accounts" as ACC {
+  * id             : VARCHAR(36) <<PK>>
+  --
+  * account_number : VARCHAR(20) <<UNIQUE>>
+  * customer_id    : VARCHAR(36) <<FK>>
+  * type           : ENUM(CHECKING, SAVINGS)
+  * status         : ENUM(ACTIVE, FROZEN, CLOSED)
+  * currency       : CHAR(3)
+  * balance        : DECIMAL(18,2)
+  * opened_at      : TIMESTAMP
+  * closed_at      : TIMESTAMP
+}
+
+entity "kyc_documents" as KYC {
+  * id               : VARCHAR(36) <<PK>>
+  --
+  * customer_id      : VARCHAR(36) <<FK>>
+  * document_type    : ENUM(PASSPORT, NATIONAL_ID, UTILITY_BILL)
+  * file_url         : VARCHAR(512)
+  * uploaded_at      : TIMESTAMP
+  * verified_at      : TIMESTAMP
+  * verified_by      : VARCHAR(36)
+  * status           : ENUM(PENDING, VERIFIED, REJECTED)
+  * rejection_reason : TEXT
+}
+
+entity "support_tickets" as TICKET {
+  * id          : VARCHAR(36) <<PK>>
+  --
+  * customer_id : VARCHAR(36) <<FK>>
+  * subject     : VARCHAR(255)
+  * description : TEXT
+  * status      : ENUM(OPEN, IN_PROGRESS, RESOLVED, CLOSED)
+  * priority    : ENUM(LOW, MEDIUM, HIGH)
+  * assigned_to : VARCHAR(36)
+  * created_at  : TIMESTAMP
+  * resolved_at : TIMESTAMP
+}
+
+entity "ticket_messages" as MSG {
+  * id        : VARCHAR(36) <<PK>>
+  --
+  * ticket_id : VARCHAR(36) <<FK>>
+  * sender_id : VARCHAR(36)
+  * message   : TEXT
+  * sent_at   : TIMESTAMP
+}
+
+CUST   ||--o{ ACC    : "owns"
+CUST   ||--o{ KYC    : "submits"
+CUST   ||--o{ TICKET : "raises"
+TICKET ||--o{ MSG    : "has"
+@enduml

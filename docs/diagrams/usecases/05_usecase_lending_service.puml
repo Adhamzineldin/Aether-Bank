@@ -1,0 +1,98 @@
+@startuml
+title Financial Products & Lending Service
+
+top to bottom direction
+
+skinparam actorStyle awesome
+skinparam usecaseBackgroundColor #EDE7F6
+skinparam usecaseBorderColor #4527A0
+skinparam usecaseFontSize 12
+skinparam packageBackgroundColor #FAFAFA
+skinparam packageBorderColor #CE93D8
+skinparam ArrowColor #4527A0
+skinparam ArrowFontColor #C62828
+skinparam ArrowFontStyle bold
+skinparam ArrowFontSize 11
+skinparam ArrowThickness 1.5
+
+actor Customer as C
+actor Employee as E
+actor Admin    as A
+actor "Kafka\nEvent Bus" as K
+
+rectangle "Financial Products & Lending Service" {
+
+  package "Loans" {
+    usecase "Apply for Personal Loan"        as UC_LOAN
+    usecase "Apply for Auto Loan"            as UC_AUTO
+    usecase "View Loan Status"               as UC_LSTAT
+    usecase "View Repayment Schedule"        as UC_REPAY
+    usecase "Make Loan Payment"              as UC_LPAY
+  }
+
+  package "Mortgage" {
+    usecase "Apply for Mortgage"             as UC_MORT
+    usecase "View Mortgage Details"          as UC_MVIEW
+    usecase "Make Mortgage Payment"          as UC_MPAY
+  }
+
+  package "Certificates of Deposit" {
+    usecase "Open CD Account"                as UC_CD
+    usecase "View CD Maturity & Rate"        as UC_CDVIEW
+    usecase "Withdraw at Maturity"           as UC_CDWD
+  }
+
+  package "Investments" {
+    usecase "Browse Investment Products"     as UC_IBROW
+    usecase "Purchase Investment"            as UC_IBUY
+    usecase "View Portfolio"                 as UC_IPORT
+    usecase "Sell Investment"                as UC_ISELL
+  }
+
+  package "Employee / Admin Actions" {
+    usecase "Review Application"             as UC_REV
+    usecase "Approve Application"            as UC_APPR
+    usecase "Reject Application"             as UC_REJ
+  }
+}
+
+' ── Customer ─────────────────────────────────────────────
+C --> UC_LOAN
+C --> UC_AUTO
+C --> UC_LSTAT
+C --> UC_REPAY
+C --> UC_LPAY
+C --> UC_MORT
+C --> UC_MVIEW
+C --> UC_MPAY
+C --> UC_CD
+C --> UC_CDVIEW
+C --> UC_CDWD
+C --> UC_IBROW
+C --> UC_IBUY
+C --> UC_IPORT
+C --> UC_ISELL
+
+' ── Employee ─────────────────────────────────────────────
+E --> UC_REV
+E --> UC_APPR
+E --> UC_REJ
+
+' ── Admin ────────────────────────────────────────────────
+A --> UC_REV
+A --> UC_APPR
+A --> UC_REJ
+
+' ── Include / Extend ─────────────────────────────────────
+UC_LOAN ..> UC_REV  : <<extend>>
+UC_AUTO ..> UC_REV  : <<extend>>
+UC_MORT ..> UC_REV  : <<extend>>
+
+UC_REV  ..> UC_APPR : <<include>>
+UC_REV  ..> UC_REJ  : <<include>>
+
+UC_APPR --> K : <<publish LoanApprovedEvent>>
+UC_REJ  --> K : <<publish LoanRejectedEvent>>
+UC_LOAN --> K : <<publish LoanAppliedEvent>>
+
+@enduml

@@ -1,0 +1,111 @@
+@startuml
+title Banking System — Overall Use Case Overview
+
+top to bottom direction
+
+skinparam actorStyle awesome
+skinparam usecaseBackgroundColor #E3F2FD
+skinparam usecaseBorderColor #1565C0
+skinparam usecaseFontSize 12
+skinparam packageBackgroundColor #FAFAFA
+skinparam packageBorderColor #90A4AE
+skinparam ArrowColor #1565C0
+skinparam ArrowFontColor #C62828
+skinparam ArrowFontStyle bold
+skinparam ArrowFontSize 11
+skinparam ArrowThickness 1.5
+
+actor Customer as C
+actor Employee as E
+actor Admin    as A
+actor "External\nMerchant" as M
+
+rectangle "Online Banking System" {
+
+  package "Authentication" {
+    usecase "Login / Register"       as UC_LOGIN
+    usecase "Reset Password"         as UC_RESET
+    usecase "Verify OTP / 2FA"       as UC_OTP
+  }
+
+  package "Account Management" {
+    usecase "Open Account"           as UC_OPEN
+    usecase "Close Account"          as UC_CLOSE
+    usecase "Update Profile"         as UC_PROF
+    usecase "View Account Details"   as UC_VIEW
+  }
+
+  package "Transactions" {
+    usecase "Deposit Funds"          as UC_DEP
+    usecase "Withdraw Funds"         as UC_WD
+    usecase "Transfer Money"         as UC_TX
+    usecase "View Transaction History" as UC_HIST
+  }
+
+  package "Financial Products" {
+    usecase "Apply for Loan"         as UC_LOAN
+    usecase "Apply for Mortgage"     as UC_MORT
+    usecase "Open Certificate of Deposit" as UC_CD
+    usecase "Manage Investments"     as UC_INV
+  }
+
+  package "Cards & Payments" {
+    usecase "Request Credit Card"    as UC_CC
+    usecase "Request Debit Card"     as UC_DC
+    usecase "Make Card Payment"      as UC_PAY
+    usecase "Currency Exchange"      as UC_FX
+  }
+
+  package "Admin & Workflow" {
+    usecase "Approve / Reject Loan"  as UC_APPROVE
+    usecase "Manage Users & Roles"   as UC_ROLES
+    usecase "View Audit Logs"        as UC_LOGS
+    usecase "Receive Notifications"  as UC_NOTIF
+  }
+}
+
+' ── Customer associations ──────────────────────────────────
+C --> UC_LOGIN
+C --> UC_RESET
+C --> UC_OPEN
+C --> UC_CLOSE
+C --> UC_PROF
+C --> UC_VIEW
+C --> UC_DEP
+C --> UC_WD
+C --> UC_TX
+C --> UC_HIST
+C --> UC_LOAN
+C --> UC_MORT
+C --> UC_CD
+C --> UC_INV
+C --> UC_CC
+C --> UC_DC
+C --> UC_PAY
+C --> UC_FX
+C --> UC_NOTIF
+
+' ── Employee associations ─────────────────────────────────
+E --> UC_LOGIN
+E --> UC_APPROVE
+E --> UC_LOGS
+E --> UC_NOTIF
+
+' ── Admin associations ───────────────────────────────────
+A --> UC_LOGIN
+A --> UC_ROLES
+A --> UC_LOGS
+A --> UC_NOTIF
+
+' ── Merchant associations ────────────────────────────────
+M --> UC_PAY
+
+' ── Include / Extend relationships ──────────────────────
+UC_LOGIN  ..> UC_OTP     : <<extend>>
+UC_LOAN   ..> UC_APPROVE : <<include>>
+UC_MORT   ..> UC_APPROVE : <<include>>
+UC_TX     ..> UC_NOTIF   : <<extend>>
+UC_APPROVE ..> UC_NOTIF  : <<extend>>
+UC_OPEN   ..> UC_PROF    : <<include>>
+
+@enduml

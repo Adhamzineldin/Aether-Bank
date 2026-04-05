@@ -1,0 +1,96 @@
+@startuml
+title Sequence 03 — Loan Application & Approval Workflow
+
+skinparam sequenceArrowThickness 2
+skinparam sequenceGroupBorderColor #4527A0
+skinparam participantBackgroundColor #EDE7F6
+skinparam participantBorderColor #4527A0
+skinparam participantFontStyle bold
+skinparam sequenceLifeLineBorderColor #CE93D8
+skinparam noteBorderColor #F57F17
+skinparam noteBackgroundColor #FFF9C4
+skinparam responseMessageBelowArrow true
+
+actor        Customer
+actor        Employee
+participant  "API Gateway"          as GW
+participant  "IAM Service"          as IAM
+participant  "Lending Service"      as LENDING
+database     "MongoDB (Lending DB)" as DB
+participant  "Kafka"                as KAFKA
+participant  "Workflow Service"     as WF
+participant  "Notification Service" as NOTIF
+participant  "Audit Service"        as AUDIT
+
+== Step 1: Customer Submits Application ==
+
+Customer -> GW : POST /api/loans/apply\n{ type, amount, term, income }
+GW  -> IAM     : Validate JWT
+IAM --> GW     : 200 OK { userId }
+GW  -> LENDING : Forward loan application
+
+activate LENDING
+LENDING -> DB  : INSERT LoanApplication { status: PENDING }
+DB --> LENDING : loanApplicationId
+LENDING -> KAFKA : Publish LoanAppliedEvent\n{ loanId, applicantId, amount, type }
+LENDING --> GW   : 202 Accepted { loanId, status: PENDING_REVIEW }
+GW --> Customer  : "Application submitted — under review"
+deactivate LENDING
+
+== Step 2: Event-Driven Routing ==
+
+KAFKA -> WF    : Consume LoanAppliedEvent
+activate WF
+WF -> WF       : Create WorkflowTask { loanId, status: OPEN }
+deactivate WF
+
+KAFKA -> AUDIT : Consume LoanAppliedEvent
+AUDIT -> AUDIT : Log application event
+
+KAFKA -> NOTIF : Consume LoanAppliedEvent
+NOTIF -> Customer : Email: "Application received — review in 2 business days"
+
+== Step 3: Employee Reviews ==
+
+Employee -> GW : GET /api/workflow/pending
+GW -> IAM      : Validate JWT + ROLE_EMPLOYEE
+IAM --> GW     : 200 OK
+GW -> WF       : GET pending tasks
+WF --> Employee : List of pending loan applications
+
+Employee -> GW : POST /api/workflow/loans/{loanId}/decide\n{ decision: APPROVED, notes }
+GW -> IAM      : Validate JWT + ROLE_EMPLOYEE
+IAM --> GW     : 200 OK
+GW -> WF       : Process decision
+
+activate WF
+WF -> WF       : Update task status = RESOLVED
+
+alt Loan Approved
+    WF -> KAFKA : Publish LoanApprovedEvent\n{ loanId, applicantId, approvedBy }
+
+    KAFKA -> LENDING : Consume LoanApprovedEvent
+    activate LENDING
+    LENDING -> DB : UPDATE status = APPROVED
+    LENDING -> DB : INSERT LoanAccount { repaymentSchedule }
+    deactivate LENDING
+
+    KAFKA -> NOTIF : Consume LoanApprovedEvent
+    NOTIF -> Customer : Email + SMS: "Your loan has been APPROVED"
+
+else Loan Rejected
+    WF -> KAFKA : Publish LoanRejectedEvent\n{ loanId, applicantId, reason }
+
+    KAFKA -> LENDING : Consume LoanRejectedEvent
+    activate LENDING
+    LENDING -> DB : UPDATE status = REJECTED
+    deactivate LENDING
+
+    KAFKA -> NOTIF : Consume LoanRejectedEvent
+    NOTIF -> Customer : Email: "Loan application declined. Reason: [reason]"
+end
+
+deactivate WF
+KAFKA -> AUDIT : Consume LoanDecisionEvent
+AUDIT -> AUDIT : Log decision { employeeId, timestamp }
+@enduml
