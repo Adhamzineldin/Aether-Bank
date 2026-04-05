@@ -1,0 +1,27 @@
+// Account service module
+
+import @models/*
+
+module Account {
+  description: "Account service"
+  prefix: /account
+
+  action ListAccount {
+    method: GET
+    path: /
+    output: AccountItem
+  }
+
+  action GetAccount {
+    method: GET
+    path: /:id
+    output: AccountItem
+  }
+
+  action CreateAccount {
+    method: POST
+    path: /
+    input: CreateAccountInput
+    output: AccountItem
+  }
+}

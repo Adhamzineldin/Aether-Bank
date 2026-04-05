@@ -1,0 +1,27 @@
+// Card service module
+
+import @models/*
+
+module Card {
+  description: "Card service"
+  prefix: /card
+
+  action ListCard {
+    method: GET
+    path: /
+    output: CardItem
+  }
+
+  action GetCard {
+    method: GET
+    path: /:id
+    output: CardItem
+  }
+
+  action CreateCard {
+    method: POST
+    path: /
+    input: CreateCardInput
+    output: CardItem
+  }
+}

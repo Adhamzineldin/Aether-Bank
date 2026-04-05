@@ -1,0 +1,27 @@
+// Transaction service module
+
+import @models/*
+
+module Transaction {
+  description: "Transaction service"
+  prefix: /transaction
+
+  action ListTransaction {
+    method: GET
+    path: /
+    output: TransactionItem
+  }
+
+  action GetTransaction {
+    method: GET
+    path: /:id
+    output: TransactionItem
+  }
+
+  action CreateTransaction {
+    method: POST
+    path: /
+    input: CreateTransactionInput
+    output: TransactionItem
+  }
+}

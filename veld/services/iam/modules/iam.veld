@@ -1,0 +1,27 @@
+// Iam service module
+
+import @models/*
+
+module Iam {
+  description: "Iam service"
+  prefix: /iam
+
+  action ListIam {
+    method: GET
+    path: /
+    output: IamItem
+  }
+
+  action GetIam {
+    method: GET
+    path: /:id
+    output: IamItem
+  }
+
+  action CreateIam {
+    method: POST
+    path: /
+    input: CreateIamInput
+    output: IamItem
+  }
+}

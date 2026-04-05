@@ -1,0 +1,27 @@
+// Lending service module
+
+import @models/*
+
+module Lending {
+  description: "Lending service"
+  prefix: /lending
+
+  action ListLending {
+    method: GET
+    path: /
+    output: LendingItem
+  }
+
+  action GetLending {
+    method: GET
+    path: /:id
+    output: LendingItem
+  }
+
+  action CreateLending {
+    method: POST
+    path: /
+    input: CreateLendingInput
+    output: LendingItem
+  }
+}

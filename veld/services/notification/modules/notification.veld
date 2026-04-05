@@ -1,0 +1,27 @@
+// Notification service module
+
+import @models/*
+
+module Notification {
+  description: "Notification service"
+  prefix: /notification
+
+  action ListNotification {
+    method: GET
+    path: /
+    output: NotificationItem
+  }
+
+  action GetNotification {
+    method: GET
+    path: /:id
+    output: NotificationItem
+  }
+
+  action CreateNotification {
+    method: POST
+    path: /
+    input: CreateNotificationInput
+    output: NotificationItem
+  }
+}

@@ -1,0 +1,12 @@
+// Lending domain models
+
+model LendingItem {
+  description: "A lending entity"
+  id:        uuid
+  name:      string
+  createdAt: datetime
+}
+
+model CreateLendingInput {
+  name: string
+}
