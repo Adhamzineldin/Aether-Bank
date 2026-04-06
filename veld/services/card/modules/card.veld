@@ -1,0 +1,28 @@
+// Card service module
+
+import "../models/card.model.veld"
+
+module Card {
+  description: "Card service"
+  prefix: /api/card
+
+  action ListCard {
+    method: GET
+    path: /
+    output: CardItem[]
+  }
+
+  action GetCard {
+    method: GET
+    path: /:id
+    output: CardItem
+    errors: [NotFound]
+  }
+
+  action CreateCard {
+    method: POST
+    path: /
+    input: CreateCardInput
+    output: CardItem
+  }
+}

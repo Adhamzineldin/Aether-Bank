@@ -1,12 +1,22 @@
 {
   "fileHashes": {
-    "G:\\University\\Third Year Term 2\\SE-2\\Aether Bank\\veld\\services\\account\\main.veld": "9cff132d3ce10d0ed439a54597811db2dd913b537baf9cd82dc0eab81b8cadf5",
+    "G:\\University\\Third Year Term 2\\SE-2\\Aether Bank\\veld\\services\\account\\main.veld": "b6954fa33a90aafce5e3e85dd7fc117d5b33e188df01d002eccd5d6a534c4d52",
     "G:\\University\\Third Year Term 2\\SE-2\\Aether Bank\\veld\\services\\account\\models\\account.model.veld": "24ef35581a9be05f34378c23f97ccba85d42c8fc4afed3a69aa447875ebd9605",
-    "G:\\University\\Third Year Term 2\\SE-2\\Aether Bank\\veld\\services\\account\\modules\\account.veld": "20ccb95ded2406901253810a02e66b212c82b1d2821a0795dc3c12b05edb11cb",
-    "G:\\University\\Third Year Term 2\\SE-2\\Aether Bank\\veld\\services\\card\\modules\\card.veld": "18f8673b86039063cd767653c8bf625a463c30ae14222f686bda24b92fdd709f",
-    "G:\\University\\Third Year Term 2\\SE-2\\Aether Bank\\veld\\services\\iam\\modules\\iam.veld": "fd317b0fe1bcd79fdd5e78d1d236340b7297dfb149fbc8e7ff83cb7ff29bfd65",
-    "G:\\University\\Third Year Term 2\\SE-2\\Aether Bank\\veld\\services\\lending\\modules\\lending.veld": "6e0341d9d9a4a663cd0f2faef04129f600e5c229dd29049b25984758f9685568",
-    "G:\\University\\Third Year Term 2\\SE-2\\Aether Bank\\veld\\services\\notification\\modules\\notification.veld": "506ae103aa056a763b6fbf8fc8a7501e2c440e51ad074ee7ea59c3befe8d5fc6",
-    "G:\\University\\Third Year Term 2\\SE-2\\Aether Bank\\veld\\services\\transaction\\modules\\transaction.veld": "d14cd6e1f7563849499361085cf6387346f78eae3eb143ab97771141db5cb2dc"
+    "G:\\University\\Third Year Term 2\\SE-2\\Aether Bank\\veld\\services\\account\\modules\\account.veld": "4d2199ab8e9edce72d278334546622e0c4594df59d801579b1f42fcb50363385",
+    "G:\\University\\Third Year Term 2\\SE-2\\Aether Bank\\veld\\services\\card\\main.veld": "8921b94f3e0c48801cb3562e65693313b1287dfd904d8e34ef0e47cad321cf37",
+    "G:\\University\\Third Year Term 2\\SE-2\\Aether Bank\\veld\\services\\card\\models\\card.model.veld": "1aad947b2e9ca60ea110986b174ad8ee8f25b790863bf80e93d03bd507d68a71",
+    "G:\\University\\Third Year Term 2\\SE-2\\Aether Bank\\veld\\services\\card\\modules\\card.veld": "877e146dcf5eda8904ea39f42958399e10420ee615f9932eb352692a324dc731",
+    "G:\\University\\Third Year Term 2\\SE-2\\Aether Bank\\veld\\services\\iam\\main.veld": "f455fea8fcbba9b4b2185c6cfc6926afd92c997616724b7e264135bfe5411221",
+    "G:\\University\\Third Year Term 2\\SE-2\\Aether Bank\\veld\\services\\iam\\models\\iam.model.veld": "1f80e15bd53cbf375f710c3bbb0c90e59ade33feeac6fcbe82ce7e05b0d7dead",
+    "G:\\University\\Third Year Term 2\\SE-2\\Aether Bank\\veld\\services\\iam\\modules\\iam.veld": "ff09db9b865bff6b51a3d08ed6848262f9a6113debdf1421e8e5e9f8f36ff531",
+    "G:\\University\\Third Year Term 2\\SE-2\\Aether Bank\\veld\\services\\lending\\main.veld": "2f83e130cc28b41dcbeaa548494c8d467ca2f2c4c00f8b9d494a2e47a233c27c",
+    "G:\\University\\Third Year Term 2\\SE-2\\Aether Bank\\veld\\services\\lending\\models\\lending.model.veld": "744fa7ac9584588c81d315c6777b2f1871e4d5db993c12f127802c1db698fa2e",
+    "G:\\University\\Third Year Term 2\\SE-2\\Aether Bank\\veld\\services\\lending\\modules\\lending.veld": "aa5da82a814d405eff03c1cc6cb6687fe3cb254cae8c9a163daeb9b80c108f41",
+    "G:\\University\\Third Year Term 2\\SE-2\\Aether Bank\\veld\\services\\notification\\main.veld": "90492d65fc3cb4977027a0cc7aba69952be82f0feb807a3576e559e43cb9b1e9",
+    "G:\\University\\Third Year Term 2\\SE-2\\Aether Bank\\veld\\services\\notification\\models\\notification.model.veld": "872fe93dbe789558e18540d8f9c4547cd49bd26102c860171f24d9a1320dfcaf",
+    "G:\\University\\Third Year Term 2\\SE-2\\Aether Bank\\veld\\services\\notification\\modules\\notification.veld": "99118b0d5dea9fd0086b2f5be12961c9f5afd265795fe995dc93d8ecd1f5bb44",
+    "G:\\University\\Third Year Term 2\\SE-2\\Aether Bank\\veld\\services\\transaction\\main.veld": "c5ebc4d1d7569675a02ee664504f155269582308ff66fa5efad77588017efcc8",
+    "G:\\University\\Third Year Term 2\\SE-2\\Aether Bank\\veld\\services\\transaction\\models\\transaction.model.veld": "34dfbac45c208e78a93e6ca1474f7108310f83b7dbc024b6167ed556c5230135",
+    "G:\\University\\Third Year Term 2\\SE-2\\Aether Bank\\veld\\services\\transaction\\modules\\transaction.veld": "2bbd78f620905650ee06022d04d9859dbbe56d1af80cf5ee12416cc468ff0141"
   }
 }

@@ -1,0 +1,6 @@
+// Card service entry point
+// This file is the "input" for the card workspace entry.
+// It imports all models and modules for this service.
+
+import "./models/card.model.veld"
+import "./modules/card.veld"

@@ -1,0 +1,28 @@
+// Transaction service module
+
+import "../models/transaction.model.veld"
+
+module Transaction {
+  description: "Transaction service"
+  prefix: /api/transaction
+
+  action ListTransaction {
+    method: GET
+    path: /
+    output: TransactionItem[]
+  }
+
+  action GetTransaction {
+    method: GET
+    path: /:id
+    output: TransactionItem
+    errors: [NotFound]
+  }
+
+  action CreateTransaction {
+    method: POST
+    path: /
+    input: CreateTransactionInput
+    output: TransactionItem
+  }
+}

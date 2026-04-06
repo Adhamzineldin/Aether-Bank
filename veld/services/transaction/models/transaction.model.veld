@@ -1,0 +1,12 @@
+// Transaction domain models
+
+model TransactionItem {
+  description: "A transaction entity"
+  id:        uuid
+  name:      string
+  createdAt: datetime
+}
+
+model CreateTransactionInput {
+  name: string
+}

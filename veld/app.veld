@@ -1,0 +1,10 @@
+// Frontend entry point — imports all service contracts.
+// Used by the frontend workspace entry to generate a unified SDK
+// that covers every microservice.
+
+import "./services/iam/main.veld"
+import "./services/card/main.veld"
+import "./services/account/main.veld"
+import "./services/lending/main.veld"
+import "./services/notification/main.veld"
+import "./services/transaction/main.veld"

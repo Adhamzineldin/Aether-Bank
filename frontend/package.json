@@ -10,8 +10,9 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@veld/hooks": "file:generated/hooks",
     "@veld/client": "file:src/generated/client",
-    "@veld/generated": "file:src/generated",
+    "@veld/generated": "file:generated",
     "react": "^19.2.4",
     "react-dom": "^19.2.4"
   },

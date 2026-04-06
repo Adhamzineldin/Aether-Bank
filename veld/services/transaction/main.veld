@@ -1,0 +1,6 @@
+// Transaction service entry point
+// This file is the "input" for the transaction workspace entry.
+// It imports all models and modules for this service.
+
+import "./models/transaction.model.veld"
+import "./modules/transaction.veld"

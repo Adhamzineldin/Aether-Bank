@@ -1,0 +1,6 @@
+// Lending service entry point
+// This file is the "input" for the lending workspace entry.
+// It imports all models and modules for this service.
+
+import "./models/lending.model.veld"
+import "./modules/lending.veld"

@@ -1,0 +1,28 @@
+// Notification service module
+
+import "../models/notification.model.veld"
+
+module Notification {
+  description: "Notification service"
+  prefix: /api/notification
+
+  action ListNotification {
+    method: GET
+    path: /
+    output: NotificationItem[]
+  }
+
+  action GetNotification {
+    method: GET
+    path: /:id
+    output: NotificationItem
+    errors: [NotFound]
+  }
+
+  action CreateNotification {
+    method: POST
+    path: /
+    input: CreateNotificationInput
+    output: NotificationItem
+  }
+}
