@@ -1,7 +1,7 @@
-version: '3.8'
+name: aether-bank-backend
 
 services:
-  # 1. PostgreSQL (Used by IAM Service & Transaction Service)
+  # 1) PostgreSQL (IAM + Transaction Service)
   postgres:
     image: postgres:15-alpine
     container_name: bank-postgres
@@ -9,48 +9,49 @@ services:
     environment:
       POSTGRES_USER: root
       POSTGRES_PASSWORD: password
+      POSTGRES_DB: transaction_db
     ports:
-      - "5432:5432"
+      - "5433:5432"   # host:container
     volumes:
       - postgres_data:/var/lib/postgresql/data
-
-  # 2. MySQL (Used by Account Service & Card Service)
+  
+  # 2) MySQL (Account + Card Service)
   mysql:
     image: mysql:8.0
     container_name: bank-mysql
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: account_db
     ports:
-      - "3306:3306"
+      - "3307:3306"
     volumes:
       - mysql_data:/var/lib/mysql
-
-  # 3. MongoDB (Used by Lending Service & Notification Service)
+  
+  # 3) MongoDB (Lending + Notification Service)
   mongodb:
     image: mongo:6.0
     container_name: bank-mongodb
     restart: always
     ports:
-      - "27017:27017"
+      - "27018:27017"
     volumes:
       - mongodb_data:/data/db
-
-  # 4. RabbitMQ (The Message Broker for Event-Driven Communication)
-  # We use the 'management' tag so you get a UI to watch the events visually!
+  
+  # 4) RabbitMQ
   rabbitmq:
     image: rabbitmq:3-management-alpine
     container_name: bank-rabbitmq
     restart: always
     ports:
-      - "5672:5672"     # The port your Spring Boot apps talk to
-      - "15672:15672"   # The port for the web browser UI
+      - "5673:5672"
+      - "15673:15672"
     volumes:
       - rabbitmq_data:/var/lib/rabbitmq
 
-# Volumes are declared here so your data isn't deleted when you shut down the containers
 volumes:
   postgres_data:
   mysql_data:
   mongodb_data:
   rabbitmq_data:
+ 
