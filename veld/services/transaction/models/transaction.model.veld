@@ -1,12 +1,24 @@
-// Transaction domain models
-
-model TransactionItem {
-  description: "A transaction entity"
-  id:        uuid
-  name:      string
-  createdAt: datetime
+enum TransactionType {
+  DEPOSIT,
+  WITHDRAWAL,
+  TRANSFER,
 }
 
-model CreateTransactionInput {
-  name: string
+enum TransactionStatus {
+  PENDING,
+  COMPLETED,
+  FAILED,
+}
+
+model TransferRequest {
+  sourceAccountId: uuid
+  destinationAccountId: uuid
+  amount: float
+}
+
+model TransactionResponse {
+  referenceNumber: string
+  amount: float
+  status: TransactionStatus 
+  timestamp: datetime
 }

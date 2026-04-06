@@ -13,7 +13,7 @@ spring:
         - id: transaction-service-route
           uri: lb://transaction-service # lb = Load Balancer. It asks Eureka for the IP!
           predicates:
-            - Path=/api/transactions/** # If a request starts with this, send it to the transaction service
+            - Path=/api/transaction_service/** # If a request starts with this, send it to the transaction service
 
 eureka:
   client:

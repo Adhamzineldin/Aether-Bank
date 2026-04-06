@@ -4,34 +4,20 @@
     {
       "name": "Transaction",
       "description": "Transaction service",
-      "prefix": "/api/transaction",
+      "prefix": "/api/transaction_service/transaction",
       "actions": [
         {
-          "name": "ListTransaction",
-          "method": "GET",
-          "path": "/",
-          "input": "",
-          "output": "TransactionItem",
-          "outputArray": true,
-          "middleware": []
-        },
-        {
-          "name": "GetTransaction",
-          "method": "GET",
-          "path": "/:id",
-          "input": "",
-          "output": "TransactionItem",
-          "errors": [
-            "NotFound"
-          ],
-          "middleware": []
-        },
-        {
-          "name": "CreateTransaction",
+          "name": "transfer",
           "method": "POST",
-          "path": "/",
-          "input": "CreateTransactionInput",
-          "output": "TransactionItem",
+          "path": "/transfer",
+          "input": "TransferRequest",
+          "output": "TransactionResponse",
+          "errors": [
+            "InsufficientFunds",
+            "InvalidAccount",
+            "Unauthorized",
+            "InvalidAmount"
+          ],
           "middleware": []
         }
       ]
@@ -39,29 +25,40 @@
   ],
   "models": [
     {
-      "name": "TransactionItem",
-      "description": "A transaction entity",
+      "name": "TransferRequest",
       "fields": [
         {
-          "name": "id",
+          "name": "sourceAccountId",
           "type": "uuid"
         },
         {
-          "name": "name",
-          "type": "string"
+          "name": "destinationAccountId",
+          "type": "uuid"
         },
         {
-          "name": "createdAt",
-          "type": "datetime"
+          "name": "amount",
+          "type": "float"
         }
       ]
     },
     {
-      "name": "CreateTransactionInput",
+      "name": "TransactionResponse",
       "fields": [
         {
-          "name": "name",
+          "name": "referenceNumber",
           "type": "string"
+        },
+        {
+          "name": "amount",
+          "type": "float"
+        },
+        {
+          "name": "status",
+          "type": "TransactionStatus"
+        },
+        {
+          "name": "timestamp",
+          "type": "datetime"
         }
       ]
     }

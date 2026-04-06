@@ -7,7 +7,7 @@ spring:
 
   # PostgreSQL Connection (Matches your Docker Compose)
   datasource:
-    url: jdbc:postgresql://localhost:5433/postgres
+    url: jdbc:postgresql://localhost:5433/transaction_service
     username: root
     password: password
   jpa:

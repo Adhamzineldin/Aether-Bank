@@ -9,7 +9,7 @@ services:
     environment:
       POSTGRES_USER: root
       POSTGRES_PASSWORD: password
-      POSTGRES_DB: transaction_db
+      POSTGRES_DB: transaction_service
     ports:
       - "5433:5432"   # host:container
     volumes:
