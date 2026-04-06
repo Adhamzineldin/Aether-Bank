@@ -12,10 +12,10 @@ module Transaction {
     input: TransferRequest
     output: TransactionResponse
     errors: [
-      InsufficientFunds,
-      InvalidAccount,
-      Unauthorized,
-      InvalidAmount
+      InsufficientFunds:403,
+      InvalidAccount:404,
+      Unauthorized:401,
+      InvalidAmount:400
     ]
   }
 

@@ -68,6 +68,11 @@
             <artifactId>spring-boot-starter-webmvc-test</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <scope>provided</scope>
+        </dependency>
     </dependencies>
     <dependencyManagement>
         <dependencies>
@@ -92,7 +97,7 @@
             <goals><goal>add-source</goal></goals>
             <configuration>
               <sources>
-                <source>${project.basedir}/src/generated/src/main/java</source>
+                <source>${project.basedir}/generated/src/main/java</source>
               </sources>
             </configuration>
           </execution>

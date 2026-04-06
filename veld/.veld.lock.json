@@ -18,6 +18,12 @@
             "Unauthorized",
             "InvalidAmount"
           ],
+          "errorStatuses": {
+            "InsufficientFunds": 403,
+            "InvalidAccount": 404,
+            "InvalidAmount": 400,
+            "Unauthorized": 401
+          },
           "middleware": []
         }
       ]

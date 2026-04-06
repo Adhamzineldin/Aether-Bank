@@ -1,0 +1,21 @@
+server:
+  port: 4333
+
+spring:
+  application:
+    name: iam-service
+
+  # PostgreSQL Connection (Matches your Docker Compose)
+  datasource:
+    url: jdbc:postgresql://localhost:5433/iam_service
+    username: root
+    password: password
+  jpa:
+    hibernate:
+      ddl-auto: update # Automatically creates your database tables from your Java code
+    show-sql: true     # Prints SQL to your console for debugging
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/

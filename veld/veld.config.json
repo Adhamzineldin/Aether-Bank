@@ -9,7 +9,7 @@
       "input": "services/iam/main.veld",
       "backendConfig": { "target": "java", "framework": "spring", "dir": "../backend/iam-service" },
       "out": "../backend/iam-service/generated",
-      "baseUrl": "http://iam-service:3001"
+      "baseUrl": "http://localhost:4333"
     },
     {
       "name": "card",
@@ -49,7 +49,8 @@
       "input": "services/transaction/main.veld",
       "backendConfig": { "target": "java", "framework": "spring", "dir": "../backend/transaction-service" },
       "out": "../backend/transaction-service/generated",
-      "baseUrl": "http://transaction-service:3006"
+      "baseUrl": "http://localhost:2501",
+      "consumes": ["iam"]
     },
     {
       "name": "frontend",
