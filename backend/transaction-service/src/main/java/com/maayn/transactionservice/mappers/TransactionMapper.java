@@ -6,6 +6,8 @@ import maayn.veld.generated.models.TransactionStatus;
 import maayn.veld.generated.models.TransactionType;
 import maayn.veld.generated.models.TransferRequest;
 
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.UUID;
 
@@ -22,11 +24,15 @@ public class TransactionMapper {
     }
 
     public static TransactionResponse toResponse(Transaction entity) {
+        LocalDateTime createdAt = entity.getCreatedAt() != null
+                ? entity.getCreatedAt()
+                : LocalDateTime.now();
+
         return new TransactionResponse(
                 entity.getReferenceNumber(),
                 entity.getAmount(),
                 entity.getStatus(),
-                entity.getCreatedAt().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)
+                createdAt.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)
         );
     }
 }

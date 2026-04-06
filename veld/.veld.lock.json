@@ -37,7 +37,7 @@
         },
         {
           "name": "amount",
-          "type": "float"
+          "type": "decimal"
         }
       ]
     },
@@ -50,7 +50,7 @@
         },
         {
           "name": "amount",
-          "type": "float"
+          "type": "decimal"
         },
         {
           "name": "status",

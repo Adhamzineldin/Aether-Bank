@@ -1,6 +1,5 @@
 package com.maayn.transactionservice.entity;
 
-import jdk.jfr.DataAmount;
 import maayn.veld.generated.models.TransactionStatus;
 import maayn.veld.generated.models.TransactionType;
 
@@ -48,5 +47,12 @@ public class Transaction {
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
+
+    @PrePersist
+    private void ensureCreatedAt() {
+        if (createdAt == null) {
+            createdAt = LocalDateTime.now();
+        }
+    }
     
 }

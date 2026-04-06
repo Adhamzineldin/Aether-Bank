@@ -13,12 +13,12 @@ enum TransactionStatus {
 model TransferRequest {
   sourceAccountId: uuid
   destinationAccountId: uuid
-  amount: float
+  amount: decimal
 }
 
 model TransactionResponse {
   referenceNumber: string
-  amount: float
+  amount: decimal
   status: TransactionStatus 
   timestamp: datetime
 }
