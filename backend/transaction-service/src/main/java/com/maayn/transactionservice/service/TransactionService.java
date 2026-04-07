@@ -7,11 +7,14 @@ import com.maayn.transactionservice.repository.TransactionRepository;
 import com.maayn.transactionservice.validators.TransactionValidator;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import maayn.veld.generated.models.TransactionEvent;
 import maayn.veld.generated.models.TransactionResponse;
 import maayn.veld.generated.models.TransferRequest;
 import maayn.veld.generated.errors.*;
+import maayn.veld.generated.sdk.iam.IamClient;
 import maayn.veld.generated.services.ITransactionService;
 import org.springframework.stereotype.Service;
+
 
 
 @Service
@@ -28,12 +31,14 @@ public class TransactionService implements ITransactionService {
         Transaction transaction = TransactionMapper.toEntity(request);
 
         validator.validateTransfer(transaction);
+    
         
         //TODO: Implement actual transfer logic here (e.g., call Account Service to debit/credit accounts)
         
         Transaction saved = transactionRepository.saveAndFlush(transaction);
-        
-        eventPublisher.publish(saved);
+
+        TransactionEvent event = TransactionMapper.toEvent(saved);
+        eventPublisher.publish(event);
         
         return TransactionMapper.toResponse(saved);
     }
