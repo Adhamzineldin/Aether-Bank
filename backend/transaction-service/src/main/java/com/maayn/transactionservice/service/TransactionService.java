@@ -9,6 +9,7 @@ import maayn.veld.generated.models.TransactionResponse;
 import maayn.veld.generated.models.TransferRequest;
 import maayn.veld.generated.errors.*;
 import maayn.veld.generated.sdk.iam.IamClient;
+import maayn.veld.generated.sdk.iam.errors.IamErrors;
 import maayn.veld.generated.services.ITransactionService;
 import org.springframework.stereotype.Service;
 
@@ -33,8 +34,9 @@ public class TransactionService implements ITransactionService {
         }
 
         IamClient client = new IamClient();
+        
         try {
-            org.slf4j.LoggerFactory.getLogger(getClass()).error("Client IAM list: {}", client.listIam());
+            org.slf4j.LoggerFactory.getLogger(getClass()).error("Client IAM list: {}", client.iam.listIam());
         } catch (Exception e) {
             org.slf4j.LoggerFactory.getLogger(getClass()).error("Failed to list IAM: {}", e.getMessage());
         }
