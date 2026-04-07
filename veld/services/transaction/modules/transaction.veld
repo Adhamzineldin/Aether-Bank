@@ -15,8 +15,10 @@ module Transaction {
       InsufficientFunds:403,
       InvalidAccount:404,
       Unauthorized:401,
-      InvalidAmount:400
+      InvalidAmount:400,
+      invalidTarget:400
     ]
   }
+  
 
 }

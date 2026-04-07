@@ -22,3 +22,11 @@ model TransactionResponse {
   status: TransactionStatus 
   timestamp: datetime
 }
+
+model TransactionEvent{
+   referenceNumber: string 
+   sourceAccountId: uuid
+   destinationAccountId: uuid
+   amount: decimal
+   status: TransactionStatus
+}

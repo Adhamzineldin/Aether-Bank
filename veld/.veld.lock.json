@@ -16,13 +16,15 @@
             "InsufficientFunds",
             "InvalidAccount",
             "Unauthorized",
-            "InvalidAmount"
+            "InvalidAmount",
+            "invalidTarget"
           ],
           "errorStatuses": {
             "InsufficientFunds": 403,
             "InvalidAccount": 404,
             "InvalidAmount": 400,
-            "Unauthorized": 401
+            "Unauthorized": 401,
+            "invalidTarget": 400
           },
           "middleware": []
         }
@@ -65,6 +67,31 @@
         {
           "name": "timestamp",
           "type": "datetime"
+        }
+      ]
+    },
+    {
+      "name": "TransactionEvent",
+      "fields": [
+        {
+          "name": "referenceNumber",
+          "type": "string"
+        },
+        {
+          "name": "sourceAccountId",
+          "type": "uuid"
+        },
+        {
+          "name": "destinationAccountId",
+          "type": "uuid"
+        },
+        {
+          "name": "amount",
+          "type": "decimal"
+        },
+        {
+          "name": "status",
+          "type": "TransactionStatus"
         }
       ]
     }
