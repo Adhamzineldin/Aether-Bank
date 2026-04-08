@@ -94,6 +94,31 @@
           "type": "TransactionStatus"
         }
       ]
+    },
+    {
+      "name": "TransferInitiatedEvent",
+      "fields": [
+        {
+          "name": "transactionId",
+          "type": "string"
+        },
+        {
+          "name": "sourceAccountId",
+          "type": "uuid"
+        },
+        {
+          "name": "destinationAccountId",
+          "type": "uuid"
+        },
+        {
+          "name": "amount",
+          "type": "float"
+        },
+        {
+          "name": "currency",
+          "type": "string"
+        }
+      ]
     }
   ]
 }

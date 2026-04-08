@@ -3,813 +3,2015 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>API Documentation — Veld</title>
+<title>API Reference &mdash; Veld</title>
 <style>
-*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
-:root{
-  --bg:#f9fafb;--fg:#111827;--sidebar-bg:#ffffff;--sidebar-border:#e5e7eb;
-  --card:#ffffff;--card-border:#e5e7eb;--card-shadow:0 1px 3px rgba(0,0,0,.06);
-  --accent:#4f46e5;--accent-hover:#4338ca;--accent-bg:#eef2ff;--accent-fg:#3730a3;
-  --muted:#6b7280;--muted-light:#9ca3af;
-  --code-bg:#f3f4f6;--code-fg:#1f2937;
-  --table-stripe:#f9fafb;--table-hover:#f3f4f6;
-  --get:#059669;--get-bg:#ecfdf5;--post:#2563eb;--post-bg:#eff6ff;
-  --put:#d97706;--put-bg:#fffbeb;--delete:#dc2626;--delete-bg:#fef2f2;
-  --patch:#ea580c;--patch-bg:#fff7ed;--ws:#7c3aed;--ws-bg:#f5f3ff;
-  --radius:8px;--transition:150ms ease;--highlight:#fef08a;
+/* ── Reset ── */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+/* ── Design tokens ── */
+:root {
+  --bg:         #f8fafc;
+  --fg:         #0f172a;
+  --sub-fg:     #334155;
+  --muted:      #64748b;
+  --muted2:     #94a3b8;
+
+  --card:       #ffffff;
+  --card-bd:    #e2e8f0;
+  --card-sh:    0 1px 3px rgba(0,0,0,.06);
+
+  --code-bg:    #f1f5f9;
+  --code-fg:    #0f172a;
+  --divider:    #e2e8f0;
+
+  --accent:     #6366f1;
+  --accent-dim: #4f46e5;
+  --accent-bg:  #eef2ff;
+  --accent-fg:  #4338ca;
+
+  --sb-bg:       #0f172a;
+  --sb-bd:       rgba(255,255,255,.06);
+  --sb-fg:       #94a3b8;
+  --sb-fg2:      #64748b;
+  --sb-hover:    rgba(255,255,255,.05);
+  --sb-act-bg:   rgba(99,102,241,.15);
+  --sb-act-fg:   #a5b4fc;
+  --sb-act-bd:   #6366f1;
+
+  --get:    #10b981; --get-bg:    #d1fae5; --get-fg:    #064e3b;
+  --post:   #3b82f6; --post-bg:   #dbeafe; --post-fg:   #1e3a8a;
+  --put:    #f59e0b; --put-bg:    #fef3c7; --put-fg:    #78350f;
+  --del:    #ef4444; --del-bg:    #fee2e2; --del-fg:    #7f1d1d;
+  --patch:  #f97316; --patch-bg:  #ffedd5; --patch-fg:  #7c2d12;
+  --ws:     #8b5cf6; --ws-bg:     #ede9fe; --ws-fg:     #3b0764;
+
+  --mono: 'JetBrains Mono','Fira Code','SF Mono',Consolas,'Liberation Mono',monospace;
+  --sans: -apple-system,BlinkMacSystemFont,'Inter','Segoe UI',system-ui,sans-serif;
+  --r3: 3px; --r5: 5px; --r8: 8px;
 }
-[data-theme="dark"]{
-  --bg:#0f172a;--fg:#e2e8f0;--sidebar-bg:#1e293b;--sidebar-border:#334155;
-  --card:#1e293b;--card-border:#334155;--card-shadow:0 1px 3px rgba(0,0,0,.3);
-  --accent:#818cf8;--accent-hover:#a5b4fc;--accent-bg:#1e1b4b;--accent-fg:#c7d2fe;
-  --muted:#94a3b8;--muted-light:#64748b;
-  --code-bg:#334155;--code-fg:#e2e8f0;
-  --table-stripe:#1e293b;--table-hover:#334155;
-  --get:#34d399;--get-bg:#064e3b;--post:#60a5fa;--post-bg:#1e3a5f;
-  --put:#fbbf24;--put-bg:#451a03;--delete:#f87171;--delete-bg:#450a0a;
-  --patch:#fb923c;--patch-bg:#431407;--ws:#a78bfa;--ws-bg:#2e1065;
-  --highlight:#854d0e;
+
+[data-theme="dark"] {
+  --bg:         #0c1222;
+  --fg:         #e2e8f0;
+  --sub-fg:     #cbd5e1;
+  --muted:      #64748b;
+  --muted2:     #475569;
+
+  --card:       #0f172a;
+  --card-bd:    #1e293b;
+  --card-sh:    0 1px 4px rgba(0,0,0,.3);
+
+  --code-bg:    #1e293b;
+  --code-fg:    #e2e8f0;
+  --divider:    #1e293b;
+
+  --accent:     #818cf8;
+  --accent-dim: #a5b4fc;
+  --accent-bg:  rgba(99,102,241,.12);
+  --accent-fg:  #c7d2fe;
+
+  --sb-bg:       #060d19;
+  --sb-bd:       rgba(255,255,255,.04);
+  --sb-fg:       #64748b;
+  --sb-fg2:      #475569;
+  --sb-hover:    rgba(255,255,255,.04);
+
+  --get:    #34d399; --get-bg:   rgba(5,150,105,.2);  --get-fg:   #a7f3d0;
+  --post:   #60a5fa; --post-bg:  rgba(37,99,235,.2);  --post-fg:  #bfdbfe;
+  --put:    #fbbf24; --put-bg:   rgba(217,119,6,.2);  --put-fg:   #fde68a;
+  --del:    #f87171; --del-bg:   rgba(220,38,38,.2);  --del-fg:   #fecaca;
+  --patch:  #fb923c; --patch-bg: rgba(234,88,12,.2);  --patch-fg: #fed7aa;
+  --ws:     #a78bfa; --ws-bg:    rgba(124,58,237,.2); --ws-fg:    #ddd6fe;
 }
-html{scroll-behavior:smooth}
-body{font-family:Inter,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--fg);line-height:1.6;display:flex;min-height:100vh}
-.sidebar{width:280px;background:var(--sidebar-bg);border-right:1px solid var(--sidebar-border);position:fixed;top:0;left:0;height:100vh;display:flex;flex-direction:column;z-index:20}
-.sidebar-header{padding:20px 16px 12px;border-bottom:1px solid var(--sidebar-border)}
-.sidebar-header h1{font-size:18px;font-weight:700;letter-spacing:-.02em}
-.sidebar-header h1 span{color:var(--accent)}
-.sidebar-header p{font-size:11px;color:var(--muted);margin-top:2px}
-.search-box{padding:10px 12px;position:relative}
-.search-box input{width:100%;padding:7px 10px 7px 32px;border:1px solid var(--card-border);border-radius:var(--radius);font-size:12px;background:var(--bg);color:var(--fg);outline:none;transition:border-color var(--transition)}
-.search-box input:focus{border-color:var(--accent)}
-.search-box::before{content:"🔍";position:absolute;left:20px;top:50%;transform:translateY(-50%);font-size:12px}
-.nav-scroll{flex:1;overflow-y:auto;padding:4px 8px 20px}
-.nav-scroll::-webkit-scrollbar{width:4px}
-.nav-scroll::-webkit-scrollbar-thumb{background:var(--card-border);border-radius:2px}
-details.tree-svc,details.tree-mod,details.tree-section{margin-bottom:2px}
-.tree-svc-title{font-size:12px;font-weight:700;padding:8px;cursor:pointer;list-style:none;display:flex;align-items:center;justify-content:space-between;border-radius:6px;color:var(--fg);user-select:none}
-.tree-svc-title:hover{background:var(--table-hover)}
-.tree-svc-title::-webkit-details-marker{display:none}
-details.tree-svc>summary::before{content:"▸";margin-right:6px;font-size:10px;transition:transform var(--transition);display:inline-block}
-details.tree-svc[open]>summary::before{transform:rotate(90deg)}
-.tree-mod-title{font-size:11px;font-weight:600;padding:5px 8px 5px 20px;cursor:pointer;list-style:none;display:flex;align-items:center;justify-content:space-between;border-radius:4px;color:var(--muted);user-select:none}
-.tree-mod-title:hover{background:var(--table-hover);color:var(--fg)}
-.tree-mod-title::-webkit-details-marker{display:none}
-details.tree-mod>summary::before{content:"▸";margin-right:4px;font-size:9px;transition:transform var(--transition);display:inline-block}
-details.tree-mod[open]>summary::before{transform:rotate(90deg)}
-.tree-section-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;padding:10px 8px 5px;cursor:pointer;list-style:none;color:var(--muted-light);display:flex;align-items:center;justify-content:space-between;user-select:none}
-.tree-section-title::-webkit-details-marker{display:none}
-details.tree-section>summary::before{content:"▸";margin-right:6px;font-size:9px;transition:transform var(--transition);display:inline-block}
-details.tree-section[open]>summary::before{transform:rotate(90deg)}
-.badge{font-size:10px;background:var(--code-bg);color:var(--muted);padding:1px 7px;border-radius:10px;font-weight:600}
-.nav-link{display:block;padding:4px 8px 4px 32px;font-size:12px;color:var(--fg);text-decoration:none;border-radius:4px;transition:all var(--transition);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.nav-link:hover{background:var(--accent-bg);color:var(--accent-fg)}
-.nav-link .method-dot{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:6px;vertical-align:middle}
-.nav-link.active{background:var(--accent-bg);color:var(--accent-fg);font-weight:600}
-.main{margin-left:280px;flex:1;padding:24px 48px 48px;max-width:960px}
-.breadcrumbs{position:sticky;top:0;background:var(--bg);padding:10px 0;margin-bottom:16px;font-size:12px;color:var(--muted);z-index:10;border-bottom:1px solid var(--card-border)}
-.bc-item{color:var(--muted)}.bc-sep{margin:0 6px;color:var(--muted-light)}
-.stats{display:flex;gap:16px;margin-bottom:28px;flex-wrap:wrap}
-.stat{background:var(--card);border:1px solid var(--card-border);border-radius:var(--radius);padding:14px 20px;box-shadow:var(--card-shadow);flex:1;min-width:100px;text-align:center}
-.stat-value{font-size:26px;font-weight:700;color:var(--accent)}
-.stat-label{font-size:11px;color:var(--muted);margin-top:2px}
-.service-section{margin-bottom:32px}
-.service-title{font-size:22px;font-weight:700;margin:32px 0 4px;letter-spacing:-.02em;display:flex;align-items:center;gap:12px}
-.base-url{font-size:12px;font-weight:400;color:var(--muted);background:var(--code-bg);padding:2px 8px;border-radius:4px}
-.service-stats{display:flex;gap:16px;margin-bottom:20px;font-size:12px;color:var(--muted)}
-.service-stats span{background:var(--code-bg);padding:3px 10px;border-radius:12px}
-.section-desc{color:var(--muted);font-size:13px;margin-bottom:16px}
-.module-title{font-size:17px;font-weight:700;margin:28px 0 6px;display:flex;align-items:center;gap:8px}
-.prefix-badge{font-size:11px;font-weight:400;color:var(--muted);background:var(--code-bg);padding:2px 8px;border-radius:4px}
-.section-divider{font-size:22px;font-weight:700;margin:48px 0 16px;padding-top:16px;border-top:2px solid var(--card-border);letter-spacing:-.02em}
-.endpoint{background:var(--card);border:1px solid var(--card-border);border-radius:var(--radius);margin-bottom:10px;overflow:hidden;box-shadow:var(--card-shadow);transition:box-shadow var(--transition)}
-.endpoint:hover{box-shadow:0 4px 12px rgba(0,0,0,.08)}
-.endpoint.deprecated{opacity:.7}
-.endpoint-header{display:flex;align-items:center;gap:10px;padding:12px 16px;cursor:pointer;user-select:none}
-.endpoint-header:hover{background:var(--table-hover)}
-.method-badge{display:inline-flex;align-items:center;justify-content:center;min-width:52px;padding:3px 8px;border-radius:4px;font-size:10px;font-weight:700;letter-spacing:.03em;font-family:'SF Mono',SFMono-Regular,Consolas,monospace}
-.method-GET{background:var(--get-bg);color:var(--get)}
-.method-POST{background:var(--post-bg);color:var(--post)}
-.method-PUT{background:var(--put-bg);color:var(--put)}
-.method-DELETE{background:var(--delete-bg);color:var(--delete)}
-.method-PATCH{background:var(--patch-bg);color:var(--patch)}
-.method-WS{background:var(--ws-bg);color:var(--ws)}
-.endpoint-path{font-family:'SF Mono',SFMono-Regular,Consolas,monospace;font-size:12px;font-weight:500;flex:1}
-.endpoint-path .param{color:var(--accent);font-weight:600}
-.endpoint-name{font-size:11px;color:var(--muted);font-weight:500;display:flex;align-items:center;gap:6px}
-.chevron{font-size:10px;color:var(--muted-light);transition:transform var(--transition)}
-.endpoint.open .chevron{transform:rotate(90deg)}
-.endpoint-detail{padding:0 16px 14px;display:none;border-top:1px solid var(--card-border)}
-.endpoint.open .endpoint-detail{display:block;padding-top:14px}
-.detail-row{display:flex;gap:8px;margin-bottom:6px;font-size:12px;align-items:baseline}
-.detail-label{font-weight:600;min-width:80px;color:var(--muted);flex-shrink:0}
-.detail-value code{background:var(--code-bg);color:var(--code-fg);padding:2px 6px;border-radius:4px;font-size:11px;font-family:'SF Mono',SFMono-Regular,Consolas,monospace}
-.deprecated-badge{font-size:9px;background:var(--put-bg);color:var(--put);padding:1px 6px;border-radius:3px;font-weight:700;text-transform:uppercase;letter-spacing:.03em}
-.inline-fields{margin:8px 0;border:1px solid var(--card-border);border-radius:6px;overflow:hidden}
-.inline-fields-title{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;padding:6px 12px;background:var(--table-stripe);color:var(--muted)}
-.type-link{color:var(--accent);text-decoration:none;font-weight:600;font-size:12px;font-family:'SF Mono',SFMono-Regular,Consolas,monospace;background:var(--accent-bg);padding:1px 6px;border-radius:4px;transition:all var(--transition)}
-.type-link:hover{color:var(--accent-hover);text-decoration:underline}
-.model-card{background:var(--card);border:1px solid var(--card-border);border-radius:var(--radius);margin-bottom:14px;overflow:hidden;box-shadow:var(--card-shadow)}
-.model-header{padding:14px 16px;border-bottom:1px solid var(--card-border)}
-.model-header h3{font-size:15px;font-weight:600;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-.extends{font-weight:400;color:var(--muted);font-size:12px}
-.model-desc{color:var(--muted);font-size:12px;margin-top:4px}
-.used-by{font-size:11px;color:var(--muted-light);margin-top:6px}
-.used-by-action{background:var(--code-bg);padding:1px 6px;border-radius:3px;font-size:10px;font-family:'SF Mono',SFMono-Regular,Consolas,monospace}
-.model-table{width:100%;border-collapse:collapse}
-.model-table th{text-align:left;padding:8px 16px;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--muted-light);background:var(--table-stripe);border-bottom:1px solid var(--card-border)}
-.model-table td{padding:8px 16px;font-size:12px;border-bottom:1px solid var(--card-border)}
-.model-table tr:last-child td{border-bottom:none}
-.model-table tr:hover td{background:var(--table-hover)}
-.model-table code{background:var(--code-bg);color:var(--code-fg);padding:1px 5px;border-radius:3px;font-size:11px;font-family:'SF Mono',SFMono-Regular,Consolas,monospace}
-.field-deprecated td{opacity:.6;text-decoration:line-through}
-.optional-badge{display:inline-block;padding:1px 5px;border-radius:3px;font-size:9px;font-weight:700;background:var(--put-bg);color:var(--put)}
-.attr-badge{display:inline-block;padding:1px 5px;border-radius:3px;font-size:9px;font-weight:600;background:var(--code-bg);color:var(--muted)}
-.default-value{color:var(--accent);font-size:11px;font-family:'SF Mono',SFMono-Regular,Consolas,monospace}
-.enum-values{display:flex;flex-wrap:wrap;gap:6px;padding:12px 16px}
-.enum-value{background:var(--code-bg);color:var(--code-fg);padding:4px 10px;border-radius:4px;font-size:11px;font-family:'SF Mono',SFMono-Regular,Consolas,monospace;font-weight:500}
-@keyframes flash{0%{background:var(--highlight)}100%{background:transparent}}
-.highlight{animation:flash 1.5s ease-out}
-.footer{text-align:center;padding:48px 0 24px;color:var(--muted-light);font-size:11px}
-.toolbar{position:fixed;top:12px;right:20px;z-index:30}
-.theme-btn{background:var(--card);border:1px solid var(--card-border);color:var(--fg);width:34px;height:34px;border-radius:var(--radius);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;box-shadow:var(--card-shadow);transition:all var(--transition)}
-.theme-btn:hover{border-color:var(--accent);color:var(--accent)}
-@media(max-width:768px){.sidebar{display:none}.main{margin-left:0;padding:16px}}
+
+/* ── Base ── */
+html { scroll-behavior: smooth; }
+body {
+  font-family: var(--sans);
+  background: var(--bg);
+  color: var(--fg);
+  line-height: 1.6;
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  min-height: 100vh;
+}
+a { color: inherit; text-decoration: none; }
+
+/* ── Sidebar ── */
+.sidebar {
+  background: var(--sb-bg);
+  height: 100vh;
+  position: sticky;
+  top: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border-right: 1px solid var(--sb-bd);
+}
+
+.sidebar-brand {
+  padding: 18px 16px 14px;
+  border-bottom: 1px solid var(--sb-bd);
+  flex-shrink: 0;
+}
+.brand-name {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 700;
+  color: #f1f5f9;
+  letter-spacing: -.01em;
+}
+.brand-icon { width: 18px; height: 18px; color: var(--accent); flex-shrink: 0; }
+.brand-sub  { font-size: 11px; color: var(--sb-fg2); margin-top: 3px; }
+
+/* Search */
+.search-wrap {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--sb-bd);
+  flex-shrink: 0;
+}
+.search-inner { position: relative; display: flex; align-items: center; }
+.search-icon-svg {
+  position: absolute;
+  left: 9px;
+  color: var(--sb-fg2);
+  pointer-events: none;
+  flex-shrink: 0;
+}
+#nav-search {
+  width: 100%;
+  background: rgba(255,255,255,.06);
+  border: 1px solid rgba(255,255,255,.1);
+  border-radius: var(--r5);
+  padding: 6px 30px 6px 28px;
+  font-size: 12px;
+  color: #f1f5f9;
+  outline: none;
+  font-family: var(--sans);
+  transition: border-color .15s, background .15s;
+}
+#nav-search::placeholder { color: var(--sb-fg2); }
+#nav-search:focus { border-color: var(--accent); background: rgba(255,255,255,.09); }
+.search-hint {
+  position: absolute;
+  right: 8px;
+  font-size: 10px;
+  color: var(--sb-fg2);
+  background: rgba(255,255,255,.07);
+  padding: 1px 5px;
+  border-radius: 3px;
+  border: 1px solid rgba(255,255,255,.1);
+  font-family: var(--sans);
+  pointer-events: none;
+  transition: opacity .15s;
+}
+#nav-search:focus ~ .search-hint,
+#nav-search:not(:placeholder-shown) ~ .search-hint { opacity: 0; }
+
+/* Nav tree */
+.nav-tree {
+  flex: 1;
+  overflow-y: auto;
+  padding: 6px 0 24px;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255,255,255,.08) transparent;
+}
+.nav-tree::-webkit-scrollbar { width: 3px; }
+.nav-tree::-webkit-scrollbar-thumb { background: rgba(255,255,255,.08); border-radius: 2px; }
+
+/* Service block */
+.nav-svc { margin-bottom: 4px; }
+.nav-svc-label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 16px 4px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--sb-fg);
+  cursor: pointer;
+  user-select: none;
+  transition: color .15s;
+}
+.nav-svc-label:hover { color: #cbd5e1; }
+.nav-toggle { font-size: 9px; transition: transform .2s; display: inline-block; }
+.nav-svc.collapsed .nav-toggle  { transform: rotate(-90deg); }
+.nav-svc.collapsed .nav-svc-body { display: none; }
+
+/* Module block */
+.nav-mod { margin-bottom: 1px; }
+.nav-mod-label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 5px 16px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--sb-fg);
+  cursor: pointer;
+  user-select: none;
+  transition: color .12s, background .12s;
+}
+.nav-mod-label:hover { color: #cbd5e1; background: var(--sb-hover); }
+.nav-badge {
+  font-size: 9px;
+  font-weight: 700;
+  background: rgba(255,255,255,.08);
+  color: var(--sb-fg2);
+  padding: 1px 6px;
+  border-radius: 10px;
+  flex-shrink: 0;
+}
+.nav-mod.collapsed .nav-mod-body { display: none; }
+
+/* Endpoint nav link */
+.nav-ep {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 3px 12px 3px 20px;
+  font-size: 11.5px;
+  color: var(--sb-fg);
+  cursor: pointer;
+  transition: color .12s, background .12s;
+  border-left: 2px solid transparent;
+  overflow: hidden;
+  text-decoration: none;
+}
+.nav-ep:hover { color: #e2e8f0; background: var(--sb-hover); }
+.nav-ep.active {
+  color: var(--sb-act-fg);
+  background: var(--sb-act-bg);
+  border-left-color: var(--sb-act-bd);
+}
+.nav-method {
+  font-size: 9px;
+  font-weight: 800;
+  font-family: var(--mono);
+  letter-spacing: .02em;
+  min-width: 40px;
+  text-align: left;
+  flex-shrink: 0;
+}
+.nav-method-GET    { color: var(--get); }
+.nav-method-POST   { color: var(--post); }
+.nav-method-PUT    { color: var(--put); }
+.nav-method-DELETE { color: var(--del); }
+.nav-method-PATCH  { color: var(--patch); }
+.nav-method-WS     { color: var(--ws); }
+.nav-ep-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* Type groups (models / enums) */
+.nav-group { margin-top: 10px; }
+.nav-group-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 16px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--sb-fg2);
+  cursor: pointer;
+  user-select: none;
+  transition: color .15s;
+}
+.nav-group-label:hover { color: var(--sb-fg); }
+.nav-group.collapsed .nav-group-body { display: none; }
+.nav-type {
+  display: block;
+  padding: 3px 16px 3px 20px;
+  font-size: 11.5px;
+  font-family: var(--mono);
+  color: var(--sb-fg2);
+  cursor: pointer;
+  transition: color .12s, background .12s;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-decoration: none;
+}
+.nav-type:hover { color: #e2e8f0; background: var(--sb-hover); }
+.nav-type.active { color: var(--sb-act-fg); background: var(--sb-act-bg); }
+
+/* ── Main layout ── */
+.main { display: flex; flex-direction: column; min-height: 100vh; }
+
+/* Topbar */
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: var(--bg);
+  border-bottom: 1px solid var(--divider);
+  padding: 0 40px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+}
+.breadcrumbs {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  min-width: 0;
+  overflow: hidden;
+}
+.bc-item { color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.bc-item.bc-last { color: var(--fg); font-weight: 500; }
+.bc-sep { color: var(--muted2); flex-shrink: 0; }
+.topbar-right { display: flex; align-items: center; flex-shrink: 0; }
+.theme-btn {
+  width: 30px; height: 30px;
+  background: var(--card);
+  border: 1px solid var(--card-bd);
+  border-radius: var(--r5);
+  cursor: pointer;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: border-color .15s;
+  line-height: 1;
+}
+.theme-btn:hover { border-color: var(--accent); }
+
+/* Content */
+.content { flex: 1; padding: 32px 40px 64px; max-width: 900px; }
+
+/* Stats */
+.stats-row { display: flex; gap: 12px; margin-bottom: 36px; flex-wrap: wrap; }
+.stat-card {
+  background: var(--card);
+  border: 1px solid var(--card-bd);
+  border-radius: var(--r8);
+  padding: 14px 20px;
+  box-shadow: var(--card-sh);
+  min-width: 100px;
+  text-align: center;
+}
+.stat-num {
+  font-size: 26px;
+  font-weight: 800;
+  color: var(--accent);
+  line-height: 1;
+  letter-spacing: -.02em;
+}
+.stat-lbl {
+  font-size: 10px;
+  color: var(--muted);
+  margin-top: 5px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+}
+
+/* Service + Module headers */
+.svc-block  { margin: 32px 0 8px; }
+.svc-title {
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: -.025em;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.svc-url {
+  font-size: 11px;
+  font-weight: 400;
+  color: var(--muted);
+  background: var(--code-bg);
+  padding: 2px 8px;
+  border-radius: var(--r3);
+  font-family: var(--mono);
+}
+.svc-desc { font-size: 13px; color: var(--muted); margin-top: 6px; }
+.mod-header {
+  margin: 28px 0 2px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--divider);
+}
+.mod-title {
+  font-size: 16px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.mod-prefix {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--muted);
+  background: var(--code-bg);
+  padding: 2px 8px;
+  border-radius: var(--r3);
+  font-family: var(--mono);
+}
+.mod-desc { font-size: 13px; color: var(--muted); margin-top: 4px; }
+
+/* ── Endpoint cards ── */
+.ep {
+  border: 1px solid var(--card-bd);
+  border-left-width: 3px;
+  border-radius: var(--r8);
+  background: var(--card);
+  margin: 6px 0;
+  box-shadow: var(--card-sh);
+  overflow: hidden;
+  transition: box-shadow .15s;
+}
+.ep:hover { box-shadow: 0 3px 12px rgba(0,0,0,.09); }
+.ep.ep-open { box-shadow: 0 4px 16px rgba(0,0,0,.1); }
+.ep-deprecated { opacity: .6; }
+.ep-GET    { border-left-color: var(--get); }
+.ep-POST   { border-left-color: var(--post); }
+.ep-PUT    { border-left-color: var(--put); }
+.ep-DELETE { border-left-color: var(--del); }
+.ep-PATCH  { border-left-color: var(--patch); }
+.ep-WS     { border-left-color: var(--ws); }
+
+.ep-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  cursor: pointer;
+  user-select: none;
+  transition: background .1s;
+}
+.ep-head:hover { background: var(--code-bg); }
+.ep.ep-open .ep-head { background: var(--code-bg); }
+
+/* Method tags */
+.mtag {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 60px;
+  padding: 3px 6px;
+  border-radius: var(--r3);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: .04em;
+  font-family: var(--mono);
+  flex-shrink: 0;
+}
+.mtag-GET    { background: var(--get-bg);   color: var(--get-fg); }
+.mtag-POST   { background: var(--post-bg);  color: var(--post-fg); }
+.mtag-PUT    { background: var(--put-bg);   color: var(--put-fg); }
+.mtag-DELETE { background: var(--del-bg);   color: var(--del-fg); }
+.mtag-PATCH  { background: var(--patch-bg); color: var(--patch-fg); }
+.mtag-WS     { background: var(--ws-bg);    color: var(--ws-fg); }
+
+.ep-path {
+  flex: 1;
+  font-family: var(--mono);
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--fg);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.path-param { color: var(--accent); font-weight: 700; }
+.ep-info { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+.ep-name { font-size: 11px; color: var(--muted); white-space: nowrap; }
+.depr-tag {
+  font-size: 9px;
+  font-weight: 700;
+  background: var(--put-bg);
+  color: var(--put-fg);
+  padding: 1px 5px;
+  border-radius: 3px;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+}
+.copy-btn {
+  opacity: 0;
+  background: none;
+  border: 1px solid var(--card-bd);
+  color: var(--muted);
+  padding: 2px 6px;
+  border-radius: var(--r3);
+  font-size: 12px;
+  cursor: pointer;
+  transition: opacity .12s, color .12s, border-color .12s;
+  line-height: 1.3;
+}
+.ep-head:hover .copy-btn { opacity: 1; }
+.copy-btn:hover { color: var(--accent); border-color: var(--accent); }
+.chevron {
+  font-size: 9px;
+  color: var(--muted2);
+  transition: transform .2s;
+  flex-shrink: 0;
+}
+.ep.ep-open .chevron { transform: rotate(90deg); }
+
+/* Endpoint detail */
+.ep-detail {
+  display: none;
+  padding: 14px 18px 16px;
+  border-top: 1px solid var(--card-bd);
+}
+.ep.ep-open .ep-detail { display: block; }
+.ep-desc {
+  font-size: 13px;
+  color: var(--sub-fg);
+  margin-bottom: 14px;
+  line-height: 1.55;
+}
+.ep-meta {
+  display: grid;
+  grid-template-columns: 90px 1fr;
+  gap: 8px 12px;
+  align-items: start;
+}
+.ep-meta dt {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  padding-top: 4px;
+}
+.ep-meta dd {
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  align-items: center;
+}
+
+/* Chips */
+.type-chip {
+  display: inline-flex;
+  align-items: center;
+  background: var(--accent-bg);
+  color: var(--accent-fg);
+  padding: 2px 8px;
+  border-radius: var(--r3);
+  font-size: 11.5px;
+  font-weight: 600;
+  font-family: var(--mono);
+  cursor: pointer;
+  transition: background .12s, color .12s;
+  text-decoration: none;
+}
+.type-chip:hover { background: var(--accent); color: #fff; }
+.plain-chip {
+  display: inline-block;
+  background: var(--code-bg);
+  color: var(--code-fg);
+  padding: 2px 8px;
+  border-radius: var(--r3);
+  font-size: 11.5px;
+  font-family: var(--mono);
+}
+.mw-chip {
+  display: inline-block;
+  background: var(--ws-bg);
+  color: var(--ws-fg);
+  padding: 2px 8px;
+  border-radius: var(--r3);
+  font-size: 11px;
+  font-weight: 600;
+  font-family: var(--mono);
+}
+.err-chip {
+  display: inline-block;
+  background: var(--del-bg);
+  color: var(--del-fg);
+  padding: 2px 8px;
+  border-radius: var(--r3);
+  font-size: 11px;
+  font-family: var(--mono);
+}
+.err-chip em { font-style: normal; opacity: .65; margin-left: 3px; }
+
+/* Inline field tables */
+.field-table-wrap {
+  border: 1px solid var(--card-bd);
+  border-radius: var(--r5);
+  overflow: hidden;
+  width: 100%;
+  margin-top: 2px;
+}
+.field-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+.field-table thead tr { background: var(--code-bg); }
+.field-table th {
+  text-align: left;
+  padding: 5px 12px;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+  color: var(--muted);
+  border-bottom: 1px solid var(--card-bd);
+}
+.field-table td {
+  padding: 6px 12px;
+  border-bottom: 1px solid var(--card-bd);
+  vertical-align: middle;
+}
+.field-table tr:last-child td { border-bottom: none; }
+.field-table tr:hover td { background: var(--code-bg); }
+
+/* ── Type cards (Models + Enums) ── */
+.types-title {
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: -.02em;
+  margin: 48px 0 14px;
+  padding-top: 20px;
+  border-top: 2px solid var(--divider);
+}
+.type-card {
+  background: var(--card);
+  border: 1px solid var(--card-bd);
+  border-radius: var(--r8);
+  margin-bottom: 10px;
+  box-shadow: var(--card-sh);
+  overflow: hidden;
+}
+.type-head {
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--card-bd);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+.type-name {
+  font-family: var(--mono);
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--fg);
+}
+.extends-note {
+  font-size: 11px;
+  color: var(--muted);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.type-desc { font-size: 12px; color: var(--muted); width: 100%; margin-top: 2px; }
+.used-by {
+  font-size: 11px;
+  color: var(--muted2);
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  align-items: center;
+}
+.ub-chip {
+  font-family: var(--mono);
+  font-size: 10px;
+  background: var(--code-bg);
+  color: var(--muted);
+  padding: 1px 6px;
+  border-radius: 3px;
+}
+.fields-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.fields-table thead tr { background: var(--code-bg); }
+.fields-table th {
+  text-align: left;
+  padding: 7px 16px;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  color: var(--muted);
+  border-bottom: 1px solid var(--card-bd);
+}
+.fields-table td {
+  padding: 8px 16px;
+  font-size: 12px;
+  border-bottom: 1px solid var(--card-bd);
+  vertical-align: middle;
+}
+.fields-table tr:last-child td { border-bottom: none; }
+.fields-table tr:hover td { background: var(--code-bg); }
+.depr-row td { opacity: .5; text-decoration: line-through; }
+.fn { font-family: var(--mono); font-size: 12px; font-weight: 600; }
+
+/* Field attribute badges */
+.attr-wrap  { display: flex; flex-wrap: wrap; gap: 3px; align-items: center; }
+.fa-opt     { font-size: 9px; font-weight: 700; background: var(--post-bg); color: var(--post-fg); padding: 1px 5px; border-radius: 3px; }
+.fa-badge   { font-size: 9px; font-weight: 600; background: var(--code-bg); color: var(--muted);   padding: 1px 5px; border-radius: 3px; }
+.fa-default { font-size: 9px; font-weight: 500; background: var(--code-bg); color: var(--muted);   padding: 1px 5px; border-radius: 3px; font-family: var(--mono); }
+.fa-depr    { font-size: 9px; font-weight: 700; background: var(--put-bg);  color: var(--put-fg);  padding: 1px 5px; border-radius: 3px; }
+.fa-none    { color: var(--muted2); }
+
+/* Enum chips */
+.enum-chips { display: flex; flex-wrap: wrap; gap: 6px; padding: 12px 18px; }
+.ev-chip {
+  font-family: var(--mono);
+  font-size: 12px;
+  font-weight: 600;
+  background: var(--ws-bg);
+  color: var(--ws-fg);
+  padding: 4px 12px;
+  border-radius: var(--r5);
+}
+
+/* Flash highlight */
+@keyframes ep-flash {
+  0%   { outline: 2px solid var(--accent); outline-offset: 1px; }
+  60%  { outline: 2px solid var(--accent); outline-offset: 3px; }
+  100% { outline: 2px solid transparent;   outline-offset: 4px; }
+}
+.ep-flash { animation: ep-flash 1s ease-out forwards; }
+
+/* Footer */
+.footer {
+  text-align: center;
+  padding: 36px 0 20px;
+  font-size: 12px;
+  color: var(--muted2);
+  border-top: 1px solid var(--divider);
+  margin-top: 40px;
+}
+
+/* Mobile */
+@media (max-width: 760px) {
+  body { grid-template-columns: 1fr; }
+  .sidebar { display: none; }
+  .content { padding: 20px; }
+  .topbar  { padding: 0 20px; }
+  .ep-meta { grid-template-columns: 70px 1fr; }
+}
 </style>
 </head>
 <body>
-<div class="toolbar"><button class="theme-btn" onclick="toggleTheme()" title="Toggle dark mode">🌙</button></div>
 <nav class="sidebar">
-  <div class="sidebar-header"><h1><span>Veld</span> API</h1><p>Auto-generated documentation</p></div>
-  <div class="search-box"><input type="text" id="search" placeholder="Search…" oninput="filterNav(this.value)"></div>
-  <div class="nav-scroll">
-    <details class="tree-svc" open data-search="iam"><summary class="tree-svc-title"><span>iam</span><span class="badge">3</span></summary>
-      <details class="tree-mod" open data-search="iam"><summary class="tree-mod-title">Iam <span class="badge">3</span></summary>
-        <a href="#action-iam-iam-listiam" class="nav-link" data-search="listiam get /" onclick="navigateTo('action-iam-iam-listiam')"><span class="method-dot" style="background:var(--get)"></span>ListIam</a>
-        <a href="#action-iam-iam-getiam" class="nav-link" data-search="getiam get /:id" onclick="navigateTo('action-iam-iam-getiam')"><span class="method-dot" style="background:var(--get)"></span>GetIam</a>
-        <a href="#action-iam-iam-createiam" class="nav-link" data-search="createiam post /" onclick="navigateTo('action-iam-iam-createiam')"><span class="method-dot" style="background:var(--post)"></span>CreateIam</a>
-      </details>
-    </details>
-    <details class="tree-svc" open data-search="card"><summary class="tree-svc-title"><span>card</span><span class="badge">3</span></summary>
-      <details class="tree-mod" open data-search="card"><summary class="tree-mod-title">Card <span class="badge">3</span></summary>
-        <a href="#action-card-card-listcard" class="nav-link" data-search="listcard get /" onclick="navigateTo('action-card-card-listcard')"><span class="method-dot" style="background:var(--get)"></span>ListCard</a>
-        <a href="#action-card-card-getcard" class="nav-link" data-search="getcard get /:id" onclick="navigateTo('action-card-card-getcard')"><span class="method-dot" style="background:var(--get)"></span>GetCard</a>
-        <a href="#action-card-card-createcard" class="nav-link" data-search="createcard post /" onclick="navigateTo('action-card-card-createcard')"><span class="method-dot" style="background:var(--post)"></span>CreateCard</a>
-      </details>
-    </details>
-    <details class="tree-svc" open data-search="account"><summary class="tree-svc-title"><span>account</span><span class="badge">3</span></summary>
-      <details class="tree-mod" open data-search="account"><summary class="tree-mod-title">Account <span class="badge">3</span></summary>
-        <a href="#action-account-account-listaccount" class="nav-link" data-search="listaccount get /" onclick="navigateTo('action-account-account-listaccount')"><span class="method-dot" style="background:var(--get)"></span>ListAccount</a>
-        <a href="#action-account-account-getaccount" class="nav-link" data-search="getaccount get /:id" onclick="navigateTo('action-account-account-getaccount')"><span class="method-dot" style="background:var(--get)"></span>GetAccount</a>
-        <a href="#action-account-account-createaccount" class="nav-link" data-search="createaccount post /" onclick="navigateTo('action-account-account-createaccount')"><span class="method-dot" style="background:var(--post)"></span>CreateAccount</a>
-      </details>
-    </details>
-    <details class="tree-svc" open data-search="lending"><summary class="tree-svc-title"><span>lending</span><span class="badge">3</span></summary>
-      <details class="tree-mod" open data-search="lending"><summary class="tree-mod-title">Lending <span class="badge">3</span></summary>
-        <a href="#action-lending-lending-listlending" class="nav-link" data-search="listlending get /" onclick="navigateTo('action-lending-lending-listlending')"><span class="method-dot" style="background:var(--get)"></span>ListLending</a>
-        <a href="#action-lending-lending-getlending" class="nav-link" data-search="getlending get /:id" onclick="navigateTo('action-lending-lending-getlending')"><span class="method-dot" style="background:var(--get)"></span>GetLending</a>
-        <a href="#action-lending-lending-createlending" class="nav-link" data-search="createlending post /" onclick="navigateTo('action-lending-lending-createlending')"><span class="method-dot" style="background:var(--post)"></span>CreateLending</a>
-      </details>
-    </details>
-    <details class="tree-svc" open data-search="notification"><summary class="tree-svc-title"><span>notification</span><span class="badge">3</span></summary>
-      <details class="tree-mod" open data-search="notification"><summary class="tree-mod-title">Notification <span class="badge">3</span></summary>
-        <a href="#action-notification-notification-listnotification" class="nav-link" data-search="listnotification get /" onclick="navigateTo('action-notification-notification-listnotification')"><span class="method-dot" style="background:var(--get)"></span>ListNotification</a>
-        <a href="#action-notification-notification-getnotification" class="nav-link" data-search="getnotification get /:id" onclick="navigateTo('action-notification-notification-getnotification')"><span class="method-dot" style="background:var(--get)"></span>GetNotification</a>
-        <a href="#action-notification-notification-createnotification" class="nav-link" data-search="createnotification post /" onclick="navigateTo('action-notification-notification-createnotification')"><span class="method-dot" style="background:var(--post)"></span>CreateNotification</a>
-      </details>
-    </details>
-    <details class="tree-svc" open data-search="audit"><summary class="tree-svc-title"><span>audit</span><span class="badge">0</span></summary>
-    </details>
-    <details class="tree-svc" open data-search="transaction"><summary class="tree-svc-title"><span>transaction</span><span class="badge">1</span></summary>
-      <details class="tree-mod" open data-search="transaction"><summary class="tree-mod-title">Transaction <span class="badge">1</span></summary>
-        <a href="#action-transaction-transaction-transfer" class="nav-link" data-search="transfer post /transfer" onclick="navigateTo('action-transaction-transaction-transfer')"><span class="method-dot" style="background:var(--post)"></span>transfer</a>
-      </details>
-    </details>
-    <details class="tree-svc" open data-search="frontend"><summary class="tree-svc-title"><span>frontend</span><span class="badge">16</span></summary>
-      <details class="tree-mod" open data-search="iam"><summary class="tree-mod-title">Iam <span class="badge">3</span></summary>
-        <a href="#action-frontend-iam-listiam" class="nav-link" data-search="listiam get /" onclick="navigateTo('action-frontend-iam-listiam')"><span class="method-dot" style="background:var(--get)"></span>ListIam</a>
-        <a href="#action-frontend-iam-getiam" class="nav-link" data-search="getiam get /:id" onclick="navigateTo('action-frontend-iam-getiam')"><span class="method-dot" style="background:var(--get)"></span>GetIam</a>
-        <a href="#action-frontend-iam-createiam" class="nav-link" data-search="createiam post /" onclick="navigateTo('action-frontend-iam-createiam')"><span class="method-dot" style="background:var(--post)"></span>CreateIam</a>
-      </details>
-      <details class="tree-mod" open data-search="card"><summary class="tree-mod-title">Card <span class="badge">3</span></summary>
-        <a href="#action-frontend-card-listcard" class="nav-link" data-search="listcard get /" onclick="navigateTo('action-frontend-card-listcard')"><span class="method-dot" style="background:var(--get)"></span>ListCard</a>
-        <a href="#action-frontend-card-getcard" class="nav-link" data-search="getcard get /:id" onclick="navigateTo('action-frontend-card-getcard')"><span class="method-dot" style="background:var(--get)"></span>GetCard</a>
-        <a href="#action-frontend-card-createcard" class="nav-link" data-search="createcard post /" onclick="navigateTo('action-frontend-card-createcard')"><span class="method-dot" style="background:var(--post)"></span>CreateCard</a>
-      </details>
-      <details class="tree-mod" open data-search="account"><summary class="tree-mod-title">Account <span class="badge">3</span></summary>
-        <a href="#action-frontend-account-listaccount" class="nav-link" data-search="listaccount get /" onclick="navigateTo('action-frontend-account-listaccount')"><span class="method-dot" style="background:var(--get)"></span>ListAccount</a>
-        <a href="#action-frontend-account-getaccount" class="nav-link" data-search="getaccount get /:id" onclick="navigateTo('action-frontend-account-getaccount')"><span class="method-dot" style="background:var(--get)"></span>GetAccount</a>
-        <a href="#action-frontend-account-createaccount" class="nav-link" data-search="createaccount post /" onclick="navigateTo('action-frontend-account-createaccount')"><span class="method-dot" style="background:var(--post)"></span>CreateAccount</a>
-      </details>
-      <details class="tree-mod" open data-search="lending"><summary class="tree-mod-title">Lending <span class="badge">3</span></summary>
-        <a href="#action-frontend-lending-listlending" class="nav-link" data-search="listlending get /" onclick="navigateTo('action-frontend-lending-listlending')"><span class="method-dot" style="background:var(--get)"></span>ListLending</a>
-        <a href="#action-frontend-lending-getlending" class="nav-link" data-search="getlending get /:id" onclick="navigateTo('action-frontend-lending-getlending')"><span class="method-dot" style="background:var(--get)"></span>GetLending</a>
-        <a href="#action-frontend-lending-createlending" class="nav-link" data-search="createlending post /" onclick="navigateTo('action-frontend-lending-createlending')"><span class="method-dot" style="background:var(--post)"></span>CreateLending</a>
-      </details>
-      <details class="tree-mod" open data-search="notification"><summary class="tree-mod-title">Notification <span class="badge">3</span></summary>
-        <a href="#action-frontend-notification-listnotification" class="nav-link" data-search="listnotification get /" onclick="navigateTo('action-frontend-notification-listnotification')"><span class="method-dot" style="background:var(--get)"></span>ListNotification</a>
-        <a href="#action-frontend-notification-getnotification" class="nav-link" data-search="getnotification get /:id" onclick="navigateTo('action-frontend-notification-getnotification')"><span class="method-dot" style="background:var(--get)"></span>GetNotification</a>
-        <a href="#action-frontend-notification-createnotification" class="nav-link" data-search="createnotification post /" onclick="navigateTo('action-frontend-notification-createnotification')"><span class="method-dot" style="background:var(--post)"></span>CreateNotification</a>
-      </details>
-      <details class="tree-mod" open data-search="transaction"><summary class="tree-mod-title">Transaction <span class="badge">1</span></summary>
-        <a href="#action-frontend-transaction-transfer" class="nav-link" data-search="transfer post /transfer" onclick="navigateTo('action-frontend-transaction-transfer')"><span class="method-dot" style="background:var(--post)"></span>transfer</a>
-      </details>
-    </details>
-    <details class="tree-section" open><summary class="tree-section-title">Models <span class="badge">14</span></summary>
-      <a href="#model-iamitem" class="nav-link" data-search="iamitem" onclick="navigateTo('model-iamitem')">IamItem</a>
-      <a href="#model-createiaminput" class="nav-link" data-search="createiaminput" onclick="navigateTo('model-createiaminput')">CreateIamInput</a>
-      <a href="#model-carditem" class="nav-link" data-search="carditem" onclick="navigateTo('model-carditem')">CardItem</a>
-      <a href="#model-createcardinput" class="nav-link" data-search="createcardinput" onclick="navigateTo('model-createcardinput')">CreateCardInput</a>
-      <a href="#model-accountitem" class="nav-link" data-search="accountitem" onclick="navigateTo('model-accountitem')">AccountItem</a>
-      <a href="#model-createaccountinput" class="nav-link" data-search="createaccountinput" onclick="navigateTo('model-createaccountinput')">CreateAccountInput</a>
-      <a href="#model-lendingitem" class="nav-link" data-search="lendingitem" onclick="navigateTo('model-lendingitem')">LendingItem</a>
-      <a href="#model-createlendinginput" class="nav-link" data-search="createlendinginput" onclick="navigateTo('model-createlendinginput')">CreateLendingInput</a>
-      <a href="#model-notificationitem" class="nav-link" data-search="notificationitem" onclick="navigateTo('model-notificationitem')">NotificationItem</a>
-      <a href="#model-createnotificationinput" class="nav-link" data-search="createnotificationinput" onclick="navigateTo('model-createnotificationinput')">CreateNotificationInput</a>
-      <a href="#model-auditevent" class="nav-link" data-search="auditevent" onclick="navigateTo('model-auditevent')">AuditEvent</a>
-      <a href="#model-transferrequest" class="nav-link" data-search="transferrequest" onclick="navigateTo('model-transferrequest')">TransferRequest</a>
-      <a href="#model-transactionresponse" class="nav-link" data-search="transactionresponse" onclick="navigateTo('model-transactionresponse')">TransactionResponse</a>
-      <a href="#model-transactionevent" class="nav-link" data-search="transactionevent" onclick="navigateTo('model-transactionevent')">TransactionEvent</a>
-    </details>
-    <details class="tree-section" open><summary class="tree-section-title">Enums <span class="badge">4</span></summary>
-      <a href="#enum-auditstatus" class="nav-link" data-search="auditstatus" onclick="navigateTo('enum-auditstatus')">AuditStatus</a>
-      <a href="#enum-auditaction" class="nav-link" data-search="auditaction" onclick="navigateTo('enum-auditaction')">AuditAction</a>
-      <a href="#enum-transactiontype" class="nav-link" data-search="transactiontype" onclick="navigateTo('enum-transactiontype')">TransactionType</a>
-      <a href="#enum-transactionstatus" class="nav-link" data-search="transactionstatus" onclick="navigateTo('enum-transactionstatus')">TransactionStatus</a>
-    </details>
+  <div class="sidebar-brand">
+    <div class="brand-name">
+      <svg class="brand-icon" viewBox="0 0 20 20" fill="none"><path d="M10 2L17.3 6V14L10 18L2.7 14V6L10 2Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M10 2V18" stroke="currentColor" stroke-width="1" opacity=".4"/><path d="M2.7 6L17.3 14" stroke="currentColor" stroke-width="1" opacity=".4"/><path d="M17.3 6L2.7 14" stroke="currentColor" stroke-width="1" opacity=".4"/></svg>
+      API Reference
+    </div>
+    <div class="brand-sub">Generated by Veld</div>
+  </div>
+  <div class="search-wrap">
+    <div class="search-inner">
+      <svg class="search-icon-svg" width="13" height="13" viewBox="0 0 14 14" fill="none"><circle cx="6" cy="6" r="4.5" stroke="currentColor" stroke-width="1.5"/><line x1="9.5" y1="9.5" x2="12.5" y2="12.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+      <input type="text" id="nav-search" placeholder="Search endpoints, models…" autocomplete="off" oninput="filterNav(this.value)">
+      <kbd class="search-hint">/</kbd>
+    </div>
+  </div>
+  <div class="nav-tree">
+    <div class="nav-svc" id="nav-svc-iam">
+      <div class="nav-svc-label" onclick="toggleSvc(this)"><span>iam</span><span class="nav-toggle">▾</span></div>
+      <div class="nav-svc-body">
+        <div class="nav-mod">
+          <div class="nav-mod-label" onclick="toggleMod(this)"><span>Iam</span><span class="nav-badge">3</span></div>
+          <div class="nav-mod-body">
+            <a class="nav-ep" href="#action-iam-iam-listiam" data-target="action-iam-iam-listiam" data-search="listiam get /" onclick="navigateTo('action-iam-iam-listiam');return false;">
+              <span class="nav-method nav-method-GET">GET</span>
+              <span class="nav-ep-name">ListIam</span>
+            </a>
+            <a class="nav-ep" href="#action-iam-iam-getiam" data-target="action-iam-iam-getiam" data-search="getiam get /:id" onclick="navigateTo('action-iam-iam-getiam');return false;">
+              <span class="nav-method nav-method-GET">GET</span>
+              <span class="nav-ep-name">GetIam</span>
+            </a>
+            <a class="nav-ep" href="#action-iam-iam-createiam" data-target="action-iam-iam-createiam" data-search="createiam post /" onclick="navigateTo('action-iam-iam-createiam');return false;">
+              <span class="nav-method nav-method-POST">POST</span>
+              <span class="nav-ep-name">CreateIam</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="nav-svc" id="nav-svc-card">
+      <div class="nav-svc-label" onclick="toggleSvc(this)"><span>card</span><span class="nav-toggle">▾</span></div>
+      <div class="nav-svc-body">
+        <div class="nav-mod">
+          <div class="nav-mod-label" onclick="toggleMod(this)"><span>Card</span><span class="nav-badge">3</span></div>
+          <div class="nav-mod-body">
+            <a class="nav-ep" href="#action-card-card-listcard" data-target="action-card-card-listcard" data-search="listcard get /" onclick="navigateTo('action-card-card-listcard');return false;">
+              <span class="nav-method nav-method-GET">GET</span>
+              <span class="nav-ep-name">ListCard</span>
+            </a>
+            <a class="nav-ep" href="#action-card-card-getcard" data-target="action-card-card-getcard" data-search="getcard get /:id" onclick="navigateTo('action-card-card-getcard');return false;">
+              <span class="nav-method nav-method-GET">GET</span>
+              <span class="nav-ep-name">GetCard</span>
+            </a>
+            <a class="nav-ep" href="#action-card-card-createcard" data-target="action-card-card-createcard" data-search="createcard post /" onclick="navigateTo('action-card-card-createcard');return false;">
+              <span class="nav-method nav-method-POST">POST</span>
+              <span class="nav-ep-name">CreateCard</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="nav-svc" id="nav-svc-account">
+      <div class="nav-svc-label" onclick="toggleSvc(this)"><span>account</span><span class="nav-toggle">▾</span></div>
+      <div class="nav-svc-body">
+        <div class="nav-mod">
+          <div class="nav-mod-label" onclick="toggleMod(this)"><span>Account</span><span class="nav-badge">3</span></div>
+          <div class="nav-mod-body">
+            <a class="nav-ep" href="#action-account-account-listaccount" data-target="action-account-account-listaccount" data-search="listaccount get /" onclick="navigateTo('action-account-account-listaccount');return false;">
+              <span class="nav-method nav-method-GET">GET</span>
+              <span class="nav-ep-name">ListAccount</span>
+            </a>
+            <a class="nav-ep" href="#action-account-account-getaccount" data-target="action-account-account-getaccount" data-search="getaccount get /:id" onclick="navigateTo('action-account-account-getaccount');return false;">
+              <span class="nav-method nav-method-GET">GET</span>
+              <span class="nav-ep-name">GetAccount</span>
+            </a>
+            <a class="nav-ep" href="#action-account-account-createaccount" data-target="action-account-account-createaccount" data-search="createaccount post /" onclick="navigateTo('action-account-account-createaccount');return false;">
+              <span class="nav-method nav-method-POST">POST</span>
+              <span class="nav-ep-name">CreateAccount</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="nav-svc" id="nav-svc-lending">
+      <div class="nav-svc-label" onclick="toggleSvc(this)"><span>lending</span><span class="nav-toggle">▾</span></div>
+      <div class="nav-svc-body">
+        <div class="nav-mod">
+          <div class="nav-mod-label" onclick="toggleMod(this)"><span>Lending</span><span class="nav-badge">3</span></div>
+          <div class="nav-mod-body">
+            <a class="nav-ep" href="#action-lending-lending-listlending" data-target="action-lending-lending-listlending" data-search="listlending get /" onclick="navigateTo('action-lending-lending-listlending');return false;">
+              <span class="nav-method nav-method-GET">GET</span>
+              <span class="nav-ep-name">ListLending</span>
+            </a>
+            <a class="nav-ep" href="#action-lending-lending-getlending" data-target="action-lending-lending-getlending" data-search="getlending get /:id" onclick="navigateTo('action-lending-lending-getlending');return false;">
+              <span class="nav-method nav-method-GET">GET</span>
+              <span class="nav-ep-name">GetLending</span>
+            </a>
+            <a class="nav-ep" href="#action-lending-lending-createlending" data-target="action-lending-lending-createlending" data-search="createlending post /" onclick="navigateTo('action-lending-lending-createlending');return false;">
+              <span class="nav-method nav-method-POST">POST</span>
+              <span class="nav-ep-name">CreateLending</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="nav-svc" id="nav-svc-notification">
+      <div class="nav-svc-label" onclick="toggleSvc(this)"><span>notification</span><span class="nav-toggle">▾</span></div>
+      <div class="nav-svc-body">
+        <div class="nav-mod">
+          <div class="nav-mod-label" onclick="toggleMod(this)"><span>Notification</span><span class="nav-badge">3</span></div>
+          <div class="nav-mod-body">
+            <a class="nav-ep" href="#action-notification-notification-listnotification" data-target="action-notification-notification-listnotification" data-search="listnotification get /" onclick="navigateTo('action-notification-notification-listnotification');return false;">
+              <span class="nav-method nav-method-GET">GET</span>
+              <span class="nav-ep-name">ListNotification</span>
+            </a>
+            <a class="nav-ep" href="#action-notification-notification-getnotification" data-target="action-notification-notification-getnotification" data-search="getnotification get /:id" onclick="navigateTo('action-notification-notification-getnotification');return false;">
+              <span class="nav-method nav-method-GET">GET</span>
+              <span class="nav-ep-name">GetNotification</span>
+            </a>
+            <a class="nav-ep" href="#action-notification-notification-createnotification" data-target="action-notification-notification-createnotification" data-search="createnotification post /" onclick="navigateTo('action-notification-notification-createnotification');return false;">
+              <span class="nav-method nav-method-POST">POST</span>
+              <span class="nav-ep-name">CreateNotification</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="nav-svc" id="nav-svc-audit">
+      <div class="nav-svc-label" onclick="toggleSvc(this)"><span>audit</span><span class="nav-toggle">▾</span></div>
+      <div class="nav-svc-body">
+      </div>
+    </div>
+    <div class="nav-svc" id="nav-svc-transaction">
+      <div class="nav-svc-label" onclick="toggleSvc(this)"><span>transaction</span><span class="nav-toggle">▾</span></div>
+      <div class="nav-svc-body">
+        <div class="nav-mod">
+          <div class="nav-mod-label" onclick="toggleMod(this)"><span>Transaction</span><span class="nav-badge">1</span></div>
+          <div class="nav-mod-body">
+            <a class="nav-ep" href="#action-transaction-transaction-transfer" data-target="action-transaction-transaction-transfer" data-search="transfer post /transfer" onclick="navigateTo('action-transaction-transaction-transfer');return false;">
+              <span class="nav-method nav-method-POST">POST</span>
+              <span class="nav-ep-name">transfer</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="nav-svc" id="nav-svc-frontend">
+      <div class="nav-svc-label" onclick="toggleSvc(this)"><span>frontend</span><span class="nav-toggle">▾</span></div>
+      <div class="nav-svc-body">
+        <div class="nav-mod">
+          <div class="nav-mod-label" onclick="toggleMod(this)"><span>Iam</span><span class="nav-badge">3</span></div>
+          <div class="nav-mod-body">
+            <a class="nav-ep" href="#action-frontend-iam-listiam" data-target="action-frontend-iam-listiam" data-search="listiam get /" onclick="navigateTo('action-frontend-iam-listiam');return false;">
+              <span class="nav-method nav-method-GET">GET</span>
+              <span class="nav-ep-name">ListIam</span>
+            </a>
+            <a class="nav-ep" href="#action-frontend-iam-getiam" data-target="action-frontend-iam-getiam" data-search="getiam get /:id" onclick="navigateTo('action-frontend-iam-getiam');return false;">
+              <span class="nav-method nav-method-GET">GET</span>
+              <span class="nav-ep-name">GetIam</span>
+            </a>
+            <a class="nav-ep" href="#action-frontend-iam-createiam" data-target="action-frontend-iam-createiam" data-search="createiam post /" onclick="navigateTo('action-frontend-iam-createiam');return false;">
+              <span class="nav-method nav-method-POST">POST</span>
+              <span class="nav-ep-name">CreateIam</span>
+            </a>
+          </div>
+        </div>
+        <div class="nav-mod">
+          <div class="nav-mod-label" onclick="toggleMod(this)"><span>Card</span><span class="nav-badge">3</span></div>
+          <div class="nav-mod-body">
+            <a class="nav-ep" href="#action-frontend-card-listcard" data-target="action-frontend-card-listcard" data-search="listcard get /" onclick="navigateTo('action-frontend-card-listcard');return false;">
+              <span class="nav-method nav-method-GET">GET</span>
+              <span class="nav-ep-name">ListCard</span>
+            </a>
+            <a class="nav-ep" href="#action-frontend-card-getcard" data-target="action-frontend-card-getcard" data-search="getcard get /:id" onclick="navigateTo('action-frontend-card-getcard');return false;">
+              <span class="nav-method nav-method-GET">GET</span>
+              <span class="nav-ep-name">GetCard</span>
+            </a>
+            <a class="nav-ep" href="#action-frontend-card-createcard" data-target="action-frontend-card-createcard" data-search="createcard post /" onclick="navigateTo('action-frontend-card-createcard');return false;">
+              <span class="nav-method nav-method-POST">POST</span>
+              <span class="nav-ep-name">CreateCard</span>
+            </a>
+          </div>
+        </div>
+        <div class="nav-mod">
+          <div class="nav-mod-label" onclick="toggleMod(this)"><span>Account</span><span class="nav-badge">3</span></div>
+          <div class="nav-mod-body">
+            <a class="nav-ep" href="#action-frontend-account-listaccount" data-target="action-frontend-account-listaccount" data-search="listaccount get /" onclick="navigateTo('action-frontend-account-listaccount');return false;">
+              <span class="nav-method nav-method-GET">GET</span>
+              <span class="nav-ep-name">ListAccount</span>
+            </a>
+            <a class="nav-ep" href="#action-frontend-account-getaccount" data-target="action-frontend-account-getaccount" data-search="getaccount get /:id" onclick="navigateTo('action-frontend-account-getaccount');return false;">
+              <span class="nav-method nav-method-GET">GET</span>
+              <span class="nav-ep-name">GetAccount</span>
+            </a>
+            <a class="nav-ep" href="#action-frontend-account-createaccount" data-target="action-frontend-account-createaccount" data-search="createaccount post /" onclick="navigateTo('action-frontend-account-createaccount');return false;">
+              <span class="nav-method nav-method-POST">POST</span>
+              <span class="nav-ep-name">CreateAccount</span>
+            </a>
+          </div>
+        </div>
+        <div class="nav-mod">
+          <div class="nav-mod-label" onclick="toggleMod(this)"><span>Lending</span><span class="nav-badge">3</span></div>
+          <div class="nav-mod-body">
+            <a class="nav-ep" href="#action-frontend-lending-listlending" data-target="action-frontend-lending-listlending" data-search="listlending get /" onclick="navigateTo('action-frontend-lending-listlending');return false;">
+              <span class="nav-method nav-method-GET">GET</span>
+              <span class="nav-ep-name">ListLending</span>
+            </a>
+            <a class="nav-ep" href="#action-frontend-lending-getlending" data-target="action-frontend-lending-getlending" data-search="getlending get /:id" onclick="navigateTo('action-frontend-lending-getlending');return false;">
+              <span class="nav-method nav-method-GET">GET</span>
+              <span class="nav-ep-name">GetLending</span>
+            </a>
+            <a class="nav-ep" href="#action-frontend-lending-createlending" data-target="action-frontend-lending-createlending" data-search="createlending post /" onclick="navigateTo('action-frontend-lending-createlending');return false;">
+              <span class="nav-method nav-method-POST">POST</span>
+              <span class="nav-ep-name">CreateLending</span>
+            </a>
+          </div>
+        </div>
+        <div class="nav-mod">
+          <div class="nav-mod-label" onclick="toggleMod(this)"><span>Notification</span><span class="nav-badge">3</span></div>
+          <div class="nav-mod-body">
+            <a class="nav-ep" href="#action-frontend-notification-listnotification" data-target="action-frontend-notification-listnotification" data-search="listnotification get /" onclick="navigateTo('action-frontend-notification-listnotification');return false;">
+              <span class="nav-method nav-method-GET">GET</span>
+              <span class="nav-ep-name">ListNotification</span>
+            </a>
+            <a class="nav-ep" href="#action-frontend-notification-getnotification" data-target="action-frontend-notification-getnotification" data-search="getnotification get /:id" onclick="navigateTo('action-frontend-notification-getnotification');return false;">
+              <span class="nav-method nav-method-GET">GET</span>
+              <span class="nav-ep-name">GetNotification</span>
+            </a>
+            <a class="nav-ep" href="#action-frontend-notification-createnotification" data-target="action-frontend-notification-createnotification" data-search="createnotification post /" onclick="navigateTo('action-frontend-notification-createnotification');return false;">
+              <span class="nav-method nav-method-POST">POST</span>
+              <span class="nav-ep-name">CreateNotification</span>
+            </a>
+          </div>
+        </div>
+        <div class="nav-mod">
+          <div class="nav-mod-label" onclick="toggleMod(this)"><span>Transaction</span><span class="nav-badge">1</span></div>
+          <div class="nav-mod-body">
+            <a class="nav-ep" href="#action-frontend-transaction-transfer" data-target="action-frontend-transaction-transfer" data-search="transfer post /transfer" onclick="navigateTo('action-frontend-transaction-transfer');return false;">
+              <span class="nav-method nav-method-POST">POST</span>
+              <span class="nav-ep-name">transfer</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="nav-group">
+      <div class="nav-group-label" onclick="toggleGroup(this)">Models <span class="nav-badge">14</span></div>
+      <div class="nav-group-body">
+        <a class="nav-type" href="#model-iamitem" data-target="model-iamitem" data-search="iamitem" onclick="navigateTo('model-iamitem');return false;">IamItem</a>
+        <a class="nav-type" href="#model-createiaminput" data-target="model-createiaminput" data-search="createiaminput" onclick="navigateTo('model-createiaminput');return false;">CreateIamInput</a>
+        <a class="nav-type" href="#model-carditem" data-target="model-carditem" data-search="carditem" onclick="navigateTo('model-carditem');return false;">CardItem</a>
+        <a class="nav-type" href="#model-createcardinput" data-target="model-createcardinput" data-search="createcardinput" onclick="navigateTo('model-createcardinput');return false;">CreateCardInput</a>
+        <a class="nav-type" href="#model-accountitem" data-target="model-accountitem" data-search="accountitem" onclick="navigateTo('model-accountitem');return false;">AccountItem</a>
+        <a class="nav-type" href="#model-createaccountinput" data-target="model-createaccountinput" data-search="createaccountinput" onclick="navigateTo('model-createaccountinput');return false;">CreateAccountInput</a>
+        <a class="nav-type" href="#model-lendingitem" data-target="model-lendingitem" data-search="lendingitem" onclick="navigateTo('model-lendingitem');return false;">LendingItem</a>
+        <a class="nav-type" href="#model-createlendinginput" data-target="model-createlendinginput" data-search="createlendinginput" onclick="navigateTo('model-createlendinginput');return false;">CreateLendingInput</a>
+        <a class="nav-type" href="#model-notificationitem" data-target="model-notificationitem" data-search="notificationitem" onclick="navigateTo('model-notificationitem');return false;">NotificationItem</a>
+        <a class="nav-type" href="#model-createnotificationinput" data-target="model-createnotificationinput" data-search="createnotificationinput" onclick="navigateTo('model-createnotificationinput');return false;">CreateNotificationInput</a>
+        <a class="nav-type" href="#model-auditevent" data-target="model-auditevent" data-search="auditevent" onclick="navigateTo('model-auditevent');return false;">AuditEvent</a>
+        <a class="nav-type" href="#model-transferrequest" data-target="model-transferrequest" data-search="transferrequest" onclick="navigateTo('model-transferrequest');return false;">TransferRequest</a>
+        <a class="nav-type" href="#model-transactionresponse" data-target="model-transactionresponse" data-search="transactionresponse" onclick="navigateTo('model-transactionresponse');return false;">TransactionResponse</a>
+        <a class="nav-type" href="#model-transactionevent" data-target="model-transactionevent" data-search="transactionevent" onclick="navigateTo('model-transactionevent');return false;">TransactionEvent</a>
+      </div>
+    </div>
+    <div class="nav-group">
+      <div class="nav-group-label" onclick="toggleGroup(this)">Enums <span class="nav-badge">4</span></div>
+      <div class="nav-group-body">
+        <a class="nav-type" href="#enum-auditstatus" data-target="enum-auditstatus" data-search="auditstatus" onclick="navigateTo('enum-auditstatus');return false;">AuditStatus</a>
+        <a class="nav-type" href="#enum-auditaction" data-target="enum-auditaction" data-search="auditaction" onclick="navigateTo('enum-auditaction');return false;">AuditAction</a>
+        <a class="nav-type" href="#enum-transactiontype" data-target="enum-transactiontype" data-search="transactiontype" onclick="navigateTo('enum-transactiontype');return false;">TransactionType</a>
+        <a class="nav-type" href="#enum-transactionstatus" data-target="enum-transactionstatus" data-search="transactionstatus" onclick="navigateTo('enum-transactionstatus');return false;">TransactionStatus</a>
+      </div>
+    </div>
   </div>
 </nav>
-<main class="main">
-<div class="breadcrumbs" id="breadcrumbs"><span class="bc-item">API Documentation</span></div>
-<div class="stats">
-  <div class="stat"><div class="stat-value">8</div><div class="stat-label">Services</div></div>
-  <div class="stat"><div class="stat-value">6</div><div class="stat-label">Modules</div></div>
-  <div class="stat"><div class="stat-value">16</div><div class="stat-label">Endpoints</div></div>
-  <div class="stat"><div class="stat-value">14</div><div class="stat-label">Models</div></div>
-  <div class="stat"><div class="stat-value">4</div><div class="stat-label">Enums</div></div>
-</div>
+<div class="main">
+  <div class="topbar">
+    <nav class="breadcrumbs" id="breadcrumbs"><span class="bc-item">API Reference</span></nav>
+    <div class="topbar-right">
+      <button class="theme-btn" onclick="toggleTheme()" title="Toggle dark mode">🌙</button>
+    </div>
+  </div>
+  <div class="content">
+    <div class="stats-row">
+      <div class="stat-card"><div class="stat-num">8</div><div class="stat-lbl">Services</div></div>
+      <div class="stat-card"><div class="stat-num">6</div><div class="stat-lbl">Modules</div></div>
+      <div class="stat-card"><div class="stat-num">16</div><div class="stat-lbl">Endpoints</div></div>
+      <div class="stat-card"><div class="stat-num">14</div><div class="stat-lbl">Models</div></div>
+      <div class="stat-card"><div class="stat-num">4</div><div class="stat-lbl">Enums</div></div>
+    </div>
 
-<section id="service-iam" class="service-section" data-bc="iam"><h2 class="service-title">iam <code class="base-url">http://localhost:4333</code></h2>
-<p class="section-desc">iam</p>
-<div class="service-stats"><span>3 endpoints</span><span>1 modules</span><span>2 models</span></div>
-<h3 id="mod-iam-iam" class="module-title" data-bc="iam › Iam">Iam <code class="prefix-badge">/api/iam</code></h3>
-<p class="section-desc">Iam service</p>
-<div class="endpoint" id="action-iam-iam-listiam" data-bc="iam › Iam › ListIam">
-  <div class="endpoint-header" onclick="toggleDetail(this)">
-    <span class="method-badge method-GET">GET</span>    <span class="endpoint-path">/api/iam/</span>    <span class="endpoint-name">ListIam</span>
-    <span class="chevron">▸</span>
-  </div>
-  <div class="endpoint-detail">
-    <div class="detail-row"><span class="detail-label">Output</span><span class="detail-value"><a href="#model-iamitem" class="type-link" onclick="navigateTo('model-iamitem')">IamItem</a>[]</span></div>
+    <div class="svc-block" id="service-iam" data-bc="iam">
+      <h2 class="svc-title">iam <code class="svc-url">http://localhost:4333</code></h2>
+      <p class="svc-desc">iam</p>
+    </div>
+    <div class="mod-header" id="mod-iam-iam" data-bc="iam › Iam">
+      <h3 class="mod-title">Iam <code class="mod-prefix">/api/iam</code></h3>
+      <p class="mod-desc">Iam service</p>
+    </div>
+    <div class="ep ep-GET" id="action-iam-iam-listiam" data-bc="iam › Iam › ListIam">
+      <div class="ep-head" onclick="toggleEp(this)">
+        <span class="mtag mtag-GET">GET</span>
+        <span class="ep-path">/api/iam/</span>
+        <span class="ep-info">
+          <span class="ep-name">ListIam</span>
+          <button class="copy-btn" data-path="/api/iam/" onclick="copyPath(event,this.dataset.path)" title="Copy path">⎘</button>
+        </span>
+        <span class="chevron">▶</span>
+      </div>
+      <div class="ep-detail">
+        <dl class="ep-meta">
+          <dt>Output</dt><dd><a class="type-chip" href="#model-iamitem" onclick="navigateTo('model-iamitem');return false">IamItem[]</a></dd>
+        </dl>
+      </div>
+    </div>
+    <div class="ep ep-GET" id="action-iam-iam-getiam" data-bc="iam › Iam › GetIam">
+      <div class="ep-head" onclick="toggleEp(this)">
+        <span class="mtag mtag-GET">GET</span>
+        <span class="ep-path">/api/iam/<span class="path-param">:id</span></span>
+        <span class="ep-info">
+          <span class="ep-name">GetIam</span>
+          <button class="copy-btn" data-path="/api/iam/:id" onclick="copyPath(event,this.dataset.path)" title="Copy path">⎘</button>
+        </span>
+        <span class="chevron">▶</span>
+      </div>
+      <div class="ep-detail">
+        <dl class="ep-meta">
+          <dt>Output</dt><dd><a class="type-chip" href="#model-iamitem" onclick="navigateTo('model-iamitem');return false">IamItem</a></dd>
+          <dt>Errors</dt><dd><span class="err-chip">NotFound</span></dd>
+        </dl>
+      </div>
+    </div>
+    <div class="ep ep-POST" id="action-iam-iam-createiam" data-bc="iam › Iam › CreateIam">
+      <div class="ep-head" onclick="toggleEp(this)">
+        <span class="mtag mtag-POST">POST</span>
+        <span class="ep-path">/api/iam/</span>
+        <span class="ep-info">
+          <span class="ep-name">CreateIam</span>
+          <button class="copy-btn" data-path="/api/iam/" onclick="copyPath(event,this.dataset.path)" title="Copy path">⎘</button>
+        </span>
+        <span class="chevron">▶</span>
+      </div>
+      <div class="ep-detail">
+        <dl class="ep-meta">
+          <dt>Input</dt><dd><a class="type-chip" href="#model-createiaminput" onclick="navigateTo('model-createiaminput');return false">CreateIamInput</a></dd>
+          <dt>Output</dt><dd><a class="type-chip" href="#model-iamitem" onclick="navigateTo('model-iamitem');return false">IamItem</a></dd>
+        </dl>
+      </div>
+    </div>
+    <div class="svc-block" id="service-card" data-bc="card">
+      <h2 class="svc-title">card <code class="svc-url">http://card-service:3002</code></h2>
+      <p class="svc-desc">card</p>
+    </div>
+    <div class="mod-header" id="mod-card-card" data-bc="card › Card">
+      <h3 class="mod-title">Card <code class="mod-prefix">/api/card</code></h3>
+      <p class="mod-desc">Card service</p>
+    </div>
+    <div class="ep ep-GET" id="action-card-card-listcard" data-bc="card › Card › ListCard">
+      <div class="ep-head" onclick="toggleEp(this)">
+        <span class="mtag mtag-GET">GET</span>
+        <span class="ep-path">/api/card/</span>
+        <span class="ep-info">
+          <span class="ep-name">ListCard</span>
+          <button class="copy-btn" data-path="/api/card/" onclick="copyPath(event,this.dataset.path)" title="Copy path">⎘</button>
+        </span>
+        <span class="chevron">▶</span>
+      </div>
+      <div class="ep-detail">
+        <dl class="ep-meta">
+          <dt>Output</dt><dd><a class="type-chip" href="#model-carditem" onclick="navigateTo('model-carditem');return false">CardItem[]</a></dd>
+        </dl>
+      </div>
+    </div>
+    <div class="ep ep-GET" id="action-card-card-getcard" data-bc="card › Card › GetCard">
+      <div class="ep-head" onclick="toggleEp(this)">
+        <span class="mtag mtag-GET">GET</span>
+        <span class="ep-path">/api/card/<span class="path-param">:id</span></span>
+        <span class="ep-info">
+          <span class="ep-name">GetCard</span>
+          <button class="copy-btn" data-path="/api/card/:id" onclick="copyPath(event,this.dataset.path)" title="Copy path">⎘</button>
+        </span>
+        <span class="chevron">▶</span>
+      </div>
+      <div class="ep-detail">
+        <dl class="ep-meta">
+          <dt>Output</dt><dd><a class="type-chip" href="#model-carditem" onclick="navigateTo('model-carditem');return false">CardItem</a></dd>
+          <dt>Errors</dt><dd><span class="err-chip">NotFound</span></dd>
+        </dl>
+      </div>
+    </div>
+    <div class="ep ep-POST" id="action-card-card-createcard" data-bc="card › Card › CreateCard">
+      <div class="ep-head" onclick="toggleEp(this)">
+        <span class="mtag mtag-POST">POST</span>
+        <span class="ep-path">/api/card/</span>
+        <span class="ep-info">
+          <span class="ep-name">CreateCard</span>
+          <button class="copy-btn" data-path="/api/card/" onclick="copyPath(event,this.dataset.path)" title="Copy path">⎘</button>
+        </span>
+        <span class="chevron">▶</span>
+      </div>
+      <div class="ep-detail">
+        <dl class="ep-meta">
+          <dt>Input</dt><dd><a class="type-chip" href="#model-createcardinput" onclick="navigateTo('model-createcardinput');return false">CreateCardInput</a></dd>
+          <dt>Output</dt><dd><a class="type-chip" href="#model-carditem" onclick="navigateTo('model-carditem');return false">CardItem</a></dd>
+        </dl>
+      </div>
+    </div>
+    <div class="svc-block" id="service-account" data-bc="account">
+      <h2 class="svc-title">account <code class="svc-url">http://account-service:3003</code></h2>
+      <p class="svc-desc">account</p>
+    </div>
+    <div class="mod-header" id="mod-account-account" data-bc="account › Account">
+      <h3 class="mod-title">Account <code class="mod-prefix">/api/account</code></h3>
+      <p class="mod-desc">Account service</p>
+    </div>
+    <div class="ep ep-GET" id="action-account-account-listaccount" data-bc="account › Account › ListAccount">
+      <div class="ep-head" onclick="toggleEp(this)">
+        <span class="mtag mtag-GET">GET</span>
+        <span class="ep-path">/api/account/</span>
+        <span class="ep-info">
+          <span class="ep-name">ListAccount</span>
+          <button class="copy-btn" data-path="/api/account/" onclick="copyPath(event,this.dataset.path)" title="Copy path">⎘</button>
+        </span>
+        <span class="chevron">▶</span>
+      </div>
+      <div class="ep-detail">
+        <dl class="ep-meta">
+          <dt>Output</dt><dd><a class="type-chip" href="#model-accountitem" onclick="navigateTo('model-accountitem');return false">AccountItem[]</a></dd>
+        </dl>
+      </div>
+    </div>
+    <div class="ep ep-GET" id="action-account-account-getaccount" data-bc="account › Account › GetAccount">
+      <div class="ep-head" onclick="toggleEp(this)">
+        <span class="mtag mtag-GET">GET</span>
+        <span class="ep-path">/api/account/<span class="path-param">:id</span></span>
+        <span class="ep-info">
+          <span class="ep-name">GetAccount</span>
+          <button class="copy-btn" data-path="/api/account/:id" onclick="copyPath(event,this.dataset.path)" title="Copy path">⎘</button>
+        </span>
+        <span class="chevron">▶</span>
+      </div>
+      <div class="ep-detail">
+        <dl class="ep-meta">
+          <dt>Output</dt><dd><a class="type-chip" href="#model-accountitem" onclick="navigateTo('model-accountitem');return false">AccountItem</a></dd>
+          <dt>Errors</dt><dd><span class="err-chip">NotFound</span></dd>
+        </dl>
+      </div>
+    </div>
+    <div class="ep ep-POST" id="action-account-account-createaccount" data-bc="account › Account › CreateAccount">
+      <div class="ep-head" onclick="toggleEp(this)">
+        <span class="mtag mtag-POST">POST</span>
+        <span class="ep-path">/api/account/</span>
+        <span class="ep-info">
+          <span class="ep-name">CreateAccount</span>
+          <button class="copy-btn" data-path="/api/account/" onclick="copyPath(event,this.dataset.path)" title="Copy path">⎘</button>
+        </span>
+        <span class="chevron">▶</span>
+      </div>
+      <div class="ep-detail">
+        <dl class="ep-meta">
+          <dt>Input</dt><dd><a class="type-chip" href="#model-createaccountinput" onclick="navigateTo('model-createaccountinput');return false">CreateAccountInput</a></dd>
+          <dt>Output</dt><dd><a class="type-chip" href="#model-accountitem" onclick="navigateTo('model-accountitem');return false">AccountItem</a></dd>
+        </dl>
+      </div>
+    </div>
+    <div class="svc-block" id="service-lending" data-bc="lending">
+      <h2 class="svc-title">lending <code class="svc-url">http://lending-service:3004</code></h2>
+      <p class="svc-desc">lending</p>
+    </div>
+    <div class="mod-header" id="mod-lending-lending" data-bc="lending › Lending">
+      <h3 class="mod-title">Lending <code class="mod-prefix">/api/lending</code></h3>
+      <p class="mod-desc">Lending service</p>
+    </div>
+    <div class="ep ep-GET" id="action-lending-lending-listlending" data-bc="lending › Lending › ListLending">
+      <div class="ep-head" onclick="toggleEp(this)">
+        <span class="mtag mtag-GET">GET</span>
+        <span class="ep-path">/api/lending/</span>
+        <span class="ep-info">
+          <span class="ep-name">ListLending</span>
+          <button class="copy-btn" data-path="/api/lending/" onclick="copyPath(event,this.dataset.path)" title="Copy path">⎘</button>
+        </span>
+        <span class="chevron">▶</span>
+      </div>
+      <div class="ep-detail">
+        <dl class="ep-meta">
+          <dt>Output</dt><dd><a class="type-chip" href="#model-lendingitem" onclick="navigateTo('model-lendingitem');return false">LendingItem[]</a></dd>
+        </dl>
+      </div>
+    </div>
+    <div class="ep ep-GET" id="action-lending-lending-getlending" data-bc="lending › Lending › GetLending">
+      <div class="ep-head" onclick="toggleEp(this)">
+        <span class="mtag mtag-GET">GET</span>
+        <span class="ep-path">/api/lending/<span class="path-param">:id</span></span>
+        <span class="ep-info">
+          <span class="ep-name">GetLending</span>
+          <button class="copy-btn" data-path="/api/lending/:id" onclick="copyPath(event,this.dataset.path)" title="Copy path">⎘</button>
+        </span>
+        <span class="chevron">▶</span>
+      </div>
+      <div class="ep-detail">
+        <dl class="ep-meta">
+          <dt>Output</dt><dd><a class="type-chip" href="#model-lendingitem" onclick="navigateTo('model-lendingitem');return false">LendingItem</a></dd>
+          <dt>Errors</dt><dd><span class="err-chip">NotFound</span></dd>
+        </dl>
+      </div>
+    </div>
+    <div class="ep ep-POST" id="action-lending-lending-createlending" data-bc="lending › Lending › CreateLending">
+      <div class="ep-head" onclick="toggleEp(this)">
+        <span class="mtag mtag-POST">POST</span>
+        <span class="ep-path">/api/lending/</span>
+        <span class="ep-info">
+          <span class="ep-name">CreateLending</span>
+          <button class="copy-btn" data-path="/api/lending/" onclick="copyPath(event,this.dataset.path)" title="Copy path">⎘</button>
+        </span>
+        <span class="chevron">▶</span>
+      </div>
+      <div class="ep-detail">
+        <dl class="ep-meta">
+          <dt>Input</dt><dd><a class="type-chip" href="#model-createlendinginput" onclick="navigateTo('model-createlendinginput');return false">CreateLendingInput</a></dd>
+          <dt>Output</dt><dd><a class="type-chip" href="#model-lendingitem" onclick="navigateTo('model-lendingitem');return false">LendingItem</a></dd>
+        </dl>
+      </div>
+    </div>
+    <div class="svc-block" id="service-notification" data-bc="notification">
+      <h2 class="svc-title">notification <code class="svc-url">http://notification-service:3005</code></h2>
+      <p class="svc-desc">notification</p>
+    </div>
+    <div class="mod-header" id="mod-notification-notification" data-bc="notification › Notification">
+      <h3 class="mod-title">Notification <code class="mod-prefix">/api/notification</code></h3>
+      <p class="mod-desc">Notification service</p>
+    </div>
+    <div class="ep ep-GET" id="action-notification-notification-listnotification" data-bc="notification › Notification › ListNotification">
+      <div class="ep-head" onclick="toggleEp(this)">
+        <span class="mtag mtag-GET">GET</span>
+        <span class="ep-path">/api/notification/</span>
+        <span class="ep-info">
+          <span class="ep-name">ListNotification</span>
+          <button class="copy-btn" data-path="/api/notification/" onclick="copyPath(event,this.dataset.path)" title="Copy path">⎘</button>
+        </span>
+        <span class="chevron">▶</span>
+      </div>
+      <div class="ep-detail">
+        <dl class="ep-meta">
+          <dt>Output</dt><dd><a class="type-chip" href="#model-notificationitem" onclick="navigateTo('model-notificationitem');return false">NotificationItem[]</a></dd>
+        </dl>
+      </div>
+    </div>
+    <div class="ep ep-GET" id="action-notification-notification-getnotification" data-bc="notification › Notification › GetNotification">
+      <div class="ep-head" onclick="toggleEp(this)">
+        <span class="mtag mtag-GET">GET</span>
+        <span class="ep-path">/api/notification/<span class="path-param">:id</span></span>
+        <span class="ep-info">
+          <span class="ep-name">GetNotification</span>
+          <button class="copy-btn" data-path="/api/notification/:id" onclick="copyPath(event,this.dataset.path)" title="Copy path">⎘</button>
+        </span>
+        <span class="chevron">▶</span>
+      </div>
+      <div class="ep-detail">
+        <dl class="ep-meta">
+          <dt>Output</dt><dd><a class="type-chip" href="#model-notificationitem" onclick="navigateTo('model-notificationitem');return false">NotificationItem</a></dd>
+          <dt>Errors</dt><dd><span class="err-chip">NotFound</span></dd>
+        </dl>
+      </div>
+    </div>
+    <div class="ep ep-POST" id="action-notification-notification-createnotification" data-bc="notification › Notification › CreateNotification">
+      <div class="ep-head" onclick="toggleEp(this)">
+        <span class="mtag mtag-POST">POST</span>
+        <span class="ep-path">/api/notification/</span>
+        <span class="ep-info">
+          <span class="ep-name">CreateNotification</span>
+          <button class="copy-btn" data-path="/api/notification/" onclick="copyPath(event,this.dataset.path)" title="Copy path">⎘</button>
+        </span>
+        <span class="chevron">▶</span>
+      </div>
+      <div class="ep-detail">
+        <dl class="ep-meta">
+          <dt>Input</dt><dd><a class="type-chip" href="#model-createnotificationinput" onclick="navigateTo('model-createnotificationinput');return false">CreateNotificationInput</a></dd>
+          <dt>Output</dt><dd><a class="type-chip" href="#model-notificationitem" onclick="navigateTo('model-notificationitem');return false">NotificationItem</a></dd>
+        </dl>
+      </div>
+    </div>
+    <div class="svc-block" id="service-audit" data-bc="audit">
+      <h2 class="svc-title">audit <code class="svc-url">http://localhost:8084</code></h2>
+      <p class="svc-desc">audit</p>
+    </div>
+    <div class="svc-block" id="service-transaction" data-bc="transaction">
+      <h2 class="svc-title">transaction <code class="svc-url">http://localhost:2501</code></h2>
+      <p class="svc-desc">transaction</p>
+    </div>
+    <div class="mod-header" id="mod-transaction-transaction" data-bc="transaction › Transaction">
+      <h3 class="mod-title">Transaction <code class="mod-prefix">/api/transaction_service/transaction</code></h3>
+      <p class="mod-desc">Transaction service</p>
+    </div>
+    <div class="ep ep-POST" id="action-transaction-transaction-transfer" data-bc="transaction › Transaction › transfer">
+      <div class="ep-head" onclick="toggleEp(this)">
+        <span class="mtag mtag-POST">POST</span>
+        <span class="ep-path">/api/transaction_service/transaction/transfer</span>
+        <span class="ep-info">
+          <span class="ep-name">transfer</span>
+          <button class="copy-btn" data-path="/api/transaction_service/transaction/transfer" onclick="copyPath(event,this.dataset.path)" title="Copy path">⎘</button>
+        </span>
+        <span class="chevron">▶</span>
+      </div>
+      <div class="ep-detail">
+        <dl class="ep-meta">
+          <dt>Input</dt><dd><a class="type-chip" href="#model-transferrequest" onclick="navigateTo('model-transferrequest');return false">TransferRequest</a></dd>
+          <dt>Output</dt><dd><a class="type-chip" href="#model-transactionresponse" onclick="navigateTo('model-transactionresponse');return false">TransactionResponse</a></dd>
+          <dt>Errors</dt><dd><span class="err-chip">InsufficientFunds <em>403</em></span> <span class="err-chip">InvalidAccount <em>404</em></span> <span class="err-chip">Unauthorized <em>401</em></span> <span class="err-chip">InvalidAmount <em>400</em></span> <span class="err-chip">invalidTarget <em>400</em></span></dd>
+        </dl>
+      </div>
+    </div>
+    <div class="svc-block" id="service-frontend" data-bc="frontend">
+      <h2 class="svc-title">frontend <code class="svc-url">http://localhost:3000</code></h2>
+      <p class="svc-desc">Frontend SDK — auto-consumes all backend services</p>
+    </div>
+    <div class="mod-header" id="mod-frontend-iam" data-bc="frontend › Iam">
+      <h3 class="mod-title">Iam <code class="mod-prefix">/api/iam</code></h3>
+      <p class="mod-desc">Iam service</p>
+    </div>
+    <div class="ep ep-GET" id="action-frontend-iam-listiam" data-bc="frontend › Iam › ListIam">
+      <div class="ep-head" onclick="toggleEp(this)">
+        <span class="mtag mtag-GET">GET</span>
+        <span class="ep-path">/api/iam/</span>
+        <span class="ep-info">
+          <span class="ep-name">ListIam</span>
+          <button class="copy-btn" data-path="/api/iam/" onclick="copyPath(event,this.dataset.path)" title="Copy path">⎘</button>
+        </span>
+        <span class="chevron">▶</span>
+      </div>
+      <div class="ep-detail">
+        <dl class="ep-meta">
+          <dt>Output</dt><dd><a class="type-chip" href="#model-iamitem" onclick="navigateTo('model-iamitem');return false">IamItem[]</a></dd>
+        </dl>
+      </div>
+    </div>
+    <div class="ep ep-GET" id="action-frontend-iam-getiam" data-bc="frontend › Iam › GetIam">
+      <div class="ep-head" onclick="toggleEp(this)">
+        <span class="mtag mtag-GET">GET</span>
+        <span class="ep-path">/api/iam/<span class="path-param">:id</span></span>
+        <span class="ep-info">
+          <span class="ep-name">GetIam</span>
+          <button class="copy-btn" data-path="/api/iam/:id" onclick="copyPath(event,this.dataset.path)" title="Copy path">⎘</button>
+        </span>
+        <span class="chevron">▶</span>
+      </div>
+      <div class="ep-detail">
+        <dl class="ep-meta">
+          <dt>Output</dt><dd><a class="type-chip" href="#model-iamitem" onclick="navigateTo('model-iamitem');return false">IamItem</a></dd>
+          <dt>Errors</dt><dd><span class="err-chip">NotFound</span></dd>
+        </dl>
+      </div>
+    </div>
+    <div class="ep ep-POST" id="action-frontend-iam-createiam" data-bc="frontend › Iam › CreateIam">
+      <div class="ep-head" onclick="toggleEp(this)">
+        <span class="mtag mtag-POST">POST</span>
+        <span class="ep-path">/api/iam/</span>
+        <span class="ep-info">
+          <span class="ep-name">CreateIam</span>
+          <button class="copy-btn" data-path="/api/iam/" onclick="copyPath(event,this.dataset.path)" title="Copy path">⎘</button>
+        </span>
+        <span class="chevron">▶</span>
+      </div>
+      <div class="ep-detail">
+        <dl class="ep-meta">
+          <dt>Input</dt><dd><a class="type-chip" href="#model-createiaminput" onclick="navigateTo('model-createiaminput');return false">CreateIamInput</a></dd>
+          <dt>Output</dt><dd><a class="type-chip" href="#model-iamitem" onclick="navigateTo('model-iamitem');return false">IamItem</a></dd>
+        </dl>
+      </div>
+    </div>
+    <div class="mod-header" id="mod-frontend-card" data-bc="frontend › Card">
+      <h3 class="mod-title">Card <code class="mod-prefix">/api/card</code></h3>
+      <p class="mod-desc">Card service</p>
+    </div>
+    <div class="ep ep-GET" id="action-frontend-card-listcard" data-bc="frontend › Card › ListCard">
+      <div class="ep-head" onclick="toggleEp(this)">
+        <span class="mtag mtag-GET">GET</span>
+        <span class="ep-path">/api/card/</span>
+        <span class="ep-info">
+          <span class="ep-name">ListCard</span>
+          <button class="copy-btn" data-path="/api/card/" onclick="copyPath(event,this.dataset.path)" title="Copy path">⎘</button>
+        </span>
+        <span class="chevron">▶</span>
+      </div>
+      <div class="ep-detail">
+        <dl class="ep-meta">
+          <dt>Output</dt><dd><a class="type-chip" href="#model-carditem" onclick="navigateTo('model-carditem');return false">CardItem[]</a></dd>
+        </dl>
+      </div>
+    </div>
+    <div class="ep ep-GET" id="action-frontend-card-getcard" data-bc="frontend › Card › GetCard">
+      <div class="ep-head" onclick="toggleEp(this)">
+        <span class="mtag mtag-GET">GET</span>
+        <span class="ep-path">/api/card/<span class="path-param">:id</span></span>
+        <span class="ep-info">
+          <span class="ep-name">GetCard</span>
+          <button class="copy-btn" data-path="/api/card/:id" onclick="copyPath(event,this.dataset.path)" title="Copy path">⎘</button>
+        </span>
+        <span class="chevron">▶</span>
+      </div>
+      <div class="ep-detail">
+        <dl class="ep-meta">
+          <dt>Output</dt><dd><a class="type-chip" href="#model-carditem" onclick="navigateTo('model-carditem');return false">CardItem</a></dd>
+          <dt>Errors</dt><dd><span class="err-chip">NotFound</span></dd>
+        </dl>
+      </div>
+    </div>
+    <div class="ep ep-POST" id="action-frontend-card-createcard" data-bc="frontend › Card › CreateCard">
+      <div class="ep-head" onclick="toggleEp(this)">
+        <span class="mtag mtag-POST">POST</span>
+        <span class="ep-path">/api/card/</span>
+        <span class="ep-info">
+          <span class="ep-name">CreateCard</span>
+          <button class="copy-btn" data-path="/api/card/" onclick="copyPath(event,this.dataset.path)" title="Copy path">⎘</button>
+        </span>
+        <span class="chevron">▶</span>
+      </div>
+      <div class="ep-detail">
+        <dl class="ep-meta">
+          <dt>Input</dt><dd><a class="type-chip" href="#model-createcardinput" onclick="navigateTo('model-createcardinput');return false">CreateCardInput</a></dd>
+          <dt>Output</dt><dd><a class="type-chip" href="#model-carditem" onclick="navigateTo('model-carditem');return false">CardItem</a></dd>
+        </dl>
+      </div>
+    </div>
+    <div class="mod-header" id="mod-frontend-account" data-bc="frontend › Account">
+      <h3 class="mod-title">Account <code class="mod-prefix">/api/account</code></h3>
+      <p class="mod-desc">Account service</p>
+    </div>
+    <div class="ep ep-GET" id="action-frontend-account-listaccount" data-bc="frontend › Account › ListAccount">
+      <div class="ep-head" onclick="toggleEp(this)">
+        <span class="mtag mtag-GET">GET</span>
+        <span class="ep-path">/api/account/</span>
+        <span class="ep-info">
+          <span class="ep-name">ListAccount</span>
+          <button class="copy-btn" data-path="/api/account/" onclick="copyPath(event,this.dataset.path)" title="Copy path">⎘</button>
+        </span>
+        <span class="chevron">▶</span>
+      </div>
+      <div class="ep-detail">
+        <dl class="ep-meta">
+          <dt>Output</dt><dd><a class="type-chip" href="#model-accountitem" onclick="navigateTo('model-accountitem');return false">AccountItem[]</a></dd>
+        </dl>
+      </div>
+    </div>
+    <div class="ep ep-GET" id="action-frontend-account-getaccount" data-bc="frontend › Account › GetAccount">
+      <div class="ep-head" onclick="toggleEp(this)">
+        <span class="mtag mtag-GET">GET</span>
+        <span class="ep-path">/api/account/<span class="path-param">:id</span></span>
+        <span class="ep-info">
+          <span class="ep-name">GetAccount</span>
+          <button class="copy-btn" data-path="/api/account/:id" onclick="copyPath(event,this.dataset.path)" title="Copy path">⎘</button>
+        </span>
+        <span class="chevron">▶</span>
+      </div>
+      <div class="ep-detail">
+        <dl class="ep-meta">
+          <dt>Output</dt><dd><a class="type-chip" href="#model-accountitem" onclick="navigateTo('model-accountitem');return false">AccountItem</a></dd>
+          <dt>Errors</dt><dd><span class="err-chip">NotFound</span></dd>
+        </dl>
+      </div>
+    </div>
+    <div class="ep ep-POST" id="action-frontend-account-createaccount" data-bc="frontend › Account › CreateAccount">
+      <div class="ep-head" onclick="toggleEp(this)">
+        <span class="mtag mtag-POST">POST</span>
+        <span class="ep-path">/api/account/</span>
+        <span class="ep-info">
+          <span class="ep-name">CreateAccount</span>
+          <button class="copy-btn" data-path="/api/account/" onclick="copyPath(event,this.dataset.path)" title="Copy path">⎘</button>
+        </span>
+        <span class="chevron">▶</span>
+      </div>
+      <div class="ep-detail">
+        <dl class="ep-meta">
+          <dt>Input</dt><dd><a class="type-chip" href="#model-createaccountinput" onclick="navigateTo('model-createaccountinput');return false">CreateAccountInput</a></dd>
+          <dt>Output</dt><dd><a class="type-chip" href="#model-accountitem" onclick="navigateTo('model-accountitem');return false">AccountItem</a></dd>
+        </dl>
+      </div>
+    </div>
+    <div class="mod-header" id="mod-frontend-lending" data-bc="frontend › Lending">
+      <h3 class="mod-title">Lending <code class="mod-prefix">/api/lending</code></h3>
+      <p class="mod-desc">Lending service</p>
+    </div>
+    <div class="ep ep-GET" id="action-frontend-lending-listlending" data-bc="frontend › Lending › ListLending">
+      <div class="ep-head" onclick="toggleEp(this)">
+        <span class="mtag mtag-GET">GET</span>
+        <span class="ep-path">/api/lending/</span>
+        <span class="ep-info">
+          <span class="ep-name">ListLending</span>
+          <button class="copy-btn" data-path="/api/lending/" onclick="copyPath(event,this.dataset.path)" title="Copy path">⎘</button>
+        </span>
+        <span class="chevron">▶</span>
+      </div>
+      <div class="ep-detail">
+        <dl class="ep-meta">
+          <dt>Output</dt><dd><a class="type-chip" href="#model-lendingitem" onclick="navigateTo('model-lendingitem');return false">LendingItem[]</a></dd>
+        </dl>
+      </div>
+    </div>
+    <div class="ep ep-GET" id="action-frontend-lending-getlending" data-bc="frontend › Lending › GetLending">
+      <div class="ep-head" onclick="toggleEp(this)">
+        <span class="mtag mtag-GET">GET</span>
+        <span class="ep-path">/api/lending/<span class="path-param">:id</span></span>
+        <span class="ep-info">
+          <span class="ep-name">GetLending</span>
+          <button class="copy-btn" data-path="/api/lending/:id" onclick="copyPath(event,this.dataset.path)" title="Copy path">⎘</button>
+        </span>
+        <span class="chevron">▶</span>
+      </div>
+      <div class="ep-detail">
+        <dl class="ep-meta">
+          <dt>Output</dt><dd><a class="type-chip" href="#model-lendingitem" onclick="navigateTo('model-lendingitem');return false">LendingItem</a></dd>
+          <dt>Errors</dt><dd><span class="err-chip">NotFound</span></dd>
+        </dl>
+      </div>
+    </div>
+    <div class="ep ep-POST" id="action-frontend-lending-createlending" data-bc="frontend › Lending › CreateLending">
+      <div class="ep-head" onclick="toggleEp(this)">
+        <span class="mtag mtag-POST">POST</span>
+        <span class="ep-path">/api/lending/</span>
+        <span class="ep-info">
+          <span class="ep-name">CreateLending</span>
+          <button class="copy-btn" data-path="/api/lending/" onclick="copyPath(event,this.dataset.path)" title="Copy path">⎘</button>
+        </span>
+        <span class="chevron">▶</span>
+      </div>
+      <div class="ep-detail">
+        <dl class="ep-meta">
+          <dt>Input</dt><dd><a class="type-chip" href="#model-createlendinginput" onclick="navigateTo('model-createlendinginput');return false">CreateLendingInput</a></dd>
+          <dt>Output</dt><dd><a class="type-chip" href="#model-lendingitem" onclick="navigateTo('model-lendingitem');return false">LendingItem</a></dd>
+        </dl>
+      </div>
+    </div>
+    <div class="mod-header" id="mod-frontend-notification" data-bc="frontend › Notification">
+      <h3 class="mod-title">Notification <code class="mod-prefix">/api/notification</code></h3>
+      <p class="mod-desc">Notification service</p>
+    </div>
+    <div class="ep ep-GET" id="action-frontend-notification-listnotification" data-bc="frontend › Notification › ListNotification">
+      <div class="ep-head" onclick="toggleEp(this)">
+        <span class="mtag mtag-GET">GET</span>
+        <span class="ep-path">/api/notification/</span>
+        <span class="ep-info">
+          <span class="ep-name">ListNotification</span>
+          <button class="copy-btn" data-path="/api/notification/" onclick="copyPath(event,this.dataset.path)" title="Copy path">⎘</button>
+        </span>
+        <span class="chevron">▶</span>
+      </div>
+      <div class="ep-detail">
+        <dl class="ep-meta">
+          <dt>Output</dt><dd><a class="type-chip" href="#model-notificationitem" onclick="navigateTo('model-notificationitem');return false">NotificationItem[]</a></dd>
+        </dl>
+      </div>
+    </div>
+    <div class="ep ep-GET" id="action-frontend-notification-getnotification" data-bc="frontend › Notification › GetNotification">
+      <div class="ep-head" onclick="toggleEp(this)">
+        <span class="mtag mtag-GET">GET</span>
+        <span class="ep-path">/api/notification/<span class="path-param">:id</span></span>
+        <span class="ep-info">
+          <span class="ep-name">GetNotification</span>
+          <button class="copy-btn" data-path="/api/notification/:id" onclick="copyPath(event,this.dataset.path)" title="Copy path">⎘</button>
+        </span>
+        <span class="chevron">▶</span>
+      </div>
+      <div class="ep-detail">
+        <dl class="ep-meta">
+          <dt>Output</dt><dd><a class="type-chip" href="#model-notificationitem" onclick="navigateTo('model-notificationitem');return false">NotificationItem</a></dd>
+          <dt>Errors</dt><dd><span class="err-chip">NotFound</span></dd>
+        </dl>
+      </div>
+    </div>
+    <div class="ep ep-POST" id="action-frontend-notification-createnotification" data-bc="frontend › Notification › CreateNotification">
+      <div class="ep-head" onclick="toggleEp(this)">
+        <span class="mtag mtag-POST">POST</span>
+        <span class="ep-path">/api/notification/</span>
+        <span class="ep-info">
+          <span class="ep-name">CreateNotification</span>
+          <button class="copy-btn" data-path="/api/notification/" onclick="copyPath(event,this.dataset.path)" title="Copy path">⎘</button>
+        </span>
+        <span class="chevron">▶</span>
+      </div>
+      <div class="ep-detail">
+        <dl class="ep-meta">
+          <dt>Input</dt><dd><a class="type-chip" href="#model-createnotificationinput" onclick="navigateTo('model-createnotificationinput');return false">CreateNotificationInput</a></dd>
+          <dt>Output</dt><dd><a class="type-chip" href="#model-notificationitem" onclick="navigateTo('model-notificationitem');return false">NotificationItem</a></dd>
+        </dl>
+      </div>
+    </div>
+    <div class="mod-header" id="mod-frontend-transaction" data-bc="frontend › Transaction">
+      <h3 class="mod-title">Transaction <code class="mod-prefix">/api/transaction_service/transaction</code></h3>
+      <p class="mod-desc">Transaction service</p>
+    </div>
+    <div class="ep ep-POST" id="action-frontend-transaction-transfer" data-bc="frontend › Transaction › transfer">
+      <div class="ep-head" onclick="toggleEp(this)">
+        <span class="mtag mtag-POST">POST</span>
+        <span class="ep-path">/api/transaction_service/transaction/transfer</span>
+        <span class="ep-info">
+          <span class="ep-name">transfer</span>
+          <button class="copy-btn" data-path="/api/transaction_service/transaction/transfer" onclick="copyPath(event,this.dataset.path)" title="Copy path">⎘</button>
+        </span>
+        <span class="chevron">▶</span>
+      </div>
+      <div class="ep-detail">
+        <dl class="ep-meta">
+          <dt>Input</dt><dd><a class="type-chip" href="#model-transferrequest" onclick="navigateTo('model-transferrequest');return false">TransferRequest</a></dd>
+          <dt>Output</dt><dd><a class="type-chip" href="#model-transactionresponse" onclick="navigateTo('model-transactionresponse');return false">TransactionResponse</a></dd>
+          <dt>Errors</dt><dd><span class="err-chip">InsufficientFunds <em>403</em></span> <span class="err-chip">InvalidAccount <em>404</em></span> <span class="err-chip">Unauthorized <em>401</em></span> <span class="err-chip">InvalidAmount <em>400</em></span> <span class="err-chip">invalidTarget <em>400</em></span></dd>
+        </dl>
+      </div>
+    </div>
+    <h2 class="types-title" id="section-models" data-bc="Models">Models</h2>
+    <div class="type-card" id="model-iamitem" data-bc="Models › IamItem">
+      <div class="type-head">
+        <span class="type-name">IamItem</span>
+        <span class="type-desc">A iam entity</span>
+        <span class="used-by">Used by: <span class="ub-chip">Iam.ListIam</span>, <span class="ub-chip">Iam.GetIam</span>, <span class="ub-chip">Iam.CreateIam</span></span>
+      </div>
+      <table class="fields-table"><thead><tr><th>Field</th><th>Type</th><th>Attributes</th></tr></thead><tbody>
+        <tr><td class="fn">id</td><td><span class="plain-chip">uuid</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">name</td><td><span class="plain-chip">string</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">createdAt</td><td><span class="plain-chip">datetime</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+      </tbody></table>
+    </div>
+    <div class="type-card" id="model-createiaminput" data-bc="Models › CreateIamInput">
+      <div class="type-head">
+        <span class="type-name">CreateIamInput</span>
+        <span class="used-by">Used by: <span class="ub-chip">Iam.CreateIam</span></span>
+      </div>
+      <table class="fields-table"><thead><tr><th>Field</th><th>Type</th><th>Attributes</th></tr></thead><tbody>
+        <tr><td class="fn">name</td><td><span class="plain-chip">string</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+      </tbody></table>
+    </div>
+    <div class="type-card" id="model-carditem" data-bc="Models › CardItem">
+      <div class="type-head">
+        <span class="type-name">CardItem</span>
+        <span class="type-desc">A card entity</span>
+        <span class="used-by">Used by: <span class="ub-chip">Card.ListCard</span>, <span class="ub-chip">Card.GetCard</span>, <span class="ub-chip">Card.CreateCard</span></span>
+      </div>
+      <table class="fields-table"><thead><tr><th>Field</th><th>Type</th><th>Attributes</th></tr></thead><tbody>
+        <tr><td class="fn">id</td><td><span class="plain-chip">uuid</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">name</td><td><span class="plain-chip">string</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">createdAt</td><td><span class="plain-chip">datetime</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+      </tbody></table>
+    </div>
+    <div class="type-card" id="model-createcardinput" data-bc="Models › CreateCardInput">
+      <div class="type-head">
+        <span class="type-name">CreateCardInput</span>
+        <span class="used-by">Used by: <span class="ub-chip">Card.CreateCard</span></span>
+      </div>
+      <table class="fields-table"><thead><tr><th>Field</th><th>Type</th><th>Attributes</th></tr></thead><tbody>
+        <tr><td class="fn">name</td><td><span class="plain-chip">string</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+      </tbody></table>
+    </div>
+    <div class="type-card" id="model-accountitem" data-bc="Models › AccountItem">
+      <div class="type-head">
+        <span class="type-name">AccountItem</span>
+        <span class="type-desc">A account entity</span>
+        <span class="used-by">Used by: <span class="ub-chip">Account.ListAccount</span>, <span class="ub-chip">Account.GetAccount</span>, <span class="ub-chip">Account.CreateAccount</span></span>
+      </div>
+      <table class="fields-table"><thead><tr><th>Field</th><th>Type</th><th>Attributes</th></tr></thead><tbody>
+        <tr><td class="fn">id</td><td><span class="plain-chip">uuid</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">name</td><td><span class="plain-chip">string</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">createdAt</td><td><span class="plain-chip">datetime</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+      </tbody></table>
+    </div>
+    <div class="type-card" id="model-createaccountinput" data-bc="Models › CreateAccountInput">
+      <div class="type-head">
+        <span class="type-name">CreateAccountInput</span>
+        <span class="used-by">Used by: <span class="ub-chip">Account.CreateAccount</span></span>
+      </div>
+      <table class="fields-table"><thead><tr><th>Field</th><th>Type</th><th>Attributes</th></tr></thead><tbody>
+        <tr><td class="fn">name</td><td><span class="plain-chip">string</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+      </tbody></table>
+    </div>
+    <div class="type-card" id="model-lendingitem" data-bc="Models › LendingItem">
+      <div class="type-head">
+        <span class="type-name">LendingItem</span>
+        <span class="type-desc">A lending entity</span>
+        <span class="used-by">Used by: <span class="ub-chip">Lending.ListLending</span>, <span class="ub-chip">Lending.GetLending</span>, <span class="ub-chip">Lending.CreateLending</span></span>
+      </div>
+      <table class="fields-table"><thead><tr><th>Field</th><th>Type</th><th>Attributes</th></tr></thead><tbody>
+        <tr><td class="fn">id</td><td><span class="plain-chip">uuid</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">name</td><td><span class="plain-chip">string</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">createdAt</td><td><span class="plain-chip">datetime</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+      </tbody></table>
+    </div>
+    <div class="type-card" id="model-createlendinginput" data-bc="Models › CreateLendingInput">
+      <div class="type-head">
+        <span class="type-name">CreateLendingInput</span>
+        <span class="used-by">Used by: <span class="ub-chip">Lending.CreateLending</span></span>
+      </div>
+      <table class="fields-table"><thead><tr><th>Field</th><th>Type</th><th>Attributes</th></tr></thead><tbody>
+        <tr><td class="fn">name</td><td><span class="plain-chip">string</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+      </tbody></table>
+    </div>
+    <div class="type-card" id="model-notificationitem" data-bc="Models › NotificationItem">
+      <div class="type-head">
+        <span class="type-name">NotificationItem</span>
+        <span class="type-desc">A notification entity</span>
+        <span class="used-by">Used by: <span class="ub-chip">Notification.ListNotification</span>, <span class="ub-chip">Notification.GetNotification</span>, <span class="ub-chip">Notification.CreateNotification</span></span>
+      </div>
+      <table class="fields-table"><thead><tr><th>Field</th><th>Type</th><th>Attributes</th></tr></thead><tbody>
+        <tr><td class="fn">id</td><td><span class="plain-chip">uuid</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">name</td><td><span class="plain-chip">string</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">createdAt</td><td><span class="plain-chip">datetime</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+      </tbody></table>
+    </div>
+    <div class="type-card" id="model-createnotificationinput" data-bc="Models › CreateNotificationInput">
+      <div class="type-head">
+        <span class="type-name">CreateNotificationInput</span>
+        <span class="used-by">Used by: <span class="ub-chip">Notification.CreateNotification</span></span>
+      </div>
+      <table class="fields-table"><thead><tr><th>Field</th><th>Type</th><th>Attributes</th></tr></thead><tbody>
+        <tr><td class="fn">name</td><td><span class="plain-chip">string</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+      </tbody></table>
+    </div>
+    <div class="type-card" id="model-auditevent" data-bc="Models › AuditEvent">
+      <div class="type-head">
+        <span class="type-name">AuditEvent</span>
+      </div>
+      <table class="fields-table"><thead><tr><th>Field</th><th>Type</th><th>Attributes</th></tr></thead><tbody>
+        <tr><td class="fn">serviceName</td><td><span class="plain-chip">string</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">action</td><td><a class="type-chip" href="#enum-auditaction" onclick="navigateTo('enum-auditaction');return false">AuditAction</a></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">status</td><td><a class="type-chip" href="#enum-auditstatus" onclick="navigateTo('enum-auditstatus');return false">AuditStatus</a></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">details</td><td><span class="plain-chip">string</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">userIdentifier</td><td><span class="plain-chip">uuid</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">timestamp</td><td><span class="plain-chip">datetime</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+      </tbody></table>
+    </div>
+    <div class="type-card" id="model-transferrequest" data-bc="Models › TransferRequest">
+      <div class="type-head">
+        <span class="type-name">TransferRequest</span>
+        <span class="used-by">Used by: <span class="ub-chip">Transaction.transfer</span></span>
+      </div>
+      <table class="fields-table"><thead><tr><th>Field</th><th>Type</th><th>Attributes</th></tr></thead><tbody>
+        <tr><td class="fn">sourceAccountId</td><td><span class="plain-chip">uuid</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">destinationAccountId</td><td><span class="plain-chip">uuid</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">amount</td><td><span class="plain-chip">decimal</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+      </tbody></table>
+    </div>
+    <div class="type-card" id="model-transactionresponse" data-bc="Models › TransactionResponse">
+      <div class="type-head">
+        <span class="type-name">TransactionResponse</span>
+        <span class="used-by">Used by: <span class="ub-chip">Transaction.transfer</span></span>
+      </div>
+      <table class="fields-table"><thead><tr><th>Field</th><th>Type</th><th>Attributes</th></tr></thead><tbody>
+        <tr><td class="fn">referenceNumber</td><td><span class="plain-chip">string</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">amount</td><td><span class="plain-chip">decimal</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">status</td><td><a class="type-chip" href="#enum-transactionstatus" onclick="navigateTo('enum-transactionstatus');return false">TransactionStatus</a></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">timestamp</td><td><span class="plain-chip">datetime</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+      </tbody></table>
+    </div>
+    <div class="type-card" id="model-transactionevent" data-bc="Models › TransactionEvent">
+      <div class="type-head">
+        <span class="type-name">TransactionEvent</span>
+      </div>
+      <table class="fields-table"><thead><tr><th>Field</th><th>Type</th><th>Attributes</th></tr></thead><tbody>
+        <tr><td class="fn">referenceNumber</td><td><span class="plain-chip">string</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">sourceAccountId</td><td><span class="plain-chip">uuid</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">destinationAccountId</td><td><span class="plain-chip">uuid</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">amount</td><td><span class="plain-chip">decimal</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">status</td><td><a class="type-chip" href="#enum-transactionstatus" onclick="navigateTo('enum-transactionstatus');return false">TransactionStatus</a></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+      </tbody></table>
+    </div>
+    <h2 class="types-title" id="section-enums" data-bc="Enums">Enums</h2>
+    <div class="type-card" id="enum-auditstatus" data-bc="Enums › AuditStatus">
+      <div class="type-head">
+        <span class="type-name">AuditStatus</span>
+        <span class="used-by">Used by: <span class="ub-chip">AuditEvent</span></span>
+      </div>
+      <div class="enum-chips">
+        <span class="ev-chip">SUCCESS</span>
+        <span class="ev-chip">FAILED</span>
+        <span class="ev-chip">WARNING</span>
+        <span class="ev-chip">UNAUTHORIZED</span>
+      </div>
+    </div>
+    <div class="type-card" id="enum-auditaction" data-bc="Enums › AuditAction">
+      <div class="type-head">
+        <span class="type-name">AuditAction</span>
+        <span class="used-by">Used by: <span class="ub-chip">AuditEvent</span></span>
+      </div>
+      <div class="enum-chips">
+        <span class="ev-chip">TRANSFER_FUNDS</span>
+        <span class="ev-chip">DEPOSIT_FUNDS</span>
+        <span class="ev-chip">WITHDRAW_FUNDS</span>
+        <span class="ev-chip">VIEW_ACCOUNT_BALANCE</span>
+        <span class="ev-chip">LOGIN_ATTEMPT</span>
+      </div>
+    </div>
+    <div class="type-card" id="enum-transactiontype" data-bc="Enums › TransactionType">
+      <div class="type-head">
+        <span class="type-name">TransactionType</span>
+      </div>
+      <div class="enum-chips">
+        <span class="ev-chip">DEPOSIT</span>
+        <span class="ev-chip">WITHDRAWAL</span>
+        <span class="ev-chip">TRANSFER</span>
+      </div>
+    </div>
+    <div class="type-card" id="enum-transactionstatus" data-bc="Enums › TransactionStatus">
+      <div class="type-head">
+        <span class="type-name">TransactionStatus</span>
+        <span class="used-by">Used by: <span class="ub-chip">TransactionResponse</span>, <span class="ub-chip">TransactionEvent</span></span>
+      </div>
+      <div class="enum-chips">
+        <span class="ev-chip">PENDING</span>
+        <span class="ev-chip">COMPLETED</span>
+        <span class="ev-chip">FAILED</span>
+      </div>
+    </div>
+    <div class="footer">Generated by <strong>Veld</strong></div>
   </div>
 </div>
-<div class="endpoint" id="action-iam-iam-getiam" data-bc="iam › Iam › GetIam">
-  <div class="endpoint-header" onclick="toggleDetail(this)">
-    <span class="method-badge method-GET">GET</span>    <span class="endpoint-path">/api/iam/<span class="param">:id</span></span>    <span class="endpoint-name">GetIam</span>
-    <span class="chevron">▸</span>
-  </div>
-  <div class="endpoint-detail">
-    <div class="detail-row"><span class="detail-label">Output</span><span class="detail-value"><a href="#model-iamitem" class="type-link" onclick="navigateTo('model-iamitem')">IamItem</a></span></div>
-    <div class="detail-row"><span class="detail-label">Errors</span><span class="detail-value"><code>NotFound</code></span></div>
-  </div>
-</div>
-<div class="endpoint" id="action-iam-iam-createiam" data-bc="iam › Iam › CreateIam">
-  <div class="endpoint-header" onclick="toggleDetail(this)">
-    <span class="method-badge method-POST">POST</span>    <span class="endpoint-path">/api/iam/</span>    <span class="endpoint-name">CreateIam</span>
-    <span class="chevron">▸</span>
-  </div>
-  <div class="endpoint-detail">
-    <div class="detail-row"><span class="detail-label">Input</span><span class="detail-value"><a href="#model-createiaminput" class="type-link" onclick="navigateTo('model-createiaminput')">CreateIamInput</a></span></div>
-    <div class="detail-row"><span class="detail-label">Output</span><span class="detail-value"><a href="#model-iamitem" class="type-link" onclick="navigateTo('model-iamitem')">IamItem</a></span></div>
-  </div>
-</div>
-</section>
-
-<section id="service-card" class="service-section" data-bc="card"><h2 class="service-title">card <code class="base-url">http://card-service:3002</code></h2>
-<p class="section-desc">card</p>
-<div class="service-stats"><span>3 endpoints</span><span>1 modules</span><span>2 models</span></div>
-<h3 id="mod-card-card" class="module-title" data-bc="card › Card">Card <code class="prefix-badge">/api/card</code></h3>
-<p class="section-desc">Card service</p>
-<div class="endpoint" id="action-card-card-listcard" data-bc="card › Card › ListCard">
-  <div class="endpoint-header" onclick="toggleDetail(this)">
-    <span class="method-badge method-GET">GET</span>    <span class="endpoint-path">/api/card/</span>    <span class="endpoint-name">ListCard</span>
-    <span class="chevron">▸</span>
-  </div>
-  <div class="endpoint-detail">
-    <div class="detail-row"><span class="detail-label">Output</span><span class="detail-value"><a href="#model-carditem" class="type-link" onclick="navigateTo('model-carditem')">CardItem</a>[]</span></div>
-  </div>
-</div>
-<div class="endpoint" id="action-card-card-getcard" data-bc="card › Card › GetCard">
-  <div class="endpoint-header" onclick="toggleDetail(this)">
-    <span class="method-badge method-GET">GET</span>    <span class="endpoint-path">/api/card/<span class="param">:id</span></span>    <span class="endpoint-name">GetCard</span>
-    <span class="chevron">▸</span>
-  </div>
-  <div class="endpoint-detail">
-    <div class="detail-row"><span class="detail-label">Output</span><span class="detail-value"><a href="#model-carditem" class="type-link" onclick="navigateTo('model-carditem')">CardItem</a></span></div>
-    <div class="detail-row"><span class="detail-label">Errors</span><span class="detail-value"><code>NotFound</code></span></div>
-  </div>
-</div>
-<div class="endpoint" id="action-card-card-createcard" data-bc="card › Card › CreateCard">
-  <div class="endpoint-header" onclick="toggleDetail(this)">
-    <span class="method-badge method-POST">POST</span>    <span class="endpoint-path">/api/card/</span>    <span class="endpoint-name">CreateCard</span>
-    <span class="chevron">▸</span>
-  </div>
-  <div class="endpoint-detail">
-    <div class="detail-row"><span class="detail-label">Input</span><span class="detail-value"><a href="#model-createcardinput" class="type-link" onclick="navigateTo('model-createcardinput')">CreateCardInput</a></span></div>
-    <div class="detail-row"><span class="detail-label">Output</span><span class="detail-value"><a href="#model-carditem" class="type-link" onclick="navigateTo('model-carditem')">CardItem</a></span></div>
-  </div>
-</div>
-</section>
-
-<section id="service-account" class="service-section" data-bc="account"><h2 class="service-title">account <code class="base-url">http://account-service:3003</code></h2>
-<p class="section-desc">account</p>
-<div class="service-stats"><span>3 endpoints</span><span>1 modules</span><span>2 models</span></div>
-<h3 id="mod-account-account" class="module-title" data-bc="account › Account">Account <code class="prefix-badge">/api/account</code></h3>
-<p class="section-desc">Account service</p>
-<div class="endpoint" id="action-account-account-listaccount" data-bc="account › Account › ListAccount">
-  <div class="endpoint-header" onclick="toggleDetail(this)">
-    <span class="method-badge method-GET">GET</span>    <span class="endpoint-path">/api/account/</span>    <span class="endpoint-name">ListAccount</span>
-    <span class="chevron">▸</span>
-  </div>
-  <div class="endpoint-detail">
-    <div class="detail-row"><span class="detail-label">Output</span><span class="detail-value"><a href="#model-accountitem" class="type-link" onclick="navigateTo('model-accountitem')">AccountItem</a>[]</span></div>
-  </div>
-</div>
-<div class="endpoint" id="action-account-account-getaccount" data-bc="account › Account › GetAccount">
-  <div class="endpoint-header" onclick="toggleDetail(this)">
-    <span class="method-badge method-GET">GET</span>    <span class="endpoint-path">/api/account/<span class="param">:id</span></span>    <span class="endpoint-name">GetAccount</span>
-    <span class="chevron">▸</span>
-  </div>
-  <div class="endpoint-detail">
-    <div class="detail-row"><span class="detail-label">Output</span><span class="detail-value"><a href="#model-accountitem" class="type-link" onclick="navigateTo('model-accountitem')">AccountItem</a></span></div>
-    <div class="detail-row"><span class="detail-label">Errors</span><span class="detail-value"><code>NotFound</code></span></div>
-  </div>
-</div>
-<div class="endpoint" id="action-account-account-createaccount" data-bc="account › Account › CreateAccount">
-  <div class="endpoint-header" onclick="toggleDetail(this)">
-    <span class="method-badge method-POST">POST</span>    <span class="endpoint-path">/api/account/</span>    <span class="endpoint-name">CreateAccount</span>
-    <span class="chevron">▸</span>
-  </div>
-  <div class="endpoint-detail">
-    <div class="detail-row"><span class="detail-label">Input</span><span class="detail-value"><a href="#model-createaccountinput" class="type-link" onclick="navigateTo('model-createaccountinput')">CreateAccountInput</a></span></div>
-    <div class="detail-row"><span class="detail-label">Output</span><span class="detail-value"><a href="#model-accountitem" class="type-link" onclick="navigateTo('model-accountitem')">AccountItem</a></span></div>
-  </div>
-</div>
-</section>
-
-<section id="service-lending" class="service-section" data-bc="lending"><h2 class="service-title">lending <code class="base-url">http://lending-service:3004</code></h2>
-<p class="section-desc">lending</p>
-<div class="service-stats"><span>3 endpoints</span><span>1 modules</span><span>2 models</span></div>
-<h3 id="mod-lending-lending" class="module-title" data-bc="lending › Lending">Lending <code class="prefix-badge">/api/lending</code></h3>
-<p class="section-desc">Lending service</p>
-<div class="endpoint" id="action-lending-lending-listlending" data-bc="lending › Lending › ListLending">
-  <div class="endpoint-header" onclick="toggleDetail(this)">
-    <span class="method-badge method-GET">GET</span>    <span class="endpoint-path">/api/lending/</span>    <span class="endpoint-name">ListLending</span>
-    <span class="chevron">▸</span>
-  </div>
-  <div class="endpoint-detail">
-    <div class="detail-row"><span class="detail-label">Output</span><span class="detail-value"><a href="#model-lendingitem" class="type-link" onclick="navigateTo('model-lendingitem')">LendingItem</a>[]</span></div>
-  </div>
-</div>
-<div class="endpoint" id="action-lending-lending-getlending" data-bc="lending › Lending › GetLending">
-  <div class="endpoint-header" onclick="toggleDetail(this)">
-    <span class="method-badge method-GET">GET</span>    <span class="endpoint-path">/api/lending/<span class="param">:id</span></span>    <span class="endpoint-name">GetLending</span>
-    <span class="chevron">▸</span>
-  </div>
-  <div class="endpoint-detail">
-    <div class="detail-row"><span class="detail-label">Output</span><span class="detail-value"><a href="#model-lendingitem" class="type-link" onclick="navigateTo('model-lendingitem')">LendingItem</a></span></div>
-    <div class="detail-row"><span class="detail-label">Errors</span><span class="detail-value"><code>NotFound</code></span></div>
-  </div>
-</div>
-<div class="endpoint" id="action-lending-lending-createlending" data-bc="lending › Lending › CreateLending">
-  <div class="endpoint-header" onclick="toggleDetail(this)">
-    <span class="method-badge method-POST">POST</span>    <span class="endpoint-path">/api/lending/</span>    <span class="endpoint-name">CreateLending</span>
-    <span class="chevron">▸</span>
-  </div>
-  <div class="endpoint-detail">
-    <div class="detail-row"><span class="detail-label">Input</span><span class="detail-value"><a href="#model-createlendinginput" class="type-link" onclick="navigateTo('model-createlendinginput')">CreateLendingInput</a></span></div>
-    <div class="detail-row"><span class="detail-label">Output</span><span class="detail-value"><a href="#model-lendingitem" class="type-link" onclick="navigateTo('model-lendingitem')">LendingItem</a></span></div>
-  </div>
-</div>
-</section>
-
-<section id="service-notification" class="service-section" data-bc="notification"><h2 class="service-title">notification <code class="base-url">http://notification-service:3005</code></h2>
-<p class="section-desc">notification</p>
-<div class="service-stats"><span>3 endpoints</span><span>1 modules</span><span>2 models</span></div>
-<h3 id="mod-notification-notification" class="module-title" data-bc="notification › Notification">Notification <code class="prefix-badge">/api/notification</code></h3>
-<p class="section-desc">Notification service</p>
-<div class="endpoint" id="action-notification-notification-listnotification" data-bc="notification › Notification › ListNotification">
-  <div class="endpoint-header" onclick="toggleDetail(this)">
-    <span class="method-badge method-GET">GET</span>    <span class="endpoint-path">/api/notification/</span>    <span class="endpoint-name">ListNotification</span>
-    <span class="chevron">▸</span>
-  </div>
-  <div class="endpoint-detail">
-    <div class="detail-row"><span class="detail-label">Output</span><span class="detail-value"><a href="#model-notificationitem" class="type-link" onclick="navigateTo('model-notificationitem')">NotificationItem</a>[]</span></div>
-  </div>
-</div>
-<div class="endpoint" id="action-notification-notification-getnotification" data-bc="notification › Notification › GetNotification">
-  <div class="endpoint-header" onclick="toggleDetail(this)">
-    <span class="method-badge method-GET">GET</span>    <span class="endpoint-path">/api/notification/<span class="param">:id</span></span>    <span class="endpoint-name">GetNotification</span>
-    <span class="chevron">▸</span>
-  </div>
-  <div class="endpoint-detail">
-    <div class="detail-row"><span class="detail-label">Output</span><span class="detail-value"><a href="#model-notificationitem" class="type-link" onclick="navigateTo('model-notificationitem')">NotificationItem</a></span></div>
-    <div class="detail-row"><span class="detail-label">Errors</span><span class="detail-value"><code>NotFound</code></span></div>
-  </div>
-</div>
-<div class="endpoint" id="action-notification-notification-createnotification" data-bc="notification › Notification › CreateNotification">
-  <div class="endpoint-header" onclick="toggleDetail(this)">
-    <span class="method-badge method-POST">POST</span>    <span class="endpoint-path">/api/notification/</span>    <span class="endpoint-name">CreateNotification</span>
-    <span class="chevron">▸</span>
-  </div>
-  <div class="endpoint-detail">
-    <div class="detail-row"><span class="detail-label">Input</span><span class="detail-value"><a href="#model-createnotificationinput" class="type-link" onclick="navigateTo('model-createnotificationinput')">CreateNotificationInput</a></span></div>
-    <div class="detail-row"><span class="detail-label">Output</span><span class="detail-value"><a href="#model-notificationitem" class="type-link" onclick="navigateTo('model-notificationitem')">NotificationItem</a></span></div>
-  </div>
-</div>
-</section>
-
-<section id="service-audit" class="service-section" data-bc="audit"><h2 class="service-title">audit <code class="base-url">http://localhost:8084</code></h2>
-<p class="section-desc">audit</p>
-<div class="service-stats"><span>0 endpoints</span><span>0 modules</span><span>0 models</span></div>
-</section>
-
-<section id="service-transaction" class="service-section" data-bc="transaction"><h2 class="service-title">transaction <code class="base-url">http://localhost:2501</code></h2>
-<p class="section-desc">transaction</p>
-<div class="service-stats"><span>1 endpoints</span><span>1 modules</span><span>2 models</span></div>
-<h3 id="mod-transaction-transaction" class="module-title" data-bc="transaction › Transaction">Transaction <code class="prefix-badge">/api/transaction_service/transaction</code></h3>
-<p class="section-desc">Transaction service</p>
-<div class="endpoint" id="action-transaction-transaction-transfer" data-bc="transaction › Transaction › transfer">
-  <div class="endpoint-header" onclick="toggleDetail(this)">
-    <span class="method-badge method-POST">POST</span>    <span class="endpoint-path">/api/transaction_service/transaction/transfer</span>    <span class="endpoint-name">transfer</span>
-    <span class="chevron">▸</span>
-  </div>
-  <div class="endpoint-detail">
-    <div class="detail-row"><span class="detail-label">Input</span><span class="detail-value"><a href="#model-transferrequest" class="type-link" onclick="navigateTo('model-transferrequest')">TransferRequest</a></span></div>
-    <div class="detail-row"><span class="detail-label">Output</span><span class="detail-value"><a href="#model-transactionresponse" class="type-link" onclick="navigateTo('model-transactionresponse')">TransactionResponse</a></span></div>
-    <div class="detail-row"><span class="detail-label">Errors</span><span class="detail-value"><code>InsufficientFunds (403)</code>, <code>InvalidAccount (404)</code>, <code>Unauthorized (401)</code>, <code>InvalidAmount (400)</code>, <code>invalidTarget (400)</code></span></div>
-  </div>
-</div>
-</section>
-
-<section id="service-frontend" class="service-section" data-bc="frontend"><h2 class="service-title">frontend <code class="base-url">http://localhost:3000</code></h2>
-<p class="section-desc">Frontend SDK — auto-consumes all backend services</p>
-<div class="service-stats"><span>16 endpoints</span><span>6 modules</span><span>12 models</span></div>
-<h3 id="mod-frontend-iam" class="module-title" data-bc="frontend › Iam">Iam <code class="prefix-badge">/api/iam</code></h3>
-<p class="section-desc">Iam service</p>
-<div class="endpoint" id="action-frontend-iam-listiam" data-bc="frontend › Iam › ListIam">
-  <div class="endpoint-header" onclick="toggleDetail(this)">
-    <span class="method-badge method-GET">GET</span>    <span class="endpoint-path">/api/iam/</span>    <span class="endpoint-name">ListIam</span>
-    <span class="chevron">▸</span>
-  </div>
-  <div class="endpoint-detail">
-    <div class="detail-row"><span class="detail-label">Output</span><span class="detail-value"><a href="#model-iamitem" class="type-link" onclick="navigateTo('model-iamitem')">IamItem</a>[]</span></div>
-  </div>
-</div>
-<div class="endpoint" id="action-frontend-iam-getiam" data-bc="frontend › Iam › GetIam">
-  <div class="endpoint-header" onclick="toggleDetail(this)">
-    <span class="method-badge method-GET">GET</span>    <span class="endpoint-path">/api/iam/<span class="param">:id</span></span>    <span class="endpoint-name">GetIam</span>
-    <span class="chevron">▸</span>
-  </div>
-  <div class="endpoint-detail">
-    <div class="detail-row"><span class="detail-label">Output</span><span class="detail-value"><a href="#model-iamitem" class="type-link" onclick="navigateTo('model-iamitem')">IamItem</a></span></div>
-    <div class="detail-row"><span class="detail-label">Errors</span><span class="detail-value"><code>NotFound</code></span></div>
-  </div>
-</div>
-<div class="endpoint" id="action-frontend-iam-createiam" data-bc="frontend › Iam › CreateIam">
-  <div class="endpoint-header" onclick="toggleDetail(this)">
-    <span class="method-badge method-POST">POST</span>    <span class="endpoint-path">/api/iam/</span>    <span class="endpoint-name">CreateIam</span>
-    <span class="chevron">▸</span>
-  </div>
-  <div class="endpoint-detail">
-    <div class="detail-row"><span class="detail-label">Input</span><span class="detail-value"><a href="#model-createiaminput" class="type-link" onclick="navigateTo('model-createiaminput')">CreateIamInput</a></span></div>
-    <div class="detail-row"><span class="detail-label">Output</span><span class="detail-value"><a href="#model-iamitem" class="type-link" onclick="navigateTo('model-iamitem')">IamItem</a></span></div>
-  </div>
-</div>
-<h3 id="mod-frontend-card" class="module-title" data-bc="frontend › Card">Card <code class="prefix-badge">/api/card</code></h3>
-<p class="section-desc">Card service</p>
-<div class="endpoint" id="action-frontend-card-listcard" data-bc="frontend › Card › ListCard">
-  <div class="endpoint-header" onclick="toggleDetail(this)">
-    <span class="method-badge method-GET">GET</span>    <span class="endpoint-path">/api/card/</span>    <span class="endpoint-name">ListCard</span>
-    <span class="chevron">▸</span>
-  </div>
-  <div class="endpoint-detail">
-    <div class="detail-row"><span class="detail-label">Output</span><span class="detail-value"><a href="#model-carditem" class="type-link" onclick="navigateTo('model-carditem')">CardItem</a>[]</span></div>
-  </div>
-</div>
-<div class="endpoint" id="action-frontend-card-getcard" data-bc="frontend › Card › GetCard">
-  <div class="endpoint-header" onclick="toggleDetail(this)">
-    <span class="method-badge method-GET">GET</span>    <span class="endpoint-path">/api/card/<span class="param">:id</span></span>    <span class="endpoint-name">GetCard</span>
-    <span class="chevron">▸</span>
-  </div>
-  <div class="endpoint-detail">
-    <div class="detail-row"><span class="detail-label">Output</span><span class="detail-value"><a href="#model-carditem" class="type-link" onclick="navigateTo('model-carditem')">CardItem</a></span></div>
-    <div class="detail-row"><span class="detail-label">Errors</span><span class="detail-value"><code>NotFound</code></span></div>
-  </div>
-</div>
-<div class="endpoint" id="action-frontend-card-createcard" data-bc="frontend › Card › CreateCard">
-  <div class="endpoint-header" onclick="toggleDetail(this)">
-    <span class="method-badge method-POST">POST</span>    <span class="endpoint-path">/api/card/</span>    <span class="endpoint-name">CreateCard</span>
-    <span class="chevron">▸</span>
-  </div>
-  <div class="endpoint-detail">
-    <div class="detail-row"><span class="detail-label">Input</span><span class="detail-value"><a href="#model-createcardinput" class="type-link" onclick="navigateTo('model-createcardinput')">CreateCardInput</a></span></div>
-    <div class="detail-row"><span class="detail-label">Output</span><span class="detail-value"><a href="#model-carditem" class="type-link" onclick="navigateTo('model-carditem')">CardItem</a></span></div>
-  </div>
-</div>
-<h3 id="mod-frontend-account" class="module-title" data-bc="frontend › Account">Account <code class="prefix-badge">/api/account</code></h3>
-<p class="section-desc">Account service</p>
-<div class="endpoint" id="action-frontend-account-listaccount" data-bc="frontend › Account › ListAccount">
-  <div class="endpoint-header" onclick="toggleDetail(this)">
-    <span class="method-badge method-GET">GET</span>    <span class="endpoint-path">/api/account/</span>    <span class="endpoint-name">ListAccount</span>
-    <span class="chevron">▸</span>
-  </div>
-  <div class="endpoint-detail">
-    <div class="detail-row"><span class="detail-label">Output</span><span class="detail-value"><a href="#model-accountitem" class="type-link" onclick="navigateTo('model-accountitem')">AccountItem</a>[]</span></div>
-  </div>
-</div>
-<div class="endpoint" id="action-frontend-account-getaccount" data-bc="frontend › Account › GetAccount">
-  <div class="endpoint-header" onclick="toggleDetail(this)">
-    <span class="method-badge method-GET">GET</span>    <span class="endpoint-path">/api/account/<span class="param">:id</span></span>    <span class="endpoint-name">GetAccount</span>
-    <span class="chevron">▸</span>
-  </div>
-  <div class="endpoint-detail">
-    <div class="detail-row"><span class="detail-label">Output</span><span class="detail-value"><a href="#model-accountitem" class="type-link" onclick="navigateTo('model-accountitem')">AccountItem</a></span></div>
-    <div class="detail-row"><span class="detail-label">Errors</span><span class="detail-value"><code>NotFound</code></span></div>
-  </div>
-</div>
-<div class="endpoint" id="action-frontend-account-createaccount" data-bc="frontend › Account › CreateAccount">
-  <div class="endpoint-header" onclick="toggleDetail(this)">
-    <span class="method-badge method-POST">POST</span>    <span class="endpoint-path">/api/account/</span>    <span class="endpoint-name">CreateAccount</span>
-    <span class="chevron">▸</span>
-  </div>
-  <div class="endpoint-detail">
-    <div class="detail-row"><span class="detail-label">Input</span><span class="detail-value"><a href="#model-createaccountinput" class="type-link" onclick="navigateTo('model-createaccountinput')">CreateAccountInput</a></span></div>
-    <div class="detail-row"><span class="detail-label">Output</span><span class="detail-value"><a href="#model-accountitem" class="type-link" onclick="navigateTo('model-accountitem')">AccountItem</a></span></div>
-  </div>
-</div>
-<h3 id="mod-frontend-lending" class="module-title" data-bc="frontend › Lending">Lending <code class="prefix-badge">/api/lending</code></h3>
-<p class="section-desc">Lending service</p>
-<div class="endpoint" id="action-frontend-lending-listlending" data-bc="frontend › Lending › ListLending">
-  <div class="endpoint-header" onclick="toggleDetail(this)">
-    <span class="method-badge method-GET">GET</span>    <span class="endpoint-path">/api/lending/</span>    <span class="endpoint-name">ListLending</span>
-    <span class="chevron">▸</span>
-  </div>
-  <div class="endpoint-detail">
-    <div class="detail-row"><span class="detail-label">Output</span><span class="detail-value"><a href="#model-lendingitem" class="type-link" onclick="navigateTo('model-lendingitem')">LendingItem</a>[]</span></div>
-  </div>
-</div>
-<div class="endpoint" id="action-frontend-lending-getlending" data-bc="frontend › Lending › GetLending">
-  <div class="endpoint-header" onclick="toggleDetail(this)">
-    <span class="method-badge method-GET">GET</span>    <span class="endpoint-path">/api/lending/<span class="param">:id</span></span>    <span class="endpoint-name">GetLending</span>
-    <span class="chevron">▸</span>
-  </div>
-  <div class="endpoint-detail">
-    <div class="detail-row"><span class="detail-label">Output</span><span class="detail-value"><a href="#model-lendingitem" class="type-link" onclick="navigateTo('model-lendingitem')">LendingItem</a></span></div>
-    <div class="detail-row"><span class="detail-label">Errors</span><span class="detail-value"><code>NotFound</code></span></div>
-  </div>
-</div>
-<div class="endpoint" id="action-frontend-lending-createlending" data-bc="frontend › Lending › CreateLending">
-  <div class="endpoint-header" onclick="toggleDetail(this)">
-    <span class="method-badge method-POST">POST</span>    <span class="endpoint-path">/api/lending/</span>    <span class="endpoint-name">CreateLending</span>
-    <span class="chevron">▸</span>
-  </div>
-  <div class="endpoint-detail">
-    <div class="detail-row"><span class="detail-label">Input</span><span class="detail-value"><a href="#model-createlendinginput" class="type-link" onclick="navigateTo('model-createlendinginput')">CreateLendingInput</a></span></div>
-    <div class="detail-row"><span class="detail-label">Output</span><span class="detail-value"><a href="#model-lendingitem" class="type-link" onclick="navigateTo('model-lendingitem')">LendingItem</a></span></div>
-  </div>
-</div>
-<h3 id="mod-frontend-notification" class="module-title" data-bc="frontend › Notification">Notification <code class="prefix-badge">/api/notification</code></h3>
-<p class="section-desc">Notification service</p>
-<div class="endpoint" id="action-frontend-notification-listnotification" data-bc="frontend › Notification › ListNotification">
-  <div class="endpoint-header" onclick="toggleDetail(this)">
-    <span class="method-badge method-GET">GET</span>    <span class="endpoint-path">/api/notification/</span>    <span class="endpoint-name">ListNotification</span>
-    <span class="chevron">▸</span>
-  </div>
-  <div class="endpoint-detail">
-    <div class="detail-row"><span class="detail-label">Output</span><span class="detail-value"><a href="#model-notificationitem" class="type-link" onclick="navigateTo('model-notificationitem')">NotificationItem</a>[]</span></div>
-  </div>
-</div>
-<div class="endpoint" id="action-frontend-notification-getnotification" data-bc="frontend › Notification › GetNotification">
-  <div class="endpoint-header" onclick="toggleDetail(this)">
-    <span class="method-badge method-GET">GET</span>    <span class="endpoint-path">/api/notification/<span class="param">:id</span></span>    <span class="endpoint-name">GetNotification</span>
-    <span class="chevron">▸</span>
-  </div>
-  <div class="endpoint-detail">
-    <div class="detail-row"><span class="detail-label">Output</span><span class="detail-value"><a href="#model-notificationitem" class="type-link" onclick="navigateTo('model-notificationitem')">NotificationItem</a></span></div>
-    <div class="detail-row"><span class="detail-label">Errors</span><span class="detail-value"><code>NotFound</code></span></div>
-  </div>
-</div>
-<div class="endpoint" id="action-frontend-notification-createnotification" data-bc="frontend › Notification › CreateNotification">
-  <div class="endpoint-header" onclick="toggleDetail(this)">
-    <span class="method-badge method-POST">POST</span>    <span class="endpoint-path">/api/notification/</span>    <span class="endpoint-name">CreateNotification</span>
-    <span class="chevron">▸</span>
-  </div>
-  <div class="endpoint-detail">
-    <div class="detail-row"><span class="detail-label">Input</span><span class="detail-value"><a href="#model-createnotificationinput" class="type-link" onclick="navigateTo('model-createnotificationinput')">CreateNotificationInput</a></span></div>
-    <div class="detail-row"><span class="detail-label">Output</span><span class="detail-value"><a href="#model-notificationitem" class="type-link" onclick="navigateTo('model-notificationitem')">NotificationItem</a></span></div>
-  </div>
-</div>
-<h3 id="mod-frontend-transaction" class="module-title" data-bc="frontend › Transaction">Transaction <code class="prefix-badge">/api/transaction_service/transaction</code></h3>
-<p class="section-desc">Transaction service</p>
-<div class="endpoint" id="action-frontend-transaction-transfer" data-bc="frontend › Transaction › transfer">
-  <div class="endpoint-header" onclick="toggleDetail(this)">
-    <span class="method-badge method-POST">POST</span>    <span class="endpoint-path">/api/transaction_service/transaction/transfer</span>    <span class="endpoint-name">transfer</span>
-    <span class="chevron">▸</span>
-  </div>
-  <div class="endpoint-detail">
-    <div class="detail-row"><span class="detail-label">Input</span><span class="detail-value"><a href="#model-transferrequest" class="type-link" onclick="navigateTo('model-transferrequest')">TransferRequest</a></span></div>
-    <div class="detail-row"><span class="detail-label">Output</span><span class="detail-value"><a href="#model-transactionresponse" class="type-link" onclick="navigateTo('model-transactionresponse')">TransactionResponse</a></span></div>
-    <div class="detail-row"><span class="detail-label">Errors</span><span class="detail-value"><code>InsufficientFunds (403)</code>, <code>InvalidAccount (404)</code>, <code>Unauthorized (401)</code>, <code>InvalidAmount (400)</code>, <code>invalidTarget (400)</code></span></div>
-  </div>
-</div>
-</section>
-
-<h2 class="section-divider" data-bc="Models">Models</h2>
-<div class="model-card" id="model-iamitem" data-bc="Models › IamItem">
-  <div class="model-header"><h3>IamItem</h3>
-    <div class="model-desc">A iam entity</div>
-    <div class="used-by">Used by: <span class="used-by-action">Iam.ListIam</span>, <span class="used-by-action">Iam.GetIam</span>, <span class="used-by-action">Iam.CreateIam</span></div>
-  </div>
-  <table class="model-table"><thead><tr><th>Field</th><th>Type</th><th>Attributes</th></tr></thead><tbody>
-    <tr><td><strong>id</strong></td><td><code>uuid</code></td><td>&mdash;</td></tr>
-    <tr><td><strong>name</strong></td><td><code>string</code></td><td>&mdash;</td></tr>
-    <tr><td><strong>createdAt</strong></td><td><code>datetime</code></td><td>&mdash;</td></tr>
-  </tbody></table>
-</div>
-<div class="model-card" id="model-createiaminput" data-bc="Models › CreateIamInput">
-  <div class="model-header"><h3>CreateIamInput</h3>
-    <div class="used-by">Used by: <span class="used-by-action">Iam.CreateIam</span></div>
-  </div>
-  <table class="model-table"><thead><tr><th>Field</th><th>Type</th><th>Attributes</th></tr></thead><tbody>
-    <tr><td><strong>name</strong></td><td><code>string</code></td><td>&mdash;</td></tr>
-  </tbody></table>
-</div>
-<div class="model-card" id="model-carditem" data-bc="Models › CardItem">
-  <div class="model-header"><h3>CardItem</h3>
-    <div class="model-desc">A card entity</div>
-    <div class="used-by">Used by: <span class="used-by-action">Card.ListCard</span>, <span class="used-by-action">Card.GetCard</span>, <span class="used-by-action">Card.CreateCard</span></div>
-  </div>
-  <table class="model-table"><thead><tr><th>Field</th><th>Type</th><th>Attributes</th></tr></thead><tbody>
-    <tr><td><strong>id</strong></td><td><code>uuid</code></td><td>&mdash;</td></tr>
-    <tr><td><strong>name</strong></td><td><code>string</code></td><td>&mdash;</td></tr>
-    <tr><td><strong>createdAt</strong></td><td><code>datetime</code></td><td>&mdash;</td></tr>
-  </tbody></table>
-</div>
-<div class="model-card" id="model-createcardinput" data-bc="Models › CreateCardInput">
-  <div class="model-header"><h3>CreateCardInput</h3>
-    <div class="used-by">Used by: <span class="used-by-action">Card.CreateCard</span></div>
-  </div>
-  <table class="model-table"><thead><tr><th>Field</th><th>Type</th><th>Attributes</th></tr></thead><tbody>
-    <tr><td><strong>name</strong></td><td><code>string</code></td><td>&mdash;</td></tr>
-  </tbody></table>
-</div>
-<div class="model-card" id="model-accountitem" data-bc="Models › AccountItem">
-  <div class="model-header"><h3>AccountItem</h3>
-    <div class="model-desc">A account entity</div>
-    <div class="used-by">Used by: <span class="used-by-action">Account.ListAccount</span>, <span class="used-by-action">Account.GetAccount</span>, <span class="used-by-action">Account.CreateAccount</span></div>
-  </div>
-  <table class="model-table"><thead><tr><th>Field</th><th>Type</th><th>Attributes</th></tr></thead><tbody>
-    <tr><td><strong>id</strong></td><td><code>uuid</code></td><td>&mdash;</td></tr>
-    <tr><td><strong>name</strong></td><td><code>string</code></td><td>&mdash;</td></tr>
-    <tr><td><strong>createdAt</strong></td><td><code>datetime</code></td><td>&mdash;</td></tr>
-  </tbody></table>
-</div>
-<div class="model-card" id="model-createaccountinput" data-bc="Models › CreateAccountInput">
-  <div class="model-header"><h3>CreateAccountInput</h3>
-    <div class="used-by">Used by: <span class="used-by-action">Account.CreateAccount</span></div>
-  </div>
-  <table class="model-table"><thead><tr><th>Field</th><th>Type</th><th>Attributes</th></tr></thead><tbody>
-    <tr><td><strong>name</strong></td><td><code>string</code></td><td>&mdash;</td></tr>
-  </tbody></table>
-</div>
-<div class="model-card" id="model-lendingitem" data-bc="Models › LendingItem">
-  <div class="model-header"><h3>LendingItem</h3>
-    <div class="model-desc">A lending entity</div>
-    <div class="used-by">Used by: <span class="used-by-action">Lending.ListLending</span>, <span class="used-by-action">Lending.GetLending</span>, <span class="used-by-action">Lending.CreateLending</span></div>
-  </div>
-  <table class="model-table"><thead><tr><th>Field</th><th>Type</th><th>Attributes</th></tr></thead><tbody>
-    <tr><td><strong>id</strong></td><td><code>uuid</code></td><td>&mdash;</td></tr>
-    <tr><td><strong>name</strong></td><td><code>string</code></td><td>&mdash;</td></tr>
-    <tr><td><strong>createdAt</strong></td><td><code>datetime</code></td><td>&mdash;</td></tr>
-  </tbody></table>
-</div>
-<div class="model-card" id="model-createlendinginput" data-bc="Models › CreateLendingInput">
-  <div class="model-header"><h3>CreateLendingInput</h3>
-    <div class="used-by">Used by: <span class="used-by-action">Lending.CreateLending</span></div>
-  </div>
-  <table class="model-table"><thead><tr><th>Field</th><th>Type</th><th>Attributes</th></tr></thead><tbody>
-    <tr><td><strong>name</strong></td><td><code>string</code></td><td>&mdash;</td></tr>
-  </tbody></table>
-</div>
-<div class="model-card" id="model-notificationitem" data-bc="Models › NotificationItem">
-  <div class="model-header"><h3>NotificationItem</h3>
-    <div class="model-desc">A notification entity</div>
-    <div class="used-by">Used by: <span class="used-by-action">Notification.ListNotification</span>, <span class="used-by-action">Notification.GetNotification</span>, <span class="used-by-action">Notification.CreateNotification</span></div>
-  </div>
-  <table class="model-table"><thead><tr><th>Field</th><th>Type</th><th>Attributes</th></tr></thead><tbody>
-    <tr><td><strong>id</strong></td><td><code>uuid</code></td><td>&mdash;</td></tr>
-    <tr><td><strong>name</strong></td><td><code>string</code></td><td>&mdash;</td></tr>
-    <tr><td><strong>createdAt</strong></td><td><code>datetime</code></td><td>&mdash;</td></tr>
-  </tbody></table>
-</div>
-<div class="model-card" id="model-createnotificationinput" data-bc="Models › CreateNotificationInput">
-  <div class="model-header"><h3>CreateNotificationInput</h3>
-    <div class="used-by">Used by: <span class="used-by-action">Notification.CreateNotification</span></div>
-  </div>
-  <table class="model-table"><thead><tr><th>Field</th><th>Type</th><th>Attributes</th></tr></thead><tbody>
-    <tr><td><strong>name</strong></td><td><code>string</code></td><td>&mdash;</td></tr>
-  </tbody></table>
-</div>
-<div class="model-card" id="model-auditevent" data-bc="Models › AuditEvent">
-  <div class="model-header"><h3>AuditEvent</h3>
-  </div>
-  <table class="model-table"><thead><tr><th>Field</th><th>Type</th><th>Attributes</th></tr></thead><tbody>
-    <tr><td><strong>serviceName</strong></td><td><code>string</code></td><td>&mdash;</td></tr>
-    <tr><td><strong>action</strong></td><td><a href="#enum-auditaction" class="type-link" onclick="navigateTo('enum-auditaction')">AuditAction</a></td><td>&mdash;</td></tr>
-    <tr><td><strong>status</strong></td><td><a href="#enum-auditstatus" class="type-link" onclick="navigateTo('enum-auditstatus')">AuditStatus</a></td><td>&mdash;</td></tr>
-    <tr><td><strong>details</strong></td><td><code>string</code></td><td>&mdash;</td></tr>
-    <tr><td><strong>userIdentifier</strong></td><td><code>uuid</code></td><td>&mdash;</td></tr>
-    <tr><td><strong>timestamp</strong></td><td><code>datetime</code></td><td>&mdash;</td></tr>
-  </tbody></table>
-</div>
-<div class="model-card" id="model-transferrequest" data-bc="Models › TransferRequest">
-  <div class="model-header"><h3>TransferRequest</h3>
-    <div class="used-by">Used by: <span class="used-by-action">Transaction.transfer</span></div>
-  </div>
-  <table class="model-table"><thead><tr><th>Field</th><th>Type</th><th>Attributes</th></tr></thead><tbody>
-    <tr><td><strong>sourceAccountId</strong></td><td><code>uuid</code></td><td>&mdash;</td></tr>
-    <tr><td><strong>destinationAccountId</strong></td><td><code>uuid</code></td><td>&mdash;</td></tr>
-    <tr><td><strong>amount</strong></td><td><code>decimal</code></td><td>&mdash;</td></tr>
-  </tbody></table>
-</div>
-<div class="model-card" id="model-transactionresponse" data-bc="Models › TransactionResponse">
-  <div class="model-header"><h3>TransactionResponse</h3>
-    <div class="used-by">Used by: <span class="used-by-action">Transaction.transfer</span></div>
-  </div>
-  <table class="model-table"><thead><tr><th>Field</th><th>Type</th><th>Attributes</th></tr></thead><tbody>
-    <tr><td><strong>referenceNumber</strong></td><td><code>string</code></td><td>&mdash;</td></tr>
-    <tr><td><strong>amount</strong></td><td><code>decimal</code></td><td>&mdash;</td></tr>
-    <tr><td><strong>status</strong></td><td><a href="#enum-transactionstatus" class="type-link" onclick="navigateTo('enum-transactionstatus')">TransactionStatus</a></td><td>&mdash;</td></tr>
-    <tr><td><strong>timestamp</strong></td><td><code>datetime</code></td><td>&mdash;</td></tr>
-  </tbody></table>
-</div>
-<div class="model-card" id="model-transactionevent" data-bc="Models › TransactionEvent">
-  <div class="model-header"><h3>TransactionEvent</h3>
-  </div>
-  <table class="model-table"><thead><tr><th>Field</th><th>Type</th><th>Attributes</th></tr></thead><tbody>
-    <tr><td><strong>referenceNumber</strong></td><td><code>string</code></td><td>&mdash;</td></tr>
-    <tr><td><strong>sourceAccountId</strong></td><td><code>uuid</code></td><td>&mdash;</td></tr>
-    <tr><td><strong>destinationAccountId</strong></td><td><code>uuid</code></td><td>&mdash;</td></tr>
-    <tr><td><strong>amount</strong></td><td><code>decimal</code></td><td>&mdash;</td></tr>
-    <tr><td><strong>status</strong></td><td><a href="#enum-transactionstatus" class="type-link" onclick="navigateTo('enum-transactionstatus')">TransactionStatus</a></td><td>&mdash;</td></tr>
-  </tbody></table>
-</div>
-<h2 class="section-divider" data-bc="Enums">Enums</h2>
-<div class="model-card" id="enum-auditstatus" data-bc="Enums › AuditStatus">
-  <div class="model-header"><h3>AuditStatus</h3><div class="used-by">Used by: <span class="used-by-action">AuditEvent</span></div></div>
-  <div class="enum-values">
-    <span class="enum-value">SUCCESS</span>
-    <span class="enum-value">FAILED</span>
-    <span class="enum-value">WARNING</span>
-    <span class="enum-value">UNAUTHORIZED</span>
-  </div>
-</div>
-<div class="model-card" id="enum-auditaction" data-bc="Enums › AuditAction">
-  <div class="model-header"><h3>AuditAction</h3><div class="used-by">Used by: <span class="used-by-action">AuditEvent</span></div></div>
-  <div class="enum-values">
-    <span class="enum-value">TRANSFER_FUNDS</span>
-    <span class="enum-value">DEPOSIT_FUNDS</span>
-    <span class="enum-value">WITHDRAW_FUNDS</span>
-    <span class="enum-value">VIEW_ACCOUNT_BALANCE</span>
-    <span class="enum-value">LOGIN_ATTEMPT</span>
-  </div>
-</div>
-<div class="model-card" id="enum-transactiontype" data-bc="Enums › TransactionType">
-  <div class="model-header"><h3>TransactionType</h3></div>
-  <div class="enum-values">
-    <span class="enum-value">DEPOSIT</span>
-    <span class="enum-value">WITHDRAWAL</span>
-    <span class="enum-value">TRANSFER</span>
-  </div>
-</div>
-<div class="model-card" id="enum-transactionstatus" data-bc="Enums › TransactionStatus">
-  <div class="model-header"><h3>TransactionStatus</h3><div class="used-by">Used by: <span class="used-by-action">TransactionResponse</span>, <span class="used-by-action">TransactionEvent</span></div></div>
-  <div class="enum-values">
-    <span class="enum-value">PENDING</span>
-    <span class="enum-value">COMPLETED</span>
-    <span class="enum-value">FAILED</span>
-  </div>
-</div>
-<div class="footer">Generated by Veld</div>
-</main>
 <script>
-function toggleTheme(){var d=document.documentElement.getAttribute('data-theme')==='dark';document.documentElement.setAttribute('data-theme',d?'':'dark');localStorage.setItem('veld-theme',d?'':'dark')}
-(function(){var t=localStorage.getItem('veld-theme');if(t)document.documentElement.setAttribute('data-theme',t)})();
-function toggleDetail(h){h.closest('.endpoint').classList.toggle('open')}
-function navigateTo(id){var el=document.getElementById(id);if(!el)return;el.scrollIntoView({behavior:'smooth',block:'start'});el.classList.remove('highlight');void el.offsetWidth;el.classList.add('highlight');var bc=el.getAttribute('data-bc');if(!bc){var p=el.closest('[data-bc]');if(p)bc=p.getAttribute('data-bc')}if(bc)setBreadcrumbs(bc);if(el.classList.contains('endpoint'))el.classList.add('open')}
-function setBreadcrumbs(t){var el=document.getElementById('breadcrumbs');if(!el)return;var p=t.split(' \u203a ');el.innerHTML=p.map(function(s){return'<span class="bc-item">'+s+'</span>'}).join('<span class="bc-sep">\u203a</span>')}
-(function(){var targets=document.querySelectorAll('[data-bc]');if(!targets.length)return;var obs=new IntersectionObserver(function(entries){for(var i=0;i<entries.length;i++){if(entries[i].isIntersecting){var bc=entries[i].target.getAttribute('data-bc');if(bc)setBreadcrumbs(bc);break}}},{rootMargin:'-80px 0px -70% 0px',threshold:0});targets.forEach(function(t){obs.observe(t)})})();
-function filterNav(q){q=q.toLowerCase().trim();var links=document.querySelectorAll('.nav-link');var groups=document.querySelectorAll('details.tree-svc,details.tree-mod,details.tree-section');if(!q){links.forEach(function(a){a.style.display=''});groups.forEach(function(g){g.style.display='';g.open=true});return}links.forEach(function(a){var t=(a.getAttribute('data-search')||a.textContent).toLowerCase();a.style.display=t.indexOf(q)>=0?'':'none'});groups.forEach(function(g){var has=false;g.querySelectorAll('.nav-link').forEach(function(a){if(a.style.display!=='none')has=true});g.style.display=has?'':'none';if(has)g.open=true})}
-(function(){var links=document.querySelectorAll('.nav-link');var secs=[];links.forEach(function(a){var h=a.getAttribute('href');if(h&&h.charAt(0)==='#'){var t=document.getElementById(h.slice(1));if(t)secs.push({link:a,target:t})}});if(!secs.length)return;var obs=new IntersectionObserver(function(entries){entries.forEach(function(e){var item;for(var i=0;i<secs.length;i++){if(secs[i].target===e.target){item=secs[i];break}}if(item&&e.isIntersecting){links.forEach(function(l){l.classList.remove('active')});item.link.classList.add('active')}})},{rootMargin:'-80px 0px -70% 0px',threshold:0});secs.forEach(function(s){obs.observe(s.target)})})();
+// ── Theme ──
+(function() {
+  var t = localStorage.getItem('vt');
+  if (t === 'dark') document.documentElement.setAttribute('data-theme', 'dark');
+})();
+function toggleTheme() {
+  var dark = document.documentElement.getAttribute('data-theme') === 'dark';
+  document.documentElement.setAttribute('data-theme', dark ? '' : 'dark');
+  localStorage.setItem('vt', dark ? '' : 'dark');
+  document.querySelector('.theme-btn').textContent = dark ? '\u{1F319}' : '\u2600\uFE0F';
+}
+
+// ── Endpoint expand / collapse ──
+function toggleEp(header) {
+  header.closest('.ep').classList.toggle('ep-open');
+}
+
+// ── Copy path ──
+function copyPath(e, path) {
+  e.stopPropagation();
+  var btn = e.currentTarget;
+  if (!navigator.clipboard) return;
+  navigator.clipboard.writeText(path).then(function() {
+    var orig = btn.textContent;
+    btn.textContent = '\u2713';
+    btn.style.cssText = 'opacity:1;color:var(--get);border-color:var(--get)';
+    setTimeout(function() {
+      btn.textContent = orig;
+      btn.style.cssText = '';
+    }, 1300);
+  }).catch(function() {
+    btn.textContent = '\u2717';
+    setTimeout(function() { btn.textContent = '\u2398'; }, 1000);
+  });
+}
+
+// ── Navigate to an element by id ──
+function navigateTo(id) {
+  var el = document.getElementById(id);
+  if (!el) return;
+  el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  el.classList.remove('ep-flash');
+  void el.offsetWidth;
+  el.classList.add('ep-flash');
+  if (el.classList.contains('ep')) el.classList.add('ep-open');
+  var bc = el.dataset.bc;
+  if (!bc) { var p = el.closest('[data-bc]'); if (p) bc = p.dataset.bc; }
+  if (bc) updateBreadcrumb(bc);
+  updateActiveNav(id);
+}
+
+function updateBreadcrumb(t) {
+  var el = document.getElementById('breadcrumbs');
+  if (!el) return;
+  var parts = t.split(' \u203a ');
+  el.innerHTML = parts.map(function(s, i) {
+    var last = i === parts.length - 1;
+    return '<span class="bc-item' + (last ? ' bc-last' : '') + '">' + s + '</span>';
+  }).join('<span class="bc-sep"> \u203a </span>');
+}
+
+function updateActiveNav(id) {
+  document.querySelectorAll('.nav-ep, .nav-type').forEach(function(a) {
+    a.classList.toggle('active', a.dataset.target === id);
+  });
+}
+
+// ── Keyboard shortcuts ──
+document.addEventListener('keydown', function(e) {
+  var search = document.getElementById('nav-search');
+  if (e.key === '/' && document.activeElement !== search) {
+    e.preventDefault();
+    search.focus();
+    search.select();
+  }
+  if (e.key === 'Escape' && document.activeElement === search) {
+    search.value = '';
+    search.blur();
+    filterNav('');
+  }
+});
+
+// ── Search / filter nav ──
+function filterNav(q) {
+  q = q.toLowerCase().trim();
+  var eps    = document.querySelectorAll('.nav-ep, .nav-type');
+  var mods   = document.querySelectorAll('.nav-mod');
+  var svcs   = document.querySelectorAll('.nav-svc');
+  var groups = document.querySelectorAll('.nav-group');
+
+  if (!q) {
+    eps.forEach(function(a) { a.style.display = ''; });
+    mods.forEach(function(m) { m.style.display = ''; m.classList.remove('collapsed'); });
+    svcs.forEach(function(s) { s.style.display = ''; s.classList.remove('collapsed'); });
+    groups.forEach(function(g) { g.style.display = ''; g.classList.remove('collapsed'); });
+    return;
+  }
+
+  eps.forEach(function(a) {
+    var text = (a.dataset.search || a.textContent).toLowerCase();
+    a.style.display = text.indexOf(q) >= 0 ? '' : 'none';
+  });
+  mods.forEach(function(m) {
+    var vis = Array.from(m.querySelectorAll('.nav-ep, .nav-type')).some(function(a) { return a.style.display !== 'none'; });
+    m.style.display = vis ? '' : 'none';
+    if (vis) m.classList.remove('collapsed');
+  });
+  svcs.forEach(function(s) {
+    var vis = Array.from(s.querySelectorAll('.nav-ep, .nav-type')).some(function(a) { return a.style.display !== 'none'; });
+    s.style.display = vis ? '' : 'none';
+    if (vis) s.classList.remove('collapsed');
+  });
+  groups.forEach(function(g) {
+    var vis = Array.from(g.querySelectorAll('.nav-type')).some(function(a) { return a.style.display !== 'none'; });
+    g.style.display = vis ? '' : 'none';
+    if (vis) g.classList.remove('collapsed');
+  });
+}
+
+// ── Nav collapse toggles ──
+function toggleSvc(el)   { el.closest('.nav-svc').classList.toggle('collapsed'); }
+function toggleMod(el)   { el.closest('.nav-mod').classList.toggle('collapsed'); }
+function toggleGroup(el) { el.closest('.nav-group').classList.toggle('collapsed'); }
+
+// ── Intersection observer: breadcrumb + active nav on scroll ──
+(function() {
+  var els = document.querySelectorAll('[data-bc]');
+  if (!els.length) return;
+  var io = new IntersectionObserver(function(entries) {
+    for (var i = 0; i < entries.length; i++) {
+      if (entries[i].isIntersecting) {
+        var bc = entries[i].target.dataset.bc;
+        var id = entries[i].target.id;
+        if (bc) updateBreadcrumb(bc);
+        if (id) updateActiveNav(id);
+        break;
+      }
+    }
+  }, { rootMargin: '-56px 0px -72% 0px', threshold: 0 });
+  els.forEach(function(el) { io.observe(el); });
+})();
 </script>
 </body>
 </html>

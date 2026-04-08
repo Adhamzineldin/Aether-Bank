@@ -1,12 +1,19 @@
-// Account domain models
-
-model AccountItem {
-  description: "A account entity"
-  id:        uuid
-  name:      string
-  createdAt: datetime
-}
-
-model CreateAccountInput {
-  name: string
-}
+  
+  model AccountBalanceResponse {
+       accountId: uuid
+       balance: decimal
+       currency: string
+  }
+  
+  model FundsSecuredEvent {
+      transactionId: string
+      status: string 
+  }
+  
+  model InsufficientFundsEvent {
+      transactionId: string
+      reason: string
+  }
+  
+ 
+ 

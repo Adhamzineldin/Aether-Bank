@@ -58,7 +58,7 @@
       "backendConfig": { "target": "java", "framework": "spring", "dir": "../backend/transaction-service" },
       "out": "../backend/transaction-service/generated",
       "baseUrl": "http://localhost:2501",
-      "consumes": ["iam", "audit"]
+      "consumes": ["iam", "audit", "account"]
     },
     {
       "name": "frontend",

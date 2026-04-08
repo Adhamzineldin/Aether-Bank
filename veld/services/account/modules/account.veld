@@ -4,25 +4,14 @@ import "../models/account.model.veld"
 
 module Account {
   description: "Account service"
-  prefix: /api/account
-
-  action ListAccount {
-    method: GET
-    path: /
-    output: AccountItem[]
+  prefix: /account
+  
+  action getBalance {
+      method: GET
+      path: /:accountId/balance
+      output: AccountBalanceResponse
+      errors: [AccountNotFoundError]
   }
 
-  action GetAccount {
-    method: GET
-    path: /:id
-    output: AccountItem
-    errors: [NotFound]
-  }
-
-  action CreateAccount {
-    method: POST
-    path: /
-    input: CreateAccountInput
-    output: AccountItem
-  }
+  
 }

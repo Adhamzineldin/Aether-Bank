@@ -2,5 +2,9 @@
 // This file is the "input" for the account workspace entry.
 // It imports all models and modules for this service.
 
+
+
+prefix: /api/accounts_service
+
 import "./models/account.model.veld"
 import "./modules/account.veld"

@@ -4,6 +4,6 @@
 
 
 prefix: /api/transaction_service
-import "./models/transaction.model.veld"
-import "./modules/transaction.veld"
+import "@models/*"
+import "@modules/*
 
