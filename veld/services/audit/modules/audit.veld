@@ -1,24 +1,10 @@
 // Transaction service module
 
-import "../models/transaction.model.veld"
+import "../models/audit.model.veld"
 
-module Transaction {
-  description: "Transaction service"
-  prefix: /transaction
+module Audit {
+  description: "Audit service"
+  prefix: /audit
 
-  action transfer {
-    method: POST
-    path: /transfer
-    input: TransferRequest
-    output: TransactionResponse
-    errors: [
-      InsufficientFunds:403,
-      InvalidAccount:404,
-      Unauthorized:401,
-      InvalidAmount:400,
-      invalidTarget:400
-    ]
-  }
-  
 
 }

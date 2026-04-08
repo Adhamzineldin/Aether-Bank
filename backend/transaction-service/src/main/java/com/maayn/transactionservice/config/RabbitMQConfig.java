@@ -8,19 +8,21 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class RabbitMQConfig {
-
-    public static final String EXCHANGE = "transaction_exchange";
-    public static final String QUEUE = "transaction_notification_queue";
+    
     public static final String ROUTING_KEY = "transaction_routing_key";
+    public static final String TRANSACTION_EXCHANGE = "transaction_exchange";
+    public static final String TRANSACTION_QUEUE = "transaction_notification_queue";
+    public static final String AUDIT_EXCHANGE = "security_audit_exchange";
+    public static final String AUDIT_ROUTING_KEY = "audit.log";
 
     @Bean
     public Queue queue() {
-        return new Queue(QUEUE);
+        return new Queue(TRANSACTION_QUEUE);
     }
 
     @Bean
     public TopicExchange exchange() {
-        return new TopicExchange(EXCHANGE);
+        return new TopicExchange(TRANSACTION_EXCHANGE);
     }
 
     @Bean
@@ -31,5 +33,10 @@ public class RabbitMQConfig {
     @Bean
     public MessageConverter converter() {
         return new JacksonJsonMessageConverter();
+    }
+
+    @Bean
+    public TopicExchange auditExchange() {
+        return new TopicExchange(AUDIT_EXCHANGE);
     }
 }

@@ -16,17 +16,17 @@ public class TransactionEventPublisher {
     private final RabbitTemplate rabbitTemplate;
 
     public void publish(TransactionEvent event) {
-        CorrelationData correlationData = new CorrelationData(event.referenceNumber());
+        CorrelationData correlationData = new CorrelationData(event.getReferenceNumber());
 
         rabbitTemplate.convertAndSend(
-                RabbitMQConfig.EXCHANGE,
+                RabbitMQConfig.TRANSACTION_EXCHANGE,
                 RabbitMQConfig.ROUTING_KEY,
                 event,
                 correlationData
         );
 
         correlationData.getFuture().whenComplete((result, ex) ->
-                handleBrokerConfirmation(event.referenceNumber(), result, ex)
+                handleBrokerConfirmation(event.getReferenceNumber(), result, ex)
         );
     }
 

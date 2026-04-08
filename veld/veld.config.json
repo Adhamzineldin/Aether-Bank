@@ -44,13 +44,21 @@
       "baseUrl": "http://notification-service:3005"
     },
     {
+      "name": "audit",
+      "description": "",
+      "input": "services/audit/main.veld",
+      "backendConfig": { "target": "java", "framework": "spring", "dir": "../backend/audit-service" },
+      "out": "../backend/audit-service/generated",
+      "baseUrl": "http://localhost:8084"
+    },
+    {
       "name": "transaction",
       "description": "",
       "input": "services/transaction/main.veld",
       "backendConfig": { "target": "java", "framework": "spring", "dir": "../backend/transaction-service" },
       "out": "../backend/transaction-service/generated",
       "baseUrl": "http://localhost:2501",
-      "consumes": ["iam"]
+      "consumes": ["iam", "audit"]
     },
     {
       "name": "frontend",

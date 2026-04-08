@@ -13,6 +13,11 @@ public class TransactionValidator {
         isLessThanOrEqualToZero(transaction);
         
         isSourceEqualToDestination(transaction);
+        
+        doesSourceAccountExist(transaction);
+        
+        doesDestinationAccountExist(transaction);
+        
 
         // Rule 3: Minimum Balance (Future proofing)
         // You could add a check here to ensure the amount isn't suspiciously high
@@ -33,6 +38,16 @@ public class TransactionValidator {
             );
         }
     }
+    
+    private void doesSourceAccountExist(Transaction transaction) {
+        
+    }
+    
+    private void doesDestinationAccountExist(Transaction transaction) {
+        
+    }
+    
+    
     
     
     

@@ -1,0 +1,23 @@
+enum AuditStatus {
+    SUCCESS
+    FAILED
+    WARNING
+    UNAUTHORIZED
+}
+
+enum AuditAction {
+    TRANSFER_FUNDS
+    DEPOSIT_FUNDS
+    WITHDRAW_FUNDS
+    VIEW_ACCOUNT_BALANCE
+    LOGIN_ATTEMPT
+}
+
+model AuditEvent {
+    serviceName: string
+    action: AuditAction
+    status: AuditStatus
+    details: string
+    userIdentifier: uuid
+    timestamp: datetime
+}

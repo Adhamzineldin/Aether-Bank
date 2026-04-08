@@ -3,7 +3,7 @@
 // It imports all models and modules for this service.
 
 
-prefix: /api/transaction_service
-import "./models/transaction.model.veld"
-import "./modules/transaction.veld"
+prefix: /api/audit_service
+import "./models/audit.model.veld"
+import "./modules/audit.veld"
 

@@ -12,9 +12,9 @@ public class TransactionMapper {
     
     public static Transaction toEntity(TransferRequest request) {
         return Transaction.builder()
-                .sourceAccountId(request.sourceAccountId())
-                .destinationAccountId(request.destinationAccountId())
-                .amount(request.amount())
+                .sourceAccountId(request.getSourceAccountId())
+                .destinationAccountId(request.getDestinationAccountId())
+                .amount(request.getAmount())
                 .transactionType(TransactionType.TRANSFER)
                 .status(TransactionStatus.PENDING)
                 .referenceNumber("TXN-" + UUID.randomUUID().toString().substring(0,8).toUpperCase())
