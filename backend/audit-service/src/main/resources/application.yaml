@@ -6,7 +6,7 @@ spring:
     name: audit-service
 
   mongodb:
-    uri: mongodb://localhost:27018/audit_service
+    uri: mongodb://localhost:27018/audit_service?uuidRepresentation=STANDARD
 
   rabbitmq:
     host: localhost

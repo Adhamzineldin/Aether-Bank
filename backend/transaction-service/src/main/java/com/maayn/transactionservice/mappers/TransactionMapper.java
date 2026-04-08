@@ -30,7 +30,7 @@ public class TransactionMapper {
                 entity.getReferenceNumber(),
                 entity.getAmount(),
                 entity.getStatus(),
-                createdAt.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)
+                createdAt
         );
     }
     

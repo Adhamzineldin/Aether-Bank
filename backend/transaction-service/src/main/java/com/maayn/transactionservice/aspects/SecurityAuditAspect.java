@@ -1,5 +1,6 @@
 package com.maayn.transactionservice.aspects;
 
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import maayn.veld.generated.sdk.audit.models.shared.*;
@@ -13,9 +14,12 @@ import org.aspectj.lang.annotation.Aspect;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.UUID;
 
 @Aspect
 @Component
@@ -26,7 +30,9 @@ public class SecurityAuditAspect {
     private final RabbitTemplate rabbitTemplate;
 
     @Value("${spring.application.name}")
-    private String serviceName; // Grabs "transaction-service" safely
+    private String serviceName;
+
+    private static final UUID SYSTEM_USER_ID = UUID.fromString("00000000-0000-0000-0000-000000000000");
 
     @AfterReturning(
             pointcut = "execution(* com.maayn.transactionservice.service.TransactionService.transfer(..)) && args(request)",
@@ -34,7 +40,10 @@ public class SecurityAuditAspect {
     )
     public void auditSuccessfulTransfer(JoinPoint joinPoint, TransferRequest request, TransactionResponse response) {
         String details = String.format("Transfer %s successful. Amount: %s", response.getReferenceNumber(), request.getAmount());
-        sendAuditMessage(AuditAction.TRANSFER_FUNDS, AuditStatus.SUCCESS, details);
+
+        UUID actingUser = extractUserIdFromContext();
+
+        sendAuditMessage(AuditAction.TRANSFER_FUNDS, AuditStatus.SUCCESS, details, actingUser);
     }
 
     @AfterThrowing(
@@ -43,20 +52,42 @@ public class SecurityAuditAspect {
     )
     public void auditFailedTransfer(JoinPoint joinPoint, TransferRequest request, Exception exception) {
         String details = String.format("Transfer failed. Reason: %s", exception.getMessage());
-        sendAuditMessage(AuditAction.TRANSFER_FUNDS, AuditStatus.FAILED, details);
+
+        UUID actingUser = extractUserIdFromContext();
+
+        sendAuditMessage(AuditAction.TRANSFER_FUNDS, AuditStatus.FAILED, details, actingUser);
     }
 
-    private void sendAuditMessage(AuditAction action, AuditStatus status, String details) {
+    private void sendAuditMessage(AuditAction action, AuditStatus status, String details, UUID userId) {
         AuditEvent event = new AuditEvent(
                 this.serviceName,
                 action,
                 status,
                 details,
-                "SYSTEM",
-                LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME) 
+                userId,
+                LocalDateTime.now()
         );
 
         rabbitTemplate.convertAndSend(RabbitMQConfig.AUDIT_EXCHANGE, RabbitMQConfig.AUDIT_ROUTING_KEY, event);
-        log.debug("Sent audit log to RabbitMQ");
+    }
+
+    
+    private UUID extractUserIdFromContext() {
+        try {
+            ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+            if (attributes != null) {
+                HttpServletRequest httpRequest = attributes.getRequest();
+
+                String userIdHeader = httpRequest.getHeader("X-User-Id");
+
+                if (userIdHeader != null && !userIdHeader.isBlank()) {
+                    return UUID.fromString(userIdHeader);
+                }
+            }
+        } catch (Exception e) {
+            log.warn("Could not extract identity from HTTP Context. Falling back to SYSTEM.");
+        }
+
+        return SYSTEM_USER_ID;
     }
 }

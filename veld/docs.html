@@ -1,0 +1,815 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>API Documentation — Veld</title>
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#f9fafb;--fg:#111827;--sidebar-bg:#ffffff;--sidebar-border:#e5e7eb;
+  --card:#ffffff;--card-border:#e5e7eb;--card-shadow:0 1px 3px rgba(0,0,0,.06);
+  --accent:#4f46e5;--accent-hover:#4338ca;--accent-bg:#eef2ff;--accent-fg:#3730a3;
+  --muted:#6b7280;--muted-light:#9ca3af;
+  --code-bg:#f3f4f6;--code-fg:#1f2937;
+  --table-stripe:#f9fafb;--table-hover:#f3f4f6;
+  --get:#059669;--get-bg:#ecfdf5;--post:#2563eb;--post-bg:#eff6ff;
+  --put:#d97706;--put-bg:#fffbeb;--delete:#dc2626;--delete-bg:#fef2f2;
+  --patch:#ea580c;--patch-bg:#fff7ed;--ws:#7c3aed;--ws-bg:#f5f3ff;
+  --radius:8px;--transition:150ms ease;--highlight:#fef08a;
+}
+[data-theme="dark"]{
+  --bg:#0f172a;--fg:#e2e8f0;--sidebar-bg:#1e293b;--sidebar-border:#334155;
+  --card:#1e293b;--card-border:#334155;--card-shadow:0 1px 3px rgba(0,0,0,.3);
+  --accent:#818cf8;--accent-hover:#a5b4fc;--accent-bg:#1e1b4b;--accent-fg:#c7d2fe;
+  --muted:#94a3b8;--muted-light:#64748b;
+  --code-bg:#334155;--code-fg:#e2e8f0;
+  --table-stripe:#1e293b;--table-hover:#334155;
+  --get:#34d399;--get-bg:#064e3b;--post:#60a5fa;--post-bg:#1e3a5f;
+  --put:#fbbf24;--put-bg:#451a03;--delete:#f87171;--delete-bg:#450a0a;
+  --patch:#fb923c;--patch-bg:#431407;--ws:#a78bfa;--ws-bg:#2e1065;
+  --highlight:#854d0e;
+}
+html{scroll-behavior:smooth}
+body{font-family:Inter,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--fg);line-height:1.6;display:flex;min-height:100vh}
+.sidebar{width:280px;background:var(--sidebar-bg);border-right:1px solid var(--sidebar-border);position:fixed;top:0;left:0;height:100vh;display:flex;flex-direction:column;z-index:20}
+.sidebar-header{padding:20px 16px 12px;border-bottom:1px solid var(--sidebar-border)}
+.sidebar-header h1{font-size:18px;font-weight:700;letter-spacing:-.02em}
+.sidebar-header h1 span{color:var(--accent)}
+.sidebar-header p{font-size:11px;color:var(--muted);margin-top:2px}
+.search-box{padding:10px 12px;position:relative}
+.search-box input{width:100%;padding:7px 10px 7px 32px;border:1px solid var(--card-border);border-radius:var(--radius);font-size:12px;background:var(--bg);color:var(--fg);outline:none;transition:border-color var(--transition)}
+.search-box input:focus{border-color:var(--accent)}
+.search-box::before{content:"🔍";position:absolute;left:20px;top:50%;transform:translateY(-50%);font-size:12px}
+.nav-scroll{flex:1;overflow-y:auto;padding:4px 8px 20px}
+.nav-scroll::-webkit-scrollbar{width:4px}
+.nav-scroll::-webkit-scrollbar-thumb{background:var(--card-border);border-radius:2px}
+details.tree-svc,details.tree-mod,details.tree-section{margin-bottom:2px}
+.tree-svc-title{font-size:12px;font-weight:700;padding:8px;cursor:pointer;list-style:none;display:flex;align-items:center;justify-content:space-between;border-radius:6px;color:var(--fg);user-select:none}
+.tree-svc-title:hover{background:var(--table-hover)}
+.tree-svc-title::-webkit-details-marker{display:none}
+details.tree-svc>summary::before{content:"▸";margin-right:6px;font-size:10px;transition:transform var(--transition);display:inline-block}
+details.tree-svc[open]>summary::before{transform:rotate(90deg)}
+.tree-mod-title{font-size:11px;font-weight:600;padding:5px 8px 5px 20px;cursor:pointer;list-style:none;display:flex;align-items:center;justify-content:space-between;border-radius:4px;color:var(--muted);user-select:none}
+.tree-mod-title:hover{background:var(--table-hover);color:var(--fg)}
+.tree-mod-title::-webkit-details-marker{display:none}
+details.tree-mod>summary::before{content:"▸";margin-right:4px;font-size:9px;transition:transform var(--transition);display:inline-block}
+details.tree-mod[open]>summary::before{transform:rotate(90deg)}
+.tree-section-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;padding:10px 8px 5px;cursor:pointer;list-style:none;color:var(--muted-light);display:flex;align-items:center;justify-content:space-between;user-select:none}
+.tree-section-title::-webkit-details-marker{display:none}
+details.tree-section>summary::before{content:"▸";margin-right:6px;font-size:9px;transition:transform var(--transition);display:inline-block}
+details.tree-section[open]>summary::before{transform:rotate(90deg)}
+.badge{font-size:10px;background:var(--code-bg);color:var(--muted);padding:1px 7px;border-radius:10px;font-weight:600}
+.nav-link{display:block;padding:4px 8px 4px 32px;font-size:12px;color:var(--fg);text-decoration:none;border-radius:4px;transition:all var(--transition);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.nav-link:hover{background:var(--accent-bg);color:var(--accent-fg)}
+.nav-link .method-dot{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:6px;vertical-align:middle}
+.nav-link.active{background:var(--accent-bg);color:var(--accent-fg);font-weight:600}
+.main{margin-left:280px;flex:1;padding:24px 48px 48px;max-width:960px}
+.breadcrumbs{position:sticky;top:0;background:var(--bg);padding:10px 0;margin-bottom:16px;font-size:12px;color:var(--muted);z-index:10;border-bottom:1px solid var(--card-border)}
+.bc-item{color:var(--muted)}.bc-sep{margin:0 6px;color:var(--muted-light)}
+.stats{display:flex;gap:16px;margin-bottom:28px;flex-wrap:wrap}
+.stat{background:var(--card);border:1px solid var(--card-border);border-radius:var(--radius);padding:14px 20px;box-shadow:var(--card-shadow);flex:1;min-width:100px;text-align:center}
+.stat-value{font-size:26px;font-weight:700;color:var(--accent)}
+.stat-label{font-size:11px;color:var(--muted);margin-top:2px}
+.service-section{margin-bottom:32px}
+.service-title{font-size:22px;font-weight:700;margin:32px 0 4px;letter-spacing:-.02em;display:flex;align-items:center;gap:12px}
+.base-url{font-size:12px;font-weight:400;color:var(--muted);background:var(--code-bg);padding:2px 8px;border-radius:4px}
+.service-stats{display:flex;gap:16px;margin-bottom:20px;font-size:12px;color:var(--muted)}
+.service-stats span{background:var(--code-bg);padding:3px 10px;border-radius:12px}
+.section-desc{color:var(--muted);font-size:13px;margin-bottom:16px}
+.module-title{font-size:17px;font-weight:700;margin:28px 0 6px;display:flex;align-items:center;gap:8px}
+.prefix-badge{font-size:11px;font-weight:400;color:var(--muted);background:var(--code-bg);padding:2px 8px;border-radius:4px}
+.section-divider{font-size:22px;font-weight:700;margin:48px 0 16px;padding-top:16px;border-top:2px solid var(--card-border);letter-spacing:-.02em}
+.endpoint{background:var(--card);border:1px solid var(--card-border);border-radius:var(--radius);margin-bottom:10px;overflow:hidden;box-shadow:var(--card-shadow);transition:box-shadow var(--transition)}
+.endpoint:hover{box-shadow:0 4px 12px rgba(0,0,0,.08)}
+.endpoint.deprecated{opacity:.7}
+.endpoint-header{display:flex;align-items:center;gap:10px;padding:12px 16px;cursor:pointer;user-select:none}
+.endpoint-header:hover{background:var(--table-hover)}
+.method-badge{display:inline-flex;align-items:center;justify-content:center;min-width:52px;padding:3px 8px;border-radius:4px;font-size:10px;font-weight:700;letter-spacing:.03em;font-family:'SF Mono',SFMono-Regular,Consolas,monospace}
+.method-GET{background:var(--get-bg);color:var(--get)}
+.method-POST{background:var(--post-bg);color:var(--post)}
+.method-PUT{background:var(--put-bg);color:var(--put)}
+.method-DELETE{background:var(--delete-bg);color:var(--delete)}
+.method-PATCH{background:var(--patch-bg);color:var(--patch)}
+.method-WS{background:var(--ws-bg);color:var(--ws)}
+.endpoint-path{font-family:'SF Mono',SFMono-Regular,Consolas,monospace;font-size:12px;font-weight:500;flex:1}
+.endpoint-path .param{color:var(--accent);font-weight:600}
+.endpoint-name{font-size:11px;color:var(--muted);font-weight:500;display:flex;align-items:center;gap:6px}
+.chevron{font-size:10px;color:var(--muted-light);transition:transform var(--transition)}
+.endpoint.open .chevron{transform:rotate(90deg)}
+.endpoint-detail{padding:0 16px 14px;display:none;border-top:1px solid var(--card-border)}
+.endpoint.open .endpoint-detail{display:block;padding-top:14px}
+.detail-row{display:flex;gap:8px;margin-bottom:6px;font-size:12px;align-items:baseline}
+.detail-label{font-weight:600;min-width:80px;color:var(--muted);flex-shrink:0}
+.detail-value code{background:var(--code-bg);color:var(--code-fg);padding:2px 6px;border-radius:4px;font-size:11px;font-family:'SF Mono',SFMono-Regular,Consolas,monospace}
+.deprecated-badge{font-size:9px;background:var(--put-bg);color:var(--put);padding:1px 6px;border-radius:3px;font-weight:700;text-transform:uppercase;letter-spacing:.03em}
+.inline-fields{margin:8px 0;border:1px solid var(--card-border);border-radius:6px;overflow:hidden}
+.inline-fields-title{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;padding:6px 12px;background:var(--table-stripe);color:var(--muted)}
+.type-link{color:var(--accent);text-decoration:none;font-weight:600;font-size:12px;font-family:'SF Mono',SFMono-Regular,Consolas,monospace;background:var(--accent-bg);padding:1px 6px;border-radius:4px;transition:all var(--transition)}
+.type-link:hover{color:var(--accent-hover);text-decoration:underline}
+.model-card{background:var(--card);border:1px solid var(--card-border);border-radius:var(--radius);margin-bottom:14px;overflow:hidden;box-shadow:var(--card-shadow)}
+.model-header{padding:14px 16px;border-bottom:1px solid var(--card-border)}
+.model-header h3{font-size:15px;font-weight:600;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.extends{font-weight:400;color:var(--muted);font-size:12px}
+.model-desc{color:var(--muted);font-size:12px;margin-top:4px}
+.used-by{font-size:11px;color:var(--muted-light);margin-top:6px}
+.used-by-action{background:var(--code-bg);padding:1px 6px;border-radius:3px;font-size:10px;font-family:'SF Mono',SFMono-Regular,Consolas,monospace}
+.model-table{width:100%;border-collapse:collapse}
+.model-table th{text-align:left;padding:8px 16px;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--muted-light);background:var(--table-stripe);border-bottom:1px solid var(--card-border)}
+.model-table td{padding:8px 16px;font-size:12px;border-bottom:1px solid var(--card-border)}
+.model-table tr:last-child td{border-bottom:none}
+.model-table tr:hover td{background:var(--table-hover)}
+.model-table code{background:var(--code-bg);color:var(--code-fg);padding:1px 5px;border-radius:3px;font-size:11px;font-family:'SF Mono',SFMono-Regular,Consolas,monospace}
+.field-deprecated td{opacity:.6;text-decoration:line-through}
+.optional-badge{display:inline-block;padding:1px 5px;border-radius:3px;font-size:9px;font-weight:700;background:var(--put-bg);color:var(--put)}
+.attr-badge{display:inline-block;padding:1px 5px;border-radius:3px;font-size:9px;font-weight:600;background:var(--code-bg);color:var(--muted)}
+.default-value{color:var(--accent);font-size:11px;font-family:'SF Mono',SFMono-Regular,Consolas,monospace}
+.enum-values{display:flex;flex-wrap:wrap;gap:6px;padding:12px 16px}
+.enum-value{background:var(--code-bg);color:var(--code-fg);padding:4px 10px;border-radius:4px;font-size:11px;font-family:'SF Mono',SFMono-Regular,Consolas,monospace;font-weight:500}
+@keyframes flash{0%{background:var(--highlight)}100%{background:transparent}}
+.highlight{animation:flash 1.5s ease-out}
+.footer{text-align:center;padding:48px 0 24px;color:var(--muted-light);font-size:11px}
+.toolbar{position:fixed;top:12px;right:20px;z-index:30}
+.theme-btn{background:var(--card);border:1px solid var(--card-border);color:var(--fg);width:34px;height:34px;border-radius:var(--radius);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;box-shadow:var(--card-shadow);transition:all var(--transition)}
+.theme-btn:hover{border-color:var(--accent);color:var(--accent)}
+@media(max-width:768px){.sidebar{display:none}.main{margin-left:0;padding:16px}}
+</style>
+</head>
+<body>
+<div class="toolbar"><button class="theme-btn" onclick="toggleTheme()" title="Toggle dark mode">🌙</button></div>
+<nav class="sidebar">
+  <div class="sidebar-header"><h1><span>Veld</span> API</h1><p>Auto-generated documentation</p></div>
+  <div class="search-box"><input type="text" id="search" placeholder="Search…" oninput="filterNav(this.value)"></div>
+  <div class="nav-scroll">
+    <details class="tree-svc" open data-search="iam"><summary class="tree-svc-title"><span>iam</span><span class="badge">3</span></summary>
+      <details class="tree-mod" open data-search="iam"><summary class="tree-mod-title">Iam <span class="badge">3</span></summary>
+        <a href="#action-iam-iam-listiam" class="nav-link" data-search="listiam get /" onclick="navigateTo('action-iam-iam-listiam')"><span class="method-dot" style="background:var(--get)"></span>ListIam</a>
+        <a href="#action-iam-iam-getiam" class="nav-link" data-search="getiam get /:id" onclick="navigateTo('action-iam-iam-getiam')"><span class="method-dot" style="background:var(--get)"></span>GetIam</a>
+        <a href="#action-iam-iam-createiam" class="nav-link" data-search="createiam post /" onclick="navigateTo('action-iam-iam-createiam')"><span class="method-dot" style="background:var(--post)"></span>CreateIam</a>
+      </details>
+    </details>
+    <details class="tree-svc" open data-search="card"><summary class="tree-svc-title"><span>card</span><span class="badge">3</span></summary>
+      <details class="tree-mod" open data-search="card"><summary class="tree-mod-title">Card <span class="badge">3</span></summary>
+        <a href="#action-card-card-listcard" class="nav-link" data-search="listcard get /" onclick="navigateTo('action-card-card-listcard')"><span class="method-dot" style="background:var(--get)"></span>ListCard</a>
+        <a href="#action-card-card-getcard" class="nav-link" data-search="getcard get /:id" onclick="navigateTo('action-card-card-getcard')"><span class="method-dot" style="background:var(--get)"></span>GetCard</a>
+        <a href="#action-card-card-createcard" class="nav-link" data-search="createcard post /" onclick="navigateTo('action-card-card-createcard')"><span class="method-dot" style="background:var(--post)"></span>CreateCard</a>
+      </details>
+    </details>
+    <details class="tree-svc" open data-search="account"><summary class="tree-svc-title"><span>account</span><span class="badge">3</span></summary>
+      <details class="tree-mod" open data-search="account"><summary class="tree-mod-title">Account <span class="badge">3</span></summary>
+        <a href="#action-account-account-listaccount" class="nav-link" data-search="listaccount get /" onclick="navigateTo('action-account-account-listaccount')"><span class="method-dot" style="background:var(--get)"></span>ListAccount</a>
+        <a href="#action-account-account-getaccount" class="nav-link" data-search="getaccount get /:id" onclick="navigateTo('action-account-account-getaccount')"><span class="method-dot" style="background:var(--get)"></span>GetAccount</a>
+        <a href="#action-account-account-createaccount" class="nav-link" data-search="createaccount post /" onclick="navigateTo('action-account-account-createaccount')"><span class="method-dot" style="background:var(--post)"></span>CreateAccount</a>
+      </details>
+    </details>
+    <details class="tree-svc" open data-search="lending"><summary class="tree-svc-title"><span>lending</span><span class="badge">3</span></summary>
+      <details class="tree-mod" open data-search="lending"><summary class="tree-mod-title">Lending <span class="badge">3</span></summary>
+        <a href="#action-lending-lending-listlending" class="nav-link" data-search="listlending get /" onclick="navigateTo('action-lending-lending-listlending')"><span class="method-dot" style="background:var(--get)"></span>ListLending</a>
+        <a href="#action-lending-lending-getlending" class="nav-link" data-search="getlending get /:id" onclick="navigateTo('action-lending-lending-getlending')"><span class="method-dot" style="background:var(--get)"></span>GetLending</a>
+        <a href="#action-lending-lending-createlending" class="nav-link" data-search="createlending post /" onclick="navigateTo('action-lending-lending-createlending')"><span class="method-dot" style="background:var(--post)"></span>CreateLending</a>
+      </details>
+    </details>
+    <details class="tree-svc" open data-search="notification"><summary class="tree-svc-title"><span>notification</span><span class="badge">3</span></summary>
+      <details class="tree-mod" open data-search="notification"><summary class="tree-mod-title">Notification <span class="badge">3</span></summary>
+        <a href="#action-notification-notification-listnotification" class="nav-link" data-search="listnotification get /" onclick="navigateTo('action-notification-notification-listnotification')"><span class="method-dot" style="background:var(--get)"></span>ListNotification</a>
+        <a href="#action-notification-notification-getnotification" class="nav-link" data-search="getnotification get /:id" onclick="navigateTo('action-notification-notification-getnotification')"><span class="method-dot" style="background:var(--get)"></span>GetNotification</a>
+        <a href="#action-notification-notification-createnotification" class="nav-link" data-search="createnotification post /" onclick="navigateTo('action-notification-notification-createnotification')"><span class="method-dot" style="background:var(--post)"></span>CreateNotification</a>
+      </details>
+    </details>
+    <details class="tree-svc" open data-search="audit"><summary class="tree-svc-title"><span>audit</span><span class="badge">0</span></summary>
+    </details>
+    <details class="tree-svc" open data-search="transaction"><summary class="tree-svc-title"><span>transaction</span><span class="badge">1</span></summary>
+      <details class="tree-mod" open data-search="transaction"><summary class="tree-mod-title">Transaction <span class="badge">1</span></summary>
+        <a href="#action-transaction-transaction-transfer" class="nav-link" data-search="transfer post /transfer" onclick="navigateTo('action-transaction-transaction-transfer')"><span class="method-dot" style="background:var(--post)"></span>transfer</a>
+      </details>
+    </details>
+    <details class="tree-svc" open data-search="frontend"><summary class="tree-svc-title"><span>frontend</span><span class="badge">16</span></summary>
+      <details class="tree-mod" open data-search="iam"><summary class="tree-mod-title">Iam <span class="badge">3</span></summary>
+        <a href="#action-frontend-iam-listiam" class="nav-link" data-search="listiam get /" onclick="navigateTo('action-frontend-iam-listiam')"><span class="method-dot" style="background:var(--get)"></span>ListIam</a>
+        <a href="#action-frontend-iam-getiam" class="nav-link" data-search="getiam get /:id" onclick="navigateTo('action-frontend-iam-getiam')"><span class="method-dot" style="background:var(--get)"></span>GetIam</a>
+        <a href="#action-frontend-iam-createiam" class="nav-link" data-search="createiam post /" onclick="navigateTo('action-frontend-iam-createiam')"><span class="method-dot" style="background:var(--post)"></span>CreateIam</a>
+      </details>
+      <details class="tree-mod" open data-search="card"><summary class="tree-mod-title">Card <span class="badge">3</span></summary>
+        <a href="#action-frontend-card-listcard" class="nav-link" data-search="listcard get /" onclick="navigateTo('action-frontend-card-listcard')"><span class="method-dot" style="background:var(--get)"></span>ListCard</a>
+        <a href="#action-frontend-card-getcard" class="nav-link" data-search="getcard get /:id" onclick="navigateTo('action-frontend-card-getcard')"><span class="method-dot" style="background:var(--get)"></span>GetCard</a>
+        <a href="#action-frontend-card-createcard" class="nav-link" data-search="createcard post /" onclick="navigateTo('action-frontend-card-createcard')"><span class="method-dot" style="background:var(--post)"></span>CreateCard</a>
+      </details>
+      <details class="tree-mod" open data-search="account"><summary class="tree-mod-title">Account <span class="badge">3</span></summary>
+        <a href="#action-frontend-account-listaccount" class="nav-link" data-search="listaccount get /" onclick="navigateTo('action-frontend-account-listaccount')"><span class="method-dot" style="background:var(--get)"></span>ListAccount</a>
+        <a href="#action-frontend-account-getaccount" class="nav-link" data-search="getaccount get /:id" onclick="navigateTo('action-frontend-account-getaccount')"><span class="method-dot" style="background:var(--get)"></span>GetAccount</a>
+        <a href="#action-frontend-account-createaccount" class="nav-link" data-search="createaccount post /" onclick="navigateTo('action-frontend-account-createaccount')"><span class="method-dot" style="background:var(--post)"></span>CreateAccount</a>
+      </details>
+      <details class="tree-mod" open data-search="lending"><summary class="tree-mod-title">Lending <span class="badge">3</span></summary>
+        <a href="#action-frontend-lending-listlending" class="nav-link" data-search="listlending get /" onclick="navigateTo('action-frontend-lending-listlending')"><span class="method-dot" style="background:var(--get)"></span>ListLending</a>
+        <a href="#action-frontend-lending-getlending" class="nav-link" data-search="getlending get /:id" onclick="navigateTo('action-frontend-lending-getlending')"><span class="method-dot" style="background:var(--get)"></span>GetLending</a>
+        <a href="#action-frontend-lending-createlending" class="nav-link" data-search="createlending post /" onclick="navigateTo('action-frontend-lending-createlending')"><span class="method-dot" style="background:var(--post)"></span>CreateLending</a>
+      </details>
+      <details class="tree-mod" open data-search="notification"><summary class="tree-mod-title">Notification <span class="badge">3</span></summary>
+        <a href="#action-frontend-notification-listnotification" class="nav-link" data-search="listnotification get /" onclick="navigateTo('action-frontend-notification-listnotification')"><span class="method-dot" style="background:var(--get)"></span>ListNotification</a>
+        <a href="#action-frontend-notification-getnotification" class="nav-link" data-search="getnotification get /:id" onclick="navigateTo('action-frontend-notification-getnotification')"><span class="method-dot" style="background:var(--get)"></span>GetNotification</a>
+        <a href="#action-frontend-notification-createnotification" class="nav-link" data-search="createnotification post /" onclick="navigateTo('action-frontend-notification-createnotification')"><span class="method-dot" style="background:var(--post)"></span>CreateNotification</a>
+      </details>
+      <details class="tree-mod" open data-search="transaction"><summary class="tree-mod-title">Transaction <span class="badge">1</span></summary>
+        <a href="#action-frontend-transaction-transfer" class="nav-link" data-search="transfer post /transfer" onclick="navigateTo('action-frontend-transaction-transfer')"><span class="method-dot" style="background:var(--post)"></span>transfer</a>
+      </details>
+    </details>
+    <details class="tree-section" open><summary class="tree-section-title">Models <span class="badge">14</span></summary>
+      <a href="#model-iamitem" class="nav-link" data-search="iamitem" onclick="navigateTo('model-iamitem')">IamItem</a>
+      <a href="#model-createiaminput" class="nav-link" data-search="createiaminput" onclick="navigateTo('model-createiaminput')">CreateIamInput</a>
+      <a href="#model-carditem" class="nav-link" data-search="carditem" onclick="navigateTo('model-carditem')">CardItem</a>
+      <a href="#model-createcardinput" class="nav-link" data-search="createcardinput" onclick="navigateTo('model-createcardinput')">CreateCardInput</a>
+      <a href="#model-accountitem" class="nav-link" data-search="accountitem" onclick="navigateTo('model-accountitem')">AccountItem</a>
+      <a href="#model-createaccountinput" class="nav-link" data-search="createaccountinput" onclick="navigateTo('model-createaccountinput')">CreateAccountInput</a>
+      <a href="#model-lendingitem" class="nav-link" data-search="lendingitem" onclick="navigateTo('model-lendingitem')">LendingItem</a>
+      <a href="#model-createlendinginput" class="nav-link" data-search="createlendinginput" onclick="navigateTo('model-createlendinginput')">CreateLendingInput</a>
+      <a href="#model-notificationitem" class="nav-link" data-search="notificationitem" onclick="navigateTo('model-notificationitem')">NotificationItem</a>
+      <a href="#model-createnotificationinput" class="nav-link" data-search="createnotificationinput" onclick="navigateTo('model-createnotificationinput')">CreateNotificationInput</a>
+      <a href="#model-auditevent" class="nav-link" data-search="auditevent" onclick="navigateTo('model-auditevent')">AuditEvent</a>
+      <a href="#model-transferrequest" class="nav-link" data-search="transferrequest" onclick="navigateTo('model-transferrequest')">TransferRequest</a>
+      <a href="#model-transactionresponse" class="nav-link" data-search="transactionresponse" onclick="navigateTo('model-transactionresponse')">TransactionResponse</a>
+      <a href="#model-transactionevent" class="nav-link" data-search="transactionevent" onclick="navigateTo('model-transactionevent')">TransactionEvent</a>
+    </details>
+    <details class="tree-section" open><summary class="tree-section-title">Enums <span class="badge">4</span></summary>
+      <a href="#enum-auditstatus" class="nav-link" data-search="auditstatus" onclick="navigateTo('enum-auditstatus')">AuditStatus</a>
+      <a href="#enum-auditaction" class="nav-link" data-search="auditaction" onclick="navigateTo('enum-auditaction')">AuditAction</a>
+      <a href="#enum-transactiontype" class="nav-link" data-search="transactiontype" onclick="navigateTo('enum-transactiontype')">TransactionType</a>
+      <a href="#enum-transactionstatus" class="nav-link" data-search="transactionstatus" onclick="navigateTo('enum-transactionstatus')">TransactionStatus</a>
+    </details>
+  </div>
+</nav>
+<main class="main">
+<div class="breadcrumbs" id="breadcrumbs"><span class="bc-item">API Documentation</span></div>
+<div class="stats">
+  <div class="stat"><div class="stat-value">8</div><div class="stat-label">Services</div></div>
+  <div class="stat"><div class="stat-value">6</div><div class="stat-label">Modules</div></div>
+  <div class="stat"><div class="stat-value">16</div><div class="stat-label">Endpoints</div></div>
+  <div class="stat"><div class="stat-value">14</div><div class="stat-label">Models</div></div>
+  <div class="stat"><div class="stat-value">4</div><div class="stat-label">Enums</div></div>
+</div>
+
+<section id="service-iam" class="service-section" data-bc="iam"><h2 class="service-title">iam <code class="base-url">http://localhost:4333</code></h2>
+<p class="section-desc">iam</p>
+<div class="service-stats"><span>3 endpoints</span><span>1 modules</span><span>2 models</span></div>
+<h3 id="mod-iam-iam" class="module-title" data-bc="iam › Iam">Iam <code class="prefix-badge">/api/iam</code></h3>
+<p class="section-desc">Iam service</p>
+<div class="endpoint" id="action-iam-iam-listiam" data-bc="iam › Iam › ListIam">
+  <div class="endpoint-header" onclick="toggleDetail(this)">
+    <span class="method-badge method-GET">GET</span>    <span class="endpoint-path">/api/iam/</span>    <span class="endpoint-name">ListIam</span>
+    <span class="chevron">▸</span>
+  </div>
+  <div class="endpoint-detail">
+    <div class="detail-row"><span class="detail-label">Output</span><span class="detail-value"><a href="#model-iamitem" class="type-link" onclick="navigateTo('model-iamitem')">IamItem</a>[]</span></div>
+  </div>
+</div>
+<div class="endpoint" id="action-iam-iam-getiam" data-bc="iam › Iam › GetIam">
+  <div class="endpoint-header" onclick="toggleDetail(this)">
+    <span class="method-badge method-GET">GET</span>    <span class="endpoint-path">/api/iam/<span class="param">:id</span></span>    <span class="endpoint-name">GetIam</span>
+    <span class="chevron">▸</span>
+  </div>
+  <div class="endpoint-detail">
+    <div class="detail-row"><span class="detail-label">Output</span><span class="detail-value"><a href="#model-iamitem" class="type-link" onclick="navigateTo('model-iamitem')">IamItem</a></span></div>
+    <div class="detail-row"><span class="detail-label">Errors</span><span class="detail-value"><code>NotFound</code></span></div>
+  </div>
+</div>
+<div class="endpoint" id="action-iam-iam-createiam" data-bc="iam › Iam › CreateIam">
+  <div class="endpoint-header" onclick="toggleDetail(this)">
+    <span class="method-badge method-POST">POST</span>    <span class="endpoint-path">/api/iam/</span>    <span class="endpoint-name">CreateIam</span>
+    <span class="chevron">▸</span>
+  </div>
+  <div class="endpoint-detail">
+    <div class="detail-row"><span class="detail-label">Input</span><span class="detail-value"><a href="#model-createiaminput" class="type-link" onclick="navigateTo('model-createiaminput')">CreateIamInput</a></span></div>
+    <div class="detail-row"><span class="detail-label">Output</span><span class="detail-value"><a href="#model-iamitem" class="type-link" onclick="navigateTo('model-iamitem')">IamItem</a></span></div>
+  </div>
+</div>
+</section>
+
+<section id="service-card" class="service-section" data-bc="card"><h2 class="service-title">card <code class="base-url">http://card-service:3002</code></h2>
+<p class="section-desc">card</p>
+<div class="service-stats"><span>3 endpoints</span><span>1 modules</span><span>2 models</span></div>
+<h3 id="mod-card-card" class="module-title" data-bc="card › Card">Card <code class="prefix-badge">/api/card</code></h3>
+<p class="section-desc">Card service</p>
+<div class="endpoint" id="action-card-card-listcard" data-bc="card › Card › ListCard">
+  <div class="endpoint-header" onclick="toggleDetail(this)">
+    <span class="method-badge method-GET">GET</span>    <span class="endpoint-path">/api/card/</span>    <span class="endpoint-name">ListCard</span>
+    <span class="chevron">▸</span>
+  </div>
+  <div class="endpoint-detail">
+    <div class="detail-row"><span class="detail-label">Output</span><span class="detail-value"><a href="#model-carditem" class="type-link" onclick="navigateTo('model-carditem')">CardItem</a>[]</span></div>
+  </div>
+</div>
+<div class="endpoint" id="action-card-card-getcard" data-bc="card › Card › GetCard">
+  <div class="endpoint-header" onclick="toggleDetail(this)">
+    <span class="method-badge method-GET">GET</span>    <span class="endpoint-path">/api/card/<span class="param">:id</span></span>    <span class="endpoint-name">GetCard</span>
+    <span class="chevron">▸</span>
+  </div>
+  <div class="endpoint-detail">
+    <div class="detail-row"><span class="detail-label">Output</span><span class="detail-value"><a href="#model-carditem" class="type-link" onclick="navigateTo('model-carditem')">CardItem</a></span></div>
+    <div class="detail-row"><span class="detail-label">Errors</span><span class="detail-value"><code>NotFound</code></span></div>
+  </div>
+</div>
+<div class="endpoint" id="action-card-card-createcard" data-bc="card › Card › CreateCard">
+  <div class="endpoint-header" onclick="toggleDetail(this)">
+    <span class="method-badge method-POST">POST</span>    <span class="endpoint-path">/api/card/</span>    <span class="endpoint-name">CreateCard</span>
+    <span class="chevron">▸</span>
+  </div>
+  <div class="endpoint-detail">
+    <div class="detail-row"><span class="detail-label">Input</span><span class="detail-value"><a href="#model-createcardinput" class="type-link" onclick="navigateTo('model-createcardinput')">CreateCardInput</a></span></div>
+    <div class="detail-row"><span class="detail-label">Output</span><span class="detail-value"><a href="#model-carditem" class="type-link" onclick="navigateTo('model-carditem')">CardItem</a></span></div>
+  </div>
+</div>
+</section>
+
+<section id="service-account" class="service-section" data-bc="account"><h2 class="service-title">account <code class="base-url">http://account-service:3003</code></h2>
+<p class="section-desc">account</p>
+<div class="service-stats"><span>3 endpoints</span><span>1 modules</span><span>2 models</span></div>
+<h3 id="mod-account-account" class="module-title" data-bc="account › Account">Account <code class="prefix-badge">/api/account</code></h3>
+<p class="section-desc">Account service</p>
+<div class="endpoint" id="action-account-account-listaccount" data-bc="account › Account › ListAccount">
+  <div class="endpoint-header" onclick="toggleDetail(this)">
+    <span class="method-badge method-GET">GET</span>    <span class="endpoint-path">/api/account/</span>    <span class="endpoint-name">ListAccount</span>
+    <span class="chevron">▸</span>
+  </div>
+  <div class="endpoint-detail">
+    <div class="detail-row"><span class="detail-label">Output</span><span class="detail-value"><a href="#model-accountitem" class="type-link" onclick="navigateTo('model-accountitem')">AccountItem</a>[]</span></div>
+  </div>
+</div>
+<div class="endpoint" id="action-account-account-getaccount" data-bc="account › Account › GetAccount">
+  <div class="endpoint-header" onclick="toggleDetail(this)">
+    <span class="method-badge method-GET">GET</span>    <span class="endpoint-path">/api/account/<span class="param">:id</span></span>    <span class="endpoint-name">GetAccount</span>
+    <span class="chevron">▸</span>
+  </div>
+  <div class="endpoint-detail">
+    <div class="detail-row"><span class="detail-label">Output</span><span class="detail-value"><a href="#model-accountitem" class="type-link" onclick="navigateTo('model-accountitem')">AccountItem</a></span></div>
+    <div class="detail-row"><span class="detail-label">Errors</span><span class="detail-value"><code>NotFound</code></span></div>
+  </div>
+</div>
+<div class="endpoint" id="action-account-account-createaccount" data-bc="account › Account › CreateAccount">
+  <div class="endpoint-header" onclick="toggleDetail(this)">
+    <span class="method-badge method-POST">POST</span>    <span class="endpoint-path">/api/account/</span>    <span class="endpoint-name">CreateAccount</span>
+    <span class="chevron">▸</span>
+  </div>
+  <div class="endpoint-detail">
+    <div class="detail-row"><span class="detail-label">Input</span><span class="detail-value"><a href="#model-createaccountinput" class="type-link" onclick="navigateTo('model-createaccountinput')">CreateAccountInput</a></span></div>
+    <div class="detail-row"><span class="detail-label">Output</span><span class="detail-value"><a href="#model-accountitem" class="type-link" onclick="navigateTo('model-accountitem')">AccountItem</a></span></div>
+  </div>
+</div>
+</section>
+
+<section id="service-lending" class="service-section" data-bc="lending"><h2 class="service-title">lending <code class="base-url">http://lending-service:3004</code></h2>
+<p class="section-desc">lending</p>
+<div class="service-stats"><span>3 endpoints</span><span>1 modules</span><span>2 models</span></div>
+<h3 id="mod-lending-lending" class="module-title" data-bc="lending › Lending">Lending <code class="prefix-badge">/api/lending</code></h3>
+<p class="section-desc">Lending service</p>
+<div class="endpoint" id="action-lending-lending-listlending" data-bc="lending › Lending › ListLending">
+  <div class="endpoint-header" onclick="toggleDetail(this)">
+    <span class="method-badge method-GET">GET</span>    <span class="endpoint-path">/api/lending/</span>    <span class="endpoint-name">ListLending</span>
+    <span class="chevron">▸</span>
+  </div>
+  <div class="endpoint-detail">
+    <div class="detail-row"><span class="detail-label">Output</span><span class="detail-value"><a href="#model-lendingitem" class="type-link" onclick="navigateTo('model-lendingitem')">LendingItem</a>[]</span></div>
+  </div>
+</div>
+<div class="endpoint" id="action-lending-lending-getlending" data-bc="lending › Lending › GetLending">
+  <div class="endpoint-header" onclick="toggleDetail(this)">
+    <span class="method-badge method-GET">GET</span>    <span class="endpoint-path">/api/lending/<span class="param">:id</span></span>    <span class="endpoint-name">GetLending</span>
+    <span class="chevron">▸</span>
+  </div>
+  <div class="endpoint-detail">
+    <div class="detail-row"><span class="detail-label">Output</span><span class="detail-value"><a href="#model-lendingitem" class="type-link" onclick="navigateTo('model-lendingitem')">LendingItem</a></span></div>
+    <div class="detail-row"><span class="detail-label">Errors</span><span class="detail-value"><code>NotFound</code></span></div>
+  </div>
+</div>
+<div class="endpoint" id="action-lending-lending-createlending" data-bc="lending › Lending › CreateLending">
+  <div class="endpoint-header" onclick="toggleDetail(this)">
+    <span class="method-badge method-POST">POST</span>    <span class="endpoint-path">/api/lending/</span>    <span class="endpoint-name">CreateLending</span>
+    <span class="chevron">▸</span>
+  </div>
+  <div class="endpoint-detail">
+    <div class="detail-row"><span class="detail-label">Input</span><span class="detail-value"><a href="#model-createlendinginput" class="type-link" onclick="navigateTo('model-createlendinginput')">CreateLendingInput</a></span></div>
+    <div class="detail-row"><span class="detail-label">Output</span><span class="detail-value"><a href="#model-lendingitem" class="type-link" onclick="navigateTo('model-lendingitem')">LendingItem</a></span></div>
+  </div>
+</div>
+</section>
+
+<section id="service-notification" class="service-section" data-bc="notification"><h2 class="service-title">notification <code class="base-url">http://notification-service:3005</code></h2>
+<p class="section-desc">notification</p>
+<div class="service-stats"><span>3 endpoints</span><span>1 modules</span><span>2 models</span></div>
+<h3 id="mod-notification-notification" class="module-title" data-bc="notification › Notification">Notification <code class="prefix-badge">/api/notification</code></h3>
+<p class="section-desc">Notification service</p>
+<div class="endpoint" id="action-notification-notification-listnotification" data-bc="notification › Notification › ListNotification">
+  <div class="endpoint-header" onclick="toggleDetail(this)">
+    <span class="method-badge method-GET">GET</span>    <span class="endpoint-path">/api/notification/</span>    <span class="endpoint-name">ListNotification</span>
+    <span class="chevron">▸</span>
+  </div>
+  <div class="endpoint-detail">
+    <div class="detail-row"><span class="detail-label">Output</span><span class="detail-value"><a href="#model-notificationitem" class="type-link" onclick="navigateTo('model-notificationitem')">NotificationItem</a>[]</span></div>
+  </div>
+</div>
+<div class="endpoint" id="action-notification-notification-getnotification" data-bc="notification › Notification › GetNotification">
+  <div class="endpoint-header" onclick="toggleDetail(this)">
+    <span class="method-badge method-GET">GET</span>    <span class="endpoint-path">/api/notification/<span class="param">:id</span></span>    <span class="endpoint-name">GetNotification</span>
+    <span class="chevron">▸</span>
+  </div>
+  <div class="endpoint-detail">
+    <div class="detail-row"><span class="detail-label">Output</span><span class="detail-value"><a href="#model-notificationitem" class="type-link" onclick="navigateTo('model-notificationitem')">NotificationItem</a></span></div>
+    <div class="detail-row"><span class="detail-label">Errors</span><span class="detail-value"><code>NotFound</code></span></div>
+  </div>
+</div>
+<div class="endpoint" id="action-notification-notification-createnotification" data-bc="notification › Notification › CreateNotification">
+  <div class="endpoint-header" onclick="toggleDetail(this)">
+    <span class="method-badge method-POST">POST</span>    <span class="endpoint-path">/api/notification/</span>    <span class="endpoint-name">CreateNotification</span>
+    <span class="chevron">▸</span>
+  </div>
+  <div class="endpoint-detail">
+    <div class="detail-row"><span class="detail-label">Input</span><span class="detail-value"><a href="#model-createnotificationinput" class="type-link" onclick="navigateTo('model-createnotificationinput')">CreateNotificationInput</a></span></div>
+    <div class="detail-row"><span class="detail-label">Output</span><span class="detail-value"><a href="#model-notificationitem" class="type-link" onclick="navigateTo('model-notificationitem')">NotificationItem</a></span></div>
+  </div>
+</div>
+</section>
+
+<section id="service-audit" class="service-section" data-bc="audit"><h2 class="service-title">audit <code class="base-url">http://localhost:8084</code></h2>
+<p class="section-desc">audit</p>
+<div class="service-stats"><span>0 endpoints</span><span>0 modules</span><span>0 models</span></div>
+</section>
+
+<section id="service-transaction" class="service-section" data-bc="transaction"><h2 class="service-title">transaction <code class="base-url">http://localhost:2501</code></h2>
+<p class="section-desc">transaction</p>
+<div class="service-stats"><span>1 endpoints</span><span>1 modules</span><span>2 models</span></div>
+<h3 id="mod-transaction-transaction" class="module-title" data-bc="transaction › Transaction">Transaction <code class="prefix-badge">/api/transaction_service/transaction</code></h3>
+<p class="section-desc">Transaction service</p>
+<div class="endpoint" id="action-transaction-transaction-transfer" data-bc="transaction › Transaction › transfer">
+  <div class="endpoint-header" onclick="toggleDetail(this)">
+    <span class="method-badge method-POST">POST</span>    <span class="endpoint-path">/api/transaction_service/transaction/transfer</span>    <span class="endpoint-name">transfer</span>
+    <span class="chevron">▸</span>
+  </div>
+  <div class="endpoint-detail">
+    <div class="detail-row"><span class="detail-label">Input</span><span class="detail-value"><a href="#model-transferrequest" class="type-link" onclick="navigateTo('model-transferrequest')">TransferRequest</a></span></div>
+    <div class="detail-row"><span class="detail-label">Output</span><span class="detail-value"><a href="#model-transactionresponse" class="type-link" onclick="navigateTo('model-transactionresponse')">TransactionResponse</a></span></div>
+    <div class="detail-row"><span class="detail-label">Errors</span><span class="detail-value"><code>InsufficientFunds (403)</code>, <code>InvalidAccount (404)</code>, <code>Unauthorized (401)</code>, <code>InvalidAmount (400)</code>, <code>invalidTarget (400)</code></span></div>
+  </div>
+</div>
+</section>
+
+<section id="service-frontend" class="service-section" data-bc="frontend"><h2 class="service-title">frontend <code class="base-url">http://localhost:3000</code></h2>
+<p class="section-desc">Frontend SDK — auto-consumes all backend services</p>
+<div class="service-stats"><span>16 endpoints</span><span>6 modules</span><span>12 models</span></div>
+<h3 id="mod-frontend-iam" class="module-title" data-bc="frontend › Iam">Iam <code class="prefix-badge">/api/iam</code></h3>
+<p class="section-desc">Iam service</p>
+<div class="endpoint" id="action-frontend-iam-listiam" data-bc="frontend › Iam › ListIam">
+  <div class="endpoint-header" onclick="toggleDetail(this)">
+    <span class="method-badge method-GET">GET</span>    <span class="endpoint-path">/api/iam/</span>    <span class="endpoint-name">ListIam</span>
+    <span class="chevron">▸</span>
+  </div>
+  <div class="endpoint-detail">
+    <div class="detail-row"><span class="detail-label">Output</span><span class="detail-value"><a href="#model-iamitem" class="type-link" onclick="navigateTo('model-iamitem')">IamItem</a>[]</span></div>
+  </div>
+</div>
+<div class="endpoint" id="action-frontend-iam-getiam" data-bc="frontend › Iam › GetIam">
+  <div class="endpoint-header" onclick="toggleDetail(this)">
+    <span class="method-badge method-GET">GET</span>    <span class="endpoint-path">/api/iam/<span class="param">:id</span></span>    <span class="endpoint-name">GetIam</span>
+    <span class="chevron">▸</span>
+  </div>
+  <div class="endpoint-detail">
+    <div class="detail-row"><span class="detail-label">Output</span><span class="detail-value"><a href="#model-iamitem" class="type-link" onclick="navigateTo('model-iamitem')">IamItem</a></span></div>
+    <div class="detail-row"><span class="detail-label">Errors</span><span class="detail-value"><code>NotFound</code></span></div>
+  </div>
+</div>
+<div class="endpoint" id="action-frontend-iam-createiam" data-bc="frontend › Iam › CreateIam">
+  <div class="endpoint-header" onclick="toggleDetail(this)">
+    <span class="method-badge method-POST">POST</span>    <span class="endpoint-path">/api/iam/</span>    <span class="endpoint-name">CreateIam</span>
+    <span class="chevron">▸</span>
+  </div>
+  <div class="endpoint-detail">
+    <div class="detail-row"><span class="detail-label">Input</span><span class="detail-value"><a href="#model-createiaminput" class="type-link" onclick="navigateTo('model-createiaminput')">CreateIamInput</a></span></div>
+    <div class="detail-row"><span class="detail-label">Output</span><span class="detail-value"><a href="#model-iamitem" class="type-link" onclick="navigateTo('model-iamitem')">IamItem</a></span></div>
+  </div>
+</div>
+<h3 id="mod-frontend-card" class="module-title" data-bc="frontend › Card">Card <code class="prefix-badge">/api/card</code></h3>
+<p class="section-desc">Card service</p>
+<div class="endpoint" id="action-frontend-card-listcard" data-bc="frontend › Card › ListCard">
+  <div class="endpoint-header" onclick="toggleDetail(this)">
+    <span class="method-badge method-GET">GET</span>    <span class="endpoint-path">/api/card/</span>    <span class="endpoint-name">ListCard</span>
+    <span class="chevron">▸</span>
+  </div>
+  <div class="endpoint-detail">
+    <div class="detail-row"><span class="detail-label">Output</span><span class="detail-value"><a href="#model-carditem" class="type-link" onclick="navigateTo('model-carditem')">CardItem</a>[]</span></div>
+  </div>
+</div>
+<div class="endpoint" id="action-frontend-card-getcard" data-bc="frontend › Card › GetCard">
+  <div class="endpoint-header" onclick="toggleDetail(this)">
+    <span class="method-badge method-GET">GET</span>    <span class="endpoint-path">/api/card/<span class="param">:id</span></span>    <span class="endpoint-name">GetCard</span>
+    <span class="chevron">▸</span>
+  </div>
+  <div class="endpoint-detail">
+    <div class="detail-row"><span class="detail-label">Output</span><span class="detail-value"><a href="#model-carditem" class="type-link" onclick="navigateTo('model-carditem')">CardItem</a></span></div>
+    <div class="detail-row"><span class="detail-label">Errors</span><span class="detail-value"><code>NotFound</code></span></div>
+  </div>
+</div>
+<div class="endpoint" id="action-frontend-card-createcard" data-bc="frontend › Card › CreateCard">
+  <div class="endpoint-header" onclick="toggleDetail(this)">
+    <span class="method-badge method-POST">POST</span>    <span class="endpoint-path">/api/card/</span>    <span class="endpoint-name">CreateCard</span>
+    <span class="chevron">▸</span>
+  </div>
+  <div class="endpoint-detail">
+    <div class="detail-row"><span class="detail-label">Input</span><span class="detail-value"><a href="#model-createcardinput" class="type-link" onclick="navigateTo('model-createcardinput')">CreateCardInput</a></span></div>
+    <div class="detail-row"><span class="detail-label">Output</span><span class="detail-value"><a href="#model-carditem" class="type-link" onclick="navigateTo('model-carditem')">CardItem</a></span></div>
+  </div>
+</div>
+<h3 id="mod-frontend-account" class="module-title" data-bc="frontend › Account">Account <code class="prefix-badge">/api/account</code></h3>
+<p class="section-desc">Account service</p>
+<div class="endpoint" id="action-frontend-account-listaccount" data-bc="frontend › Account › ListAccount">
+  <div class="endpoint-header" onclick="toggleDetail(this)">
+    <span class="method-badge method-GET">GET</span>    <span class="endpoint-path">/api/account/</span>    <span class="endpoint-name">ListAccount</span>
+    <span class="chevron">▸</span>
+  </div>
+  <div class="endpoint-detail">
+    <div class="detail-row"><span class="detail-label">Output</span><span class="detail-value"><a href="#model-accountitem" class="type-link" onclick="navigateTo('model-accountitem')">AccountItem</a>[]</span></div>
+  </div>
+</div>
+<div class="endpoint" id="action-frontend-account-getaccount" data-bc="frontend › Account › GetAccount">
+  <div class="endpoint-header" onclick="toggleDetail(this)">
+    <span class="method-badge method-GET">GET</span>    <span class="endpoint-path">/api/account/<span class="param">:id</span></span>    <span class="endpoint-name">GetAccount</span>
+    <span class="chevron">▸</span>
+  </div>
+  <div class="endpoint-detail">
+    <div class="detail-row"><span class="detail-label">Output</span><span class="detail-value"><a href="#model-accountitem" class="type-link" onclick="navigateTo('model-accountitem')">AccountItem</a></span></div>
+    <div class="detail-row"><span class="detail-label">Errors</span><span class="detail-value"><code>NotFound</code></span></div>
+  </div>
+</div>
+<div class="endpoint" id="action-frontend-account-createaccount" data-bc="frontend › Account › CreateAccount">
+  <div class="endpoint-header" onclick="toggleDetail(this)">
+    <span class="method-badge method-POST">POST</span>    <span class="endpoint-path">/api/account/</span>    <span class="endpoint-name">CreateAccount</span>
+    <span class="chevron">▸</span>
+  </div>
+  <div class="endpoint-detail">
+    <div class="detail-row"><span class="detail-label">Input</span><span class="detail-value"><a href="#model-createaccountinput" class="type-link" onclick="navigateTo('model-createaccountinput')">CreateAccountInput</a></span></div>
+    <div class="detail-row"><span class="detail-label">Output</span><span class="detail-value"><a href="#model-accountitem" class="type-link" onclick="navigateTo('model-accountitem')">AccountItem</a></span></div>
+  </div>
+</div>
+<h3 id="mod-frontend-lending" class="module-title" data-bc="frontend › Lending">Lending <code class="prefix-badge">/api/lending</code></h3>
+<p class="section-desc">Lending service</p>
+<div class="endpoint" id="action-frontend-lending-listlending" data-bc="frontend › Lending › ListLending">
+  <div class="endpoint-header" onclick="toggleDetail(this)">
+    <span class="method-badge method-GET">GET</span>    <span class="endpoint-path">/api/lending/</span>    <span class="endpoint-name">ListLending</span>
+    <span class="chevron">▸</span>
+  </div>
+  <div class="endpoint-detail">
+    <div class="detail-row"><span class="detail-label">Output</span><span class="detail-value"><a href="#model-lendingitem" class="type-link" onclick="navigateTo('model-lendingitem')">LendingItem</a>[]</span></div>
+  </div>
+</div>
+<div class="endpoint" id="action-frontend-lending-getlending" data-bc="frontend › Lending › GetLending">
+  <div class="endpoint-header" onclick="toggleDetail(this)">
+    <span class="method-badge method-GET">GET</span>    <span class="endpoint-path">/api/lending/<span class="param">:id</span></span>    <span class="endpoint-name">GetLending</span>
+    <span class="chevron">▸</span>
+  </div>
+  <div class="endpoint-detail">
+    <div class="detail-row"><span class="detail-label">Output</span><span class="detail-value"><a href="#model-lendingitem" class="type-link" onclick="navigateTo('model-lendingitem')">LendingItem</a></span></div>
+    <div class="detail-row"><span class="detail-label">Errors</span><span class="detail-value"><code>NotFound</code></span></div>
+  </div>
+</div>
+<div class="endpoint" id="action-frontend-lending-createlending" data-bc="frontend › Lending › CreateLending">
+  <div class="endpoint-header" onclick="toggleDetail(this)">
+    <span class="method-badge method-POST">POST</span>    <span class="endpoint-path">/api/lending/</span>    <span class="endpoint-name">CreateLending</span>
+    <span class="chevron">▸</span>
+  </div>
+  <div class="endpoint-detail">
+    <div class="detail-row"><span class="detail-label">Input</span><span class="detail-value"><a href="#model-createlendinginput" class="type-link" onclick="navigateTo('model-createlendinginput')">CreateLendingInput</a></span></div>
+    <div class="detail-row"><span class="detail-label">Output</span><span class="detail-value"><a href="#model-lendingitem" class="type-link" onclick="navigateTo('model-lendingitem')">LendingItem</a></span></div>
+  </div>
+</div>
+<h3 id="mod-frontend-notification" class="module-title" data-bc="frontend › Notification">Notification <code class="prefix-badge">/api/notification</code></h3>
+<p class="section-desc">Notification service</p>
+<div class="endpoint" id="action-frontend-notification-listnotification" data-bc="frontend › Notification › ListNotification">
+  <div class="endpoint-header" onclick="toggleDetail(this)">
+    <span class="method-badge method-GET">GET</span>    <span class="endpoint-path">/api/notification/</span>    <span class="endpoint-name">ListNotification</span>
+    <span class="chevron">▸</span>
+  </div>
+  <div class="endpoint-detail">
+    <div class="detail-row"><span class="detail-label">Output</span><span class="detail-value"><a href="#model-notificationitem" class="type-link" onclick="navigateTo('model-notificationitem')">NotificationItem</a>[]</span></div>
+  </div>
+</div>
+<div class="endpoint" id="action-frontend-notification-getnotification" data-bc="frontend › Notification › GetNotification">
+  <div class="endpoint-header" onclick="toggleDetail(this)">
+    <span class="method-badge method-GET">GET</span>    <span class="endpoint-path">/api/notification/<span class="param">:id</span></span>    <span class="endpoint-name">GetNotification</span>
+    <span class="chevron">▸</span>
+  </div>
+  <div class="endpoint-detail">
+    <div class="detail-row"><span class="detail-label">Output</span><span class="detail-value"><a href="#model-notificationitem" class="type-link" onclick="navigateTo('model-notificationitem')">NotificationItem</a></span></div>
+    <div class="detail-row"><span class="detail-label">Errors</span><span class="detail-value"><code>NotFound</code></span></div>
+  </div>
+</div>
+<div class="endpoint" id="action-frontend-notification-createnotification" data-bc="frontend › Notification › CreateNotification">
+  <div class="endpoint-header" onclick="toggleDetail(this)">
+    <span class="method-badge method-POST">POST</span>    <span class="endpoint-path">/api/notification/</span>    <span class="endpoint-name">CreateNotification</span>
+    <span class="chevron">▸</span>
+  </div>
+  <div class="endpoint-detail">
+    <div class="detail-row"><span class="detail-label">Input</span><span class="detail-value"><a href="#model-createnotificationinput" class="type-link" onclick="navigateTo('model-createnotificationinput')">CreateNotificationInput</a></span></div>
+    <div class="detail-row"><span class="detail-label">Output</span><span class="detail-value"><a href="#model-notificationitem" class="type-link" onclick="navigateTo('model-notificationitem')">NotificationItem</a></span></div>
+  </div>
+</div>
+<h3 id="mod-frontend-transaction" class="module-title" data-bc="frontend › Transaction">Transaction <code class="prefix-badge">/api/transaction_service/transaction</code></h3>
+<p class="section-desc">Transaction service</p>
+<div class="endpoint" id="action-frontend-transaction-transfer" data-bc="frontend › Transaction › transfer">
+  <div class="endpoint-header" onclick="toggleDetail(this)">
+    <span class="method-badge method-POST">POST</span>    <span class="endpoint-path">/api/transaction_service/transaction/transfer</span>    <span class="endpoint-name">transfer</span>
+    <span class="chevron">▸</span>
+  </div>
+  <div class="endpoint-detail">
+    <div class="detail-row"><span class="detail-label">Input</span><span class="detail-value"><a href="#model-transferrequest" class="type-link" onclick="navigateTo('model-transferrequest')">TransferRequest</a></span></div>
+    <div class="detail-row"><span class="detail-label">Output</span><span class="detail-value"><a href="#model-transactionresponse" class="type-link" onclick="navigateTo('model-transactionresponse')">TransactionResponse</a></span></div>
+    <div class="detail-row"><span class="detail-label">Errors</span><span class="detail-value"><code>InsufficientFunds (403)</code>, <code>InvalidAccount (404)</code>, <code>Unauthorized (401)</code>, <code>InvalidAmount (400)</code>, <code>invalidTarget (400)</code></span></div>
+  </div>
+</div>
+</section>
+
+<h2 class="section-divider" data-bc="Models">Models</h2>
+<div class="model-card" id="model-iamitem" data-bc="Models › IamItem">
+  <div class="model-header"><h3>IamItem</h3>
+    <div class="model-desc">A iam entity</div>
+    <div class="used-by">Used by: <span class="used-by-action">Iam.ListIam</span>, <span class="used-by-action">Iam.GetIam</span>, <span class="used-by-action">Iam.CreateIam</span></div>
+  </div>
+  <table class="model-table"><thead><tr><th>Field</th><th>Type</th><th>Attributes</th></tr></thead><tbody>
+    <tr><td><strong>id</strong></td><td><code>uuid</code></td><td>&mdash;</td></tr>
+    <tr><td><strong>name</strong></td><td><code>string</code></td><td>&mdash;</td></tr>
+    <tr><td><strong>createdAt</strong></td><td><code>datetime</code></td><td>&mdash;</td></tr>
+  </tbody></table>
+</div>
+<div class="model-card" id="model-createiaminput" data-bc="Models › CreateIamInput">
+  <div class="model-header"><h3>CreateIamInput</h3>
+    <div class="used-by">Used by: <span class="used-by-action">Iam.CreateIam</span></div>
+  </div>
+  <table class="model-table"><thead><tr><th>Field</th><th>Type</th><th>Attributes</th></tr></thead><tbody>
+    <tr><td><strong>name</strong></td><td><code>string</code></td><td>&mdash;</td></tr>
+  </tbody></table>
+</div>
+<div class="model-card" id="model-carditem" data-bc="Models › CardItem">
+  <div class="model-header"><h3>CardItem</h3>
+    <div class="model-desc">A card entity</div>
+    <div class="used-by">Used by: <span class="used-by-action">Card.ListCard</span>, <span class="used-by-action">Card.GetCard</span>, <span class="used-by-action">Card.CreateCard</span></div>
+  </div>
+  <table class="model-table"><thead><tr><th>Field</th><th>Type</th><th>Attributes</th></tr></thead><tbody>
+    <tr><td><strong>id</strong></td><td><code>uuid</code></td><td>&mdash;</td></tr>
+    <tr><td><strong>name</strong></td><td><code>string</code></td><td>&mdash;</td></tr>
+    <tr><td><strong>createdAt</strong></td><td><code>datetime</code></td><td>&mdash;</td></tr>
+  </tbody></table>
+</div>
+<div class="model-card" id="model-createcardinput" data-bc="Models › CreateCardInput">
+  <div class="model-header"><h3>CreateCardInput</h3>
+    <div class="used-by">Used by: <span class="used-by-action">Card.CreateCard</span></div>
+  </div>
+  <table class="model-table"><thead><tr><th>Field</th><th>Type</th><th>Attributes</th></tr></thead><tbody>
+    <tr><td><strong>name</strong></td><td><code>string</code></td><td>&mdash;</td></tr>
+  </tbody></table>
+</div>
+<div class="model-card" id="model-accountitem" data-bc="Models › AccountItem">
+  <div class="model-header"><h3>AccountItem</h3>
+    <div class="model-desc">A account entity</div>
+    <div class="used-by">Used by: <span class="used-by-action">Account.ListAccount</span>, <span class="used-by-action">Account.GetAccount</span>, <span class="used-by-action">Account.CreateAccount</span></div>
+  </div>
+  <table class="model-table"><thead><tr><th>Field</th><th>Type</th><th>Attributes</th></tr></thead><tbody>
+    <tr><td><strong>id</strong></td><td><code>uuid</code></td><td>&mdash;</td></tr>
+    <tr><td><strong>name</strong></td><td><code>string</code></td><td>&mdash;</td></tr>
+    <tr><td><strong>createdAt</strong></td><td><code>datetime</code></td><td>&mdash;</td></tr>
+  </tbody></table>
+</div>
+<div class="model-card" id="model-createaccountinput" data-bc="Models › CreateAccountInput">
+  <div class="model-header"><h3>CreateAccountInput</h3>
+    <div class="used-by">Used by: <span class="used-by-action">Account.CreateAccount</span></div>
+  </div>
+  <table class="model-table"><thead><tr><th>Field</th><th>Type</th><th>Attributes</th></tr></thead><tbody>
+    <tr><td><strong>name</strong></td><td><code>string</code></td><td>&mdash;</td></tr>
+  </tbody></table>
+</div>
+<div class="model-card" id="model-lendingitem" data-bc="Models › LendingItem">
+  <div class="model-header"><h3>LendingItem</h3>
+    <div class="model-desc">A lending entity</div>
+    <div class="used-by">Used by: <span class="used-by-action">Lending.ListLending</span>, <span class="used-by-action">Lending.GetLending</span>, <span class="used-by-action">Lending.CreateLending</span></div>
+  </div>
+  <table class="model-table"><thead><tr><th>Field</th><th>Type</th><th>Attributes</th></tr></thead><tbody>
+    <tr><td><strong>id</strong></td><td><code>uuid</code></td><td>&mdash;</td></tr>
+    <tr><td><strong>name</strong></td><td><code>string</code></td><td>&mdash;</td></tr>
+    <tr><td><strong>createdAt</strong></td><td><code>datetime</code></td><td>&mdash;</td></tr>
+  </tbody></table>
+</div>
+<div class="model-card" id="model-createlendinginput" data-bc="Models › CreateLendingInput">
+  <div class="model-header"><h3>CreateLendingInput</h3>
+    <div class="used-by">Used by: <span class="used-by-action">Lending.CreateLending</span></div>
+  </div>
+  <table class="model-table"><thead><tr><th>Field</th><th>Type</th><th>Attributes</th></tr></thead><tbody>
+    <tr><td><strong>name</strong></td><td><code>string</code></td><td>&mdash;</td></tr>
+  </tbody></table>
+</div>
+<div class="model-card" id="model-notificationitem" data-bc="Models › NotificationItem">
+  <div class="model-header"><h3>NotificationItem</h3>
+    <div class="model-desc">A notification entity</div>
+    <div class="used-by">Used by: <span class="used-by-action">Notification.ListNotification</span>, <span class="used-by-action">Notification.GetNotification</span>, <span class="used-by-action">Notification.CreateNotification</span></div>
+  </div>
+  <table class="model-table"><thead><tr><th>Field</th><th>Type</th><th>Attributes</th></tr></thead><tbody>
+    <tr><td><strong>id</strong></td><td><code>uuid</code></td><td>&mdash;</td></tr>
+    <tr><td><strong>name</strong></td><td><code>string</code></td><td>&mdash;</td></tr>
+    <tr><td><strong>createdAt</strong></td><td><code>datetime</code></td><td>&mdash;</td></tr>
+  </tbody></table>
+</div>
+<div class="model-card" id="model-createnotificationinput" data-bc="Models › CreateNotificationInput">
+  <div class="model-header"><h3>CreateNotificationInput</h3>
+    <div class="used-by">Used by: <span class="used-by-action">Notification.CreateNotification</span></div>
+  </div>
+  <table class="model-table"><thead><tr><th>Field</th><th>Type</th><th>Attributes</th></tr></thead><tbody>
+    <tr><td><strong>name</strong></td><td><code>string</code></td><td>&mdash;</td></tr>
+  </tbody></table>
+</div>
+<div class="model-card" id="model-auditevent" data-bc="Models › AuditEvent">
+  <div class="model-header"><h3>AuditEvent</h3>
+  </div>
+  <table class="model-table"><thead><tr><th>Field</th><th>Type</th><th>Attributes</th></tr></thead><tbody>
+    <tr><td><strong>serviceName</strong></td><td><code>string</code></td><td>&mdash;</td></tr>
+    <tr><td><strong>action</strong></td><td><a href="#enum-auditaction" class="type-link" onclick="navigateTo('enum-auditaction')">AuditAction</a></td><td>&mdash;</td></tr>
+    <tr><td><strong>status</strong></td><td><a href="#enum-auditstatus" class="type-link" onclick="navigateTo('enum-auditstatus')">AuditStatus</a></td><td>&mdash;</td></tr>
+    <tr><td><strong>details</strong></td><td><code>string</code></td><td>&mdash;</td></tr>
+    <tr><td><strong>userIdentifier</strong></td><td><code>uuid</code></td><td>&mdash;</td></tr>
+    <tr><td><strong>timestamp</strong></td><td><code>datetime</code></td><td>&mdash;</td></tr>
+  </tbody></table>
+</div>
+<div class="model-card" id="model-transferrequest" data-bc="Models › TransferRequest">
+  <div class="model-header"><h3>TransferRequest</h3>
+    <div class="used-by">Used by: <span class="used-by-action">Transaction.transfer</span></div>
+  </div>
+  <table class="model-table"><thead><tr><th>Field</th><th>Type</th><th>Attributes</th></tr></thead><tbody>
+    <tr><td><strong>sourceAccountId</strong></td><td><code>uuid</code></td><td>&mdash;</td></tr>
+    <tr><td><strong>destinationAccountId</strong></td><td><code>uuid</code></td><td>&mdash;</td></tr>
+    <tr><td><strong>amount</strong></td><td><code>decimal</code></td><td>&mdash;</td></tr>
+  </tbody></table>
+</div>
+<div class="model-card" id="model-transactionresponse" data-bc="Models › TransactionResponse">
+  <div class="model-header"><h3>TransactionResponse</h3>
+    <div class="used-by">Used by: <span class="used-by-action">Transaction.transfer</span></div>
+  </div>
+  <table class="model-table"><thead><tr><th>Field</th><th>Type</th><th>Attributes</th></tr></thead><tbody>
+    <tr><td><strong>referenceNumber</strong></td><td><code>string</code></td><td>&mdash;</td></tr>
+    <tr><td><strong>amount</strong></td><td><code>decimal</code></td><td>&mdash;</td></tr>
+    <tr><td><strong>status</strong></td><td><a href="#enum-transactionstatus" class="type-link" onclick="navigateTo('enum-transactionstatus')">TransactionStatus</a></td><td>&mdash;</td></tr>
+    <tr><td><strong>timestamp</strong></td><td><code>datetime</code></td><td>&mdash;</td></tr>
+  </tbody></table>
+</div>
+<div class="model-card" id="model-transactionevent" data-bc="Models › TransactionEvent">
+  <div class="model-header"><h3>TransactionEvent</h3>
+  </div>
+  <table class="model-table"><thead><tr><th>Field</th><th>Type</th><th>Attributes</th></tr></thead><tbody>
+    <tr><td><strong>referenceNumber</strong></td><td><code>string</code></td><td>&mdash;</td></tr>
+    <tr><td><strong>sourceAccountId</strong></td><td><code>uuid</code></td><td>&mdash;</td></tr>
+    <tr><td><strong>destinationAccountId</strong></td><td><code>uuid</code></td><td>&mdash;</td></tr>
+    <tr><td><strong>amount</strong></td><td><code>decimal</code></td><td>&mdash;</td></tr>
+    <tr><td><strong>status</strong></td><td><a href="#enum-transactionstatus" class="type-link" onclick="navigateTo('enum-transactionstatus')">TransactionStatus</a></td><td>&mdash;</td></tr>
+  </tbody></table>
+</div>
+<h2 class="section-divider" data-bc="Enums">Enums</h2>
+<div class="model-card" id="enum-auditstatus" data-bc="Enums › AuditStatus">
+  <div class="model-header"><h3>AuditStatus</h3><div class="used-by">Used by: <span class="used-by-action">AuditEvent</span></div></div>
+  <div class="enum-values">
+    <span class="enum-value">SUCCESS</span>
+    <span class="enum-value">FAILED</span>
+    <span class="enum-value">WARNING</span>
+    <span class="enum-value">UNAUTHORIZED</span>
+  </div>
+</div>
+<div class="model-card" id="enum-auditaction" data-bc="Enums › AuditAction">
+  <div class="model-header"><h3>AuditAction</h3><div class="used-by">Used by: <span class="used-by-action">AuditEvent</span></div></div>
+  <div class="enum-values">
+    <span class="enum-value">TRANSFER_FUNDS</span>
+    <span class="enum-value">DEPOSIT_FUNDS</span>
+    <span class="enum-value">WITHDRAW_FUNDS</span>
+    <span class="enum-value">VIEW_ACCOUNT_BALANCE</span>
+    <span class="enum-value">LOGIN_ATTEMPT</span>
+  </div>
+</div>
+<div class="model-card" id="enum-transactiontype" data-bc="Enums › TransactionType">
+  <div class="model-header"><h3>TransactionType</h3></div>
+  <div class="enum-values">
+    <span class="enum-value">DEPOSIT</span>
+    <span class="enum-value">WITHDRAWAL</span>
+    <span class="enum-value">TRANSFER</span>
+  </div>
+</div>
+<div class="model-card" id="enum-transactionstatus" data-bc="Enums › TransactionStatus">
+  <div class="model-header"><h3>TransactionStatus</h3><div class="used-by">Used by: <span class="used-by-action">TransactionResponse</span>, <span class="used-by-action">TransactionEvent</span></div></div>
+  <div class="enum-values">
+    <span class="enum-value">PENDING</span>
+    <span class="enum-value">COMPLETED</span>
+    <span class="enum-value">FAILED</span>
+  </div>
+</div>
+<div class="footer">Generated by Veld</div>
+</main>
+<script>
+function toggleTheme(){var d=document.documentElement.getAttribute('data-theme')==='dark';document.documentElement.setAttribute('data-theme',d?'':'dark');localStorage.setItem('veld-theme',d?'':'dark')}
+(function(){var t=localStorage.getItem('veld-theme');if(t)document.documentElement.setAttribute('data-theme',t)})();
+function toggleDetail(h){h.closest('.endpoint').classList.toggle('open')}
+function navigateTo(id){var el=document.getElementById(id);if(!el)return;el.scrollIntoView({behavior:'smooth',block:'start'});el.classList.remove('highlight');void el.offsetWidth;el.classList.add('highlight');var bc=el.getAttribute('data-bc');if(!bc){var p=el.closest('[data-bc]');if(p)bc=p.getAttribute('data-bc')}if(bc)setBreadcrumbs(bc);if(el.classList.contains('endpoint'))el.classList.add('open')}
+function setBreadcrumbs(t){var el=document.getElementById('breadcrumbs');if(!el)return;var p=t.split(' \u203a ');el.innerHTML=p.map(function(s){return'<span class="bc-item">'+s+'</span>'}).join('<span class="bc-sep">\u203a</span>')}
+(function(){var targets=document.querySelectorAll('[data-bc]');if(!targets.length)return;var obs=new IntersectionObserver(function(entries){for(var i=0;i<entries.length;i++){if(entries[i].isIntersecting){var bc=entries[i].target.getAttribute('data-bc');if(bc)setBreadcrumbs(bc);break}}},{rootMargin:'-80px 0px -70% 0px',threshold:0});targets.forEach(function(t){obs.observe(t)})})();
+function filterNav(q){q=q.toLowerCase().trim();var links=document.querySelectorAll('.nav-link');var groups=document.querySelectorAll('details.tree-svc,details.tree-mod,details.tree-section');if(!q){links.forEach(function(a){a.style.display=''});groups.forEach(function(g){g.style.display='';g.open=true});return}links.forEach(function(a){var t=(a.getAttribute('data-search')||a.textContent).toLowerCase();a.style.display=t.indexOf(q)>=0?'':'none'});groups.forEach(function(g){var has=false;g.querySelectorAll('.nav-link').forEach(function(a){if(a.style.display!=='none')has=true});g.style.display=has?'':'none';if(has)g.open=true})}
+(function(){var links=document.querySelectorAll('.nav-link');var secs=[];links.forEach(function(a){var h=a.getAttribute('href');if(h&&h.charAt(0)==='#'){var t=document.getElementById(h.slice(1));if(t)secs.push({link:a,target:t})}});if(!secs.length)return;var obs=new IntersectionObserver(function(entries){entries.forEach(function(e){var item;for(var i=0;i<secs.length;i++){if(secs[i].target===e.target){item=secs[i];break}}if(item&&e.isIntersecting){links.forEach(function(l){l.classList.remove('active')});item.link.classList.add('active')}})},{rootMargin:'-80px 0px -70% 0px',threshold:0});secs.forEach(function(s){obs.observe(s.target)})})();
+</script>
+</body>
+</html>
