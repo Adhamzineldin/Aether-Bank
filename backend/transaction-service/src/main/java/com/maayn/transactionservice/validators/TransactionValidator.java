@@ -1,6 +1,6 @@
 package com.maayn.transactionservice.validators;
 
-import maayn.veld.generated.sdk.account.constants.AccountSystemConfig;
+import maayn.veld.generated.sdk.iam.constants.AccountSystemConfig;
 import com.maayn.transactionservice.entity.Transaction;
 import lombok.RequiredArgsConstructor;
 import maayn.veld.generated.errors.TransactionErrors;

@@ -1,6 +1,6 @@
 package com.maayn.transactionservice.aspects;
 
-import maayn.veld.generated.sdk.account.constants.AccountSystemConfig;
+import maayn.veld.generated.sdk.iam.constants.AccountSystemConfig;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
