@@ -5,6 +5,16 @@
        currency: string
   }
   
+  model FundsSecuredEvent {
+      transactionId: string
+      status: string 
+  }
+  
+  model InsufficientFundsEvent {
+      transactionId: string
+      reason: string
+  }
+  
   
   
  

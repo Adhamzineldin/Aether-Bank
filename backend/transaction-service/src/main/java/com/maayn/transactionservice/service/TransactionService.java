@@ -9,7 +9,6 @@ import com.maayn.transactionservice.repository.TransactionRepository;
 import com.maayn.transactionservice.validators.TransactionValidator;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import maayn.veld.generated.models.TransactionEvent;
 import maayn.veld.generated.models.TransactionResponse;
 import maayn.veld.generated.models.TransactionStatus;
@@ -24,7 +23,6 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-@Slf4j
 public class TransactionService implements ITransactionService {
 
     private final TransactionRepository transactionRepository;
@@ -52,28 +50,10 @@ public class TransactionService implements ITransactionService {
         
         sagaPublisher.initiateTransferSaga(saved);
         
+        TransactionEvent event = TransactionMapper.toEvent(saved);
+        eventPublisher.publish(event);
+        
         return TransactionMapper.toResponse(saved);
-    }
-
-
-    @Transactional
-    public void finalizeTransaction(String referenceNumber, TransactionStatus finalStatus, String reason) {
-
-        Transaction transaction = transactionRepository.findByReferenceNumber(referenceNumber)
-                .orElseThrow(() -> new IllegalStateException("SAGA returned for unknown TXN: " + referenceNumber));
-        
-        try {
-            transaction.applySagaResult(finalStatus, reason);
-        } catch (IllegalStateException e) {
-            log.warn(e.getMessage());
-            return; 
-        }
-        
-        Transaction saved = transactionRepository.save(transaction);
-        log.info("Transaction {} finalized with status {}", referenceNumber, finalStatus);
-        
-        TransactionEvent finalEvent = TransactionMapper.toEvent(saved);
-        eventPublisher.publish(finalEvent);
     }
     
 }
