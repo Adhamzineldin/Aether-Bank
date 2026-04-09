@@ -11,6 +11,7 @@ enum TransactionStatus {
 }
 
 model TransferRequest {
+  idempotencyKey: string
   sourceAccountId: uuid
   destinationAccountId: uuid
   amount: decimal

@@ -17,5 +17,7 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
     List<Transaction> findBySourceAccountIdOrDestinationAccountIdOrderByCreatedAtDesc(UUID source, UUID dest);
     
     Optional<Transaction> findByReferenceNumber(String referenceNumber);
+
+    Optional<Transaction> findByIdempotencyKey(String idempotencyKey);
     
 }

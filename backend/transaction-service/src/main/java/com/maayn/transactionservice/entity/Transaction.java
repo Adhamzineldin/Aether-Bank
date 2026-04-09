@@ -42,6 +42,9 @@ public class Transaction {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private TransactionStatus status;
+
+    @Column(name = "idempotency_key", unique = true, nullable = false)
+    private String idempotencyKey;
     
     @Column(name = "reference_number", unique = true, nullable = false)
     private String referenceNumber;
