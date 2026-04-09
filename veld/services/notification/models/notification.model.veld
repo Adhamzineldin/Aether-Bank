@@ -1,12 +1,84 @@
-// Notification domain models
+enum NotificationStatus {
+  PENDING,
+  SENT,
+  FAILED
+}
+
+enum NotificationChannel {
+  EMAIL,
+  SMS,
+  PUSH
+}
+
+enum NotificationType {
+  LOAN,
+  TRANSACTION,
+  SECURITY
+}
+
+enum NotificationEventType {
+  LOAN_APPLIED,
+  LOAN_APPROVED,
+  LOAN_REJECTED,
+  TRANSFER_COMPLETED,
+  LOGIN_DETECTED
+}
+
+// Models
+
+model NotificationTemplate {
+  id: uuid
+  eventType: NotificationEventType
+  channel: NotificationChannel
+  titleTemplate: string
+  bodyTemplate: string
+  version: int
+  isActive: bool
+  createdAt: datetime
+  updatedAt: datetime
+}
 
 model NotificationItem {
-  description: "A notification entity"
-  id:        uuid
-  name:      string
+  id: uuid
+  userId: uuid
+  type: NotificationType
+  channel: NotificationChannel
+  eventType: NotificationEventType
+  correlationId?: uuid          // links to source entity e.g. loanId, transactionId
+  templateId?: uuid             // snapshot reference to template used
+  templateVersion?: int         // version of template at time of sending
+  title: string
+  message: string
+  status: NotificationStatus
+  retryCount: int               // default 0, capped at 3
+  processedAt?: datetime        // set on both SENT and FAILED
+  sentAt?: datetime             // set only on SENT
+  failedReason?: string         // set only on FAILED
   createdAt: datetime
 }
 
-model CreateNotificationInput {
-  name: string
+// ── Input Models ─────────────────────────────────────────
+
+model SendNotificationInput {
+  userId: uuid
+  eventType: NotificationEventType
+  channel: NotificationChannel
+  type: NotificationType
+  correlationId?: uuid          // links to source entity e.g. loanId, transactionId
+  // if title and message are omitted the service resolves
+  // them from the active NotificationTemplate for this eventType + channel
+  title?: string
+  message?: string
+}
+
+model CreateTemplateInput {
+  eventType: NotificationEventType
+  channel: NotificationChannel
+  titleTemplate: string
+  bodyTemplate: string
+}
+
+model UpdateTemplateInput {
+  titleTemplate?: string
+  bodyTemplate?: string
 }

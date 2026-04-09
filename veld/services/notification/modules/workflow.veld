@@ -1,0 +1,48 @@
+import "../models/workflow.model.veld"
+
+module Workflow {
+  prefix: /api/workflow
+
+  action CreateWorkflow {
+    method: POST
+    path: /
+    input: CreateWorkflowInput
+    output: WorkflowInstance
+  }
+
+  action UpdateWorkflow {
+    method: PUT
+    path: /:id
+    input: UpdateWorkflowInput
+    output: WorkflowInstance
+  }
+
+  action GetWorkflow {
+    method: GET
+    path: /:id
+    output: WorkflowInstance
+  }
+
+  action GetWorkflows {
+    method: GET
+    path: /
+//    authorize
+//    auth: [MANAGER, DIRECTOR]
+    output: WorkflowInstance[]
+  }
+
+  action GetTasks {
+    method: GET
+    path: /tasks/:id
+//    query: assignedTo?: uuid, status?: TaskStatus
+    output: ApprovalTask[]
+  }
+
+// APPROVE / REJECT
+  action DecideTask {
+    method: POST
+    path: /tasks/:taskId/decision
+    input: TaskActionInput
+    output: ApprovalTask
+  }
+}

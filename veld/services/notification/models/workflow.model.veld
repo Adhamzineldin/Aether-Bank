@@ -1,0 +1,101 @@
+enum WorkflowStatus {
+  PENDING,
+  IN_PROGRESS,
+  APPROVED,
+  REJECTED
+}
+
+enum TaskStatus {
+  PENDING,
+  IN_PROGRESS,
+  COMPLETED
+}
+
+enum DecisionStatus {
+  PENDING,
+  APPROVED,
+  REJECTED
+}
+
+enum TaskDecision {
+  APPROVED,
+  REJECTED
+}
+
+enum StepRole {
+  RISK,
+  MANAGER,
+  DIRECTOR
+}
+
+enum StepAction {
+  APPROVE_LOAN
+//  Will be extended
+}
+
+// Models
+
+//  if every loan workflow follows the same 3-step pattern,
+//  you define those steps once on the template rather than duplicating the array on every instance.
+// refernced as templateId in workflowInstance
+model WorkflowTemplate {
+  id: uuid
+  entityType: string        // LOAN
+  steps: WorkflowStep[]
+  createdAt: datetime
+  updatedAt: datetime
+}
+
+model WorkflowStep {
+  id: uuid
+  step: int
+  role: StepRole
+  action: StepAction
+}
+
+model WorkflowInstance {
+  id: uuid
+  templateId?: uuid
+  entityType: string
+  entityId: uuid
+  status: WorkflowStatus
+  currentStep: int
+  steps: WorkflowStep[]
+  version: int
+  createdAt: datetime
+  updatedAt: datetime
+}
+
+model ApprovalTask {
+  id: uuid
+  workflowId: uuid
+  step: int
+  role: StepRole
+  assignedTo: uuid
+  taskStatus: TaskStatus
+  decisionStatus: DecisionStatus
+  decidedBy?: uuid
+  decisionAt?: datetime
+  decisionComment?: string
+  createdAt: datetime
+  completedAt?: datetime
+}
+
+// Input Models
+
+model CreateWorkflowInput {
+  entityType: string
+  entityId: uuid
+  templateId: uuid
+}
+
+model UpdateWorkflowInput {
+  status?: WorkflowStatus
+  currentStep?: int
+}
+
+model TaskActionInput {
+  employeeId: uuid
+  decision: TaskDecision
+  comment?: string
+}
