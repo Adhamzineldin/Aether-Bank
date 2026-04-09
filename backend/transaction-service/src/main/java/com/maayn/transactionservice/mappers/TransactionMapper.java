@@ -2,6 +2,8 @@ package com.maayn.transactionservice.mappers;
 
 import com.maayn.transactionservice.entity.Transaction;
 import maayn.veld.generated.models.*;
+import maayn.veld.generated.sdk.notification.models.shared.TransferFailedEvent;
+import maayn.veld.generated.sdk.notification.models.shared.TransferSuccessEvent;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -45,4 +47,29 @@ public class TransactionMapper {
                 entity.getStatus()
         );
     }
+    
+    public static TransferSuccessEvent toTransferSuccessEvent(Transaction entity) {
+        
+        return new TransferSuccessEvent(
+                entity.getReferenceNumber(),
+                entity.getSourceAccountId(),
+                entity.getDestinationAccountId(),
+                entity.getAmount(),
+                entity.getCurrency(),
+                entity.getCreatedAt()
+        );
+        
+    }
+    
+    public static TransferFailedEvent toTransferFailedEvent(Transaction entity, String failureReason) {
+        return new TransferFailedEvent(
+                entity.getReferenceNumber(),
+                entity.getSourceAccountId(),
+                entity.getAmount(),
+                entity.getCurrency(),
+                entity.getCreatedAt(),
+                failureReason
+        );
+    }
+    
 }

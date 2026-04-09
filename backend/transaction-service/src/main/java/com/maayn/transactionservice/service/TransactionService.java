@@ -9,6 +9,7 @@ import com.maayn.transactionservice.repository.TransactionRepository;
 import com.maayn.transactionservice.validators.TransactionValidator;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import maayn.veld.generated.models.TransactionEvent;
 import maayn.veld.generated.models.TransactionResponse;
 import maayn.veld.generated.models.TransactionStatus;
@@ -23,6 +24,7 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class TransactionService implements ITransactionService {
 
     private final TransactionRepository transactionRepository;
@@ -39,21 +41,47 @@ public class TransactionService implements ITransactionService {
         if (cachedResponse.isPresent()) {
             return cachedResponse.get();
         }
-        
+
         Transaction transaction = TransactionMapper.toEntity(request);
         transaction.setIdempotencyKey(request.getIdempotencyKey());
-        
+
         validator.validateTransfer(transaction);
-        
+
         transaction.setStatus(TransactionStatus.PENDING);
         Transaction saved = transactionRepository.saveAndFlush(transaction);
-        
+
         sagaPublisher.initiateTransferSaga(saved);
-        
-        TransactionEvent event = TransactionMapper.toEvent(saved);
-        eventPublisher.publish(event);
-        
+
         return TransactionMapper.toResponse(saved);
     }
-    
+
+
+    @Transactional
+    public void finalizeTransaction(String referenceNumber, TransactionStatus finalStatus, String reason) {
+
+        Transaction transaction = transactionRepository.findByReferenceNumber(referenceNumber)
+                .orElseThrow(() -> new IllegalStateException("SAGA returned for unknown TXN: " + referenceNumber));
+
+        if (transaction.getStatus() != TransactionStatus.PENDING) {
+            log.warn("Cannot finalize TXN {}. Expected PENDING but was {}", referenceNumber, transaction.getStatus());
+            return;
+        }
+        transaction.applySagaResult(finalStatus, reason);
+
+        Transaction saved = transactionRepository.save(transaction);
+        log.info("Transaction {} finalized with status {}", referenceNumber, finalStatus);
+
+        dispatchFinalEvent(saved, finalStatus);
+    }
+
+    private void dispatchFinalEvent(Transaction transaction, TransactionStatus finalStatus) {
+        if (finalStatus == TransactionStatus.SUCCESS) {
+            var successEvent = TransactionMapper.toTransferSuccessEvent(transaction);
+            eventPublisher.publish(successEvent);
+        } else if (finalStatus == TransactionStatus.FAILED) {
+            var failedEvent = TransactionMapper.toTransferFailedEvent(transaction, transaction.getFailureReason());
+            eventPublisher.publish(failedEvent);
+        }
+    }
+
 }

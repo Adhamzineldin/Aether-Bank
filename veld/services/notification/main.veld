@@ -2,5 +2,5 @@
 // This file is the "input" for the notification workspace entry.
 // It imports all models and modules for this service.
 
-import "./models/notification.model.veld"
-import "./modules/notification.veld"
+import "@modules/*"
+import "@models/*"
