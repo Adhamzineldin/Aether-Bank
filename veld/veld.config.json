@@ -1,6 +1,10 @@
 {
   "$schema": "https://veld.dev/schemas/veld.config.schema.json",
   "description": "bank system",
+  "alias": {
+    "@services": "./services",
+    "@transaction": "./transaction"
+  },
 
   "workspace": [
     {

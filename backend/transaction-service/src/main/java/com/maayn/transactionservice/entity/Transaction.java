@@ -56,15 +56,32 @@ public class Transaction {
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
     
-    
     @UpdateTimestamp
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
+
+    @Column(name = "failure_reason", length = 500)
+    private String failureReason;
 
     @PrePersist
     private void ensureCreatedAt() {
         if (createdAt == null) {
             createdAt = LocalDateTime.now();
+        }
+    }
+
+    public void applySagaResult(TransactionStatus finalStatus, String reason) {
+        if (this.status != TransactionStatus.PENDING) {
+            throw new IllegalStateException(
+                    String.format("Cannot finalize TXN %s. Expected state PENDING but was %s",
+                            this.referenceNumber, this.status)
+            );
+        }
+
+        this.status = finalStatus;
+
+        if (finalStatus == TransactionStatus.FAILED) {
+            this.failureReason = reason;
         }
     }
     

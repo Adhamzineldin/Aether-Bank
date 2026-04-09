@@ -1,0 +1,10 @@
+import "../../transaction/models/transaction.model.veld"
+
+
+model TransactionEvent{
+   referenceNumber: string 
+   sourceAccountId: uuid
+   destinationAccountId: uuid
+   amount: decimal
+   status: TransactionStatus
+}

@@ -1,18 +1,5 @@
 import "transaction.model.veld"
 
 
-model TransactionEvent{
-   referenceNumber: string 
-   sourceAccountId: uuid
-   destinationAccountId: uuid
-   amount: decimal
-   status: TransactionStatus
-}
 
-model TransferInitiatedEvent {
-    transactionId: string
-    sourceAccountId: uuid
-    destinationAccountId: uuid
-    amount: decimal
-    currency: string
-}
+
