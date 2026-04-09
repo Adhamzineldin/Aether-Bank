@@ -1,0 +1,4 @@
+constants AuditRabbitConfig {
+    AUDIT_EXCHANGE: string = "security_audit_exchange"
+    AUDIT_ROUTING_KEY: string = "audit.log"
+}

@@ -13,6 +13,6 @@ model TransferInitiatedEvent {
     transactionId: string
     sourceAccountId: uuid
     destinationAccountId: uuid
-    amount: float
+    amount: decimal
     currency: string
 }

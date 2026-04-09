@@ -4,6 +4,19 @@ server:
 spring:
   application:
     name: transaction-service
+    
+    
+    devtools:
+      restart:
+        enabled: true
+        additional-paths:
+          - src/main/java
+          - src/main/resources
+        exclude:
+          - static/**
+          - public/**
+      livereload:
+        enabled: true
 
   # PostgreSQL Connection (Matches your Docker Compose)
   datasource:

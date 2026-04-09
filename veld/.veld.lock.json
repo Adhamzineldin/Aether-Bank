@@ -46,6 +46,10 @@
         {
           "name": "amount",
           "type": "decimal"
+        },
+        {
+          "name": "currency",
+          "type": "string"
         }
       ]
     },
@@ -112,7 +116,7 @@
         },
         {
           "name": "amount",
-          "type": "float"
+          "type": "decimal"
         },
         {
           "name": "currency",

@@ -46,6 +46,9 @@ public class Transaction {
     @Column(name = "reference_number", unique = true, nullable = false)
     private String referenceNumber;
     
+    @Column(nullable = false)
+    private String currency;
+    
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;

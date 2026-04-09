@@ -18,6 +18,7 @@ public class TransactionMapper {
                 .transactionType(TransactionType.TRANSFER)
                 .status(TransactionStatus.PENDING)
                 .referenceNumber("TXN-" + UUID.randomUUID().toString().substring(0,8).toUpperCase())
+                .currency(request.getCurrency())
                 .build();
     }
 

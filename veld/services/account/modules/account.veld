@@ -12,6 +12,11 @@ module Account {
       output: AccountBalanceResponse
       errors: [AccountNotFoundError]
   }
-
+  
+  action doesAccountExist {
+      method: GET
+      path: /:accountId/exists
+      output: bool
+  }
   
 }

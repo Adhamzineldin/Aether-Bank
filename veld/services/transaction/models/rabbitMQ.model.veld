@@ -1,0 +1,7 @@
+constants TransactionRabbitConfig {
+    TRANSACTION_EXCHANGE: string = "transaction_exchange"
+    ROUTING_KEY: string = "transaction_routing_key"
+    TRANSACTION_QUEUE: string = "transaction_notification_queue"
+}
+
+

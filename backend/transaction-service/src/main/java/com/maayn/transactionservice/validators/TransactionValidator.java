@@ -1,23 +1,26 @@
 package com.maayn.transactionservice.validators;
 
+import com.maayn.transactionservice.config.Keys;
 import com.maayn.transactionservice.entity.Transaction;
+import lombok.RequiredArgsConstructor;
 import maayn.veld.generated.errors.TransactionErrors;
+import maayn.veld.generated.sdk.account.AccountClient; // Using the Veld SDK
 import maayn.veld.generated.sdk.account.errors.SdkApiError;
+import maayn.veld.generated.sdk.account.errors.AccountErrors;
 import maayn.veld.generated.sdk.account.models.account.AccountBalanceResponse;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 
-import maayn.veld.generated.sdk.account.AccountClient;
-import maayn.veld.generated.sdk.account.errors.AccountErrors;
-
 @Component
+@RequiredArgsConstructor
 public class TransactionValidator {
+
+    private final AccountClient accountClient;
 
     public void validateTransfer(Transaction transaction) throws Exception {
         validatePositiveAmount(transaction);
         validateDifferentAccounts(transaction);
-        validateSourceAccountExists(transaction);
         validateSufficientBalance(transaction);
         validateDestinationAccountExists(transaction);
     }
@@ -34,24 +37,34 @@ public class TransactionValidator {
         }
     }
 
-    private void validateSourceAccountExists(Transaction transaction) {
-
-    }
-
     private void validateDestinationAccountExists(Transaction transaction) throws Exception {
-       
-        
+        try {
+//            boolean accountExists = accountClient.account.doesAccountExist(
+//                    String.valueOf(transaction.getDestinationAccountId())
+//            );
 
+            //TODO: replace with actual call to account service
+            boolean accountExists = true;
+
+            if (!accountExists) {
+                throw TransactionErrors.TransferErrors.invalidTarget("Destination account not found");
+            }
+        } catch (SdkApiError e) {
+            throw e;
+        }
     }
 
     private void validateSufficientBalance(Transaction transaction) throws Exception {
-        AccountClient accountClient = new AccountClient();
         try {
-            AccountBalanceResponse balance = accountClient.account.getBalance(
-                    String.valueOf(transaction.getSourceAccountId())
-            );
+//            AccountBalanceResponse balanceResponse = accountClient.account.getBalance(
+//                    String.valueOf(transaction.getSourceAccountId())
+//            );
 
-            if (balance.getBalance().compareTo(transaction.getAmount()) < 0) {
+            //TODO: replace with actual call to account service
+            AccountBalanceResponse balanceResponse = new AccountBalanceResponse(
+                    Keys.getSystemUserId(), new BigDecimal("1000.00"), "EGP");
+
+            if (balanceResponse.getBalance().compareTo(transaction.getAmount()) < 0) {
                 throw TransactionErrors.TransferErrors.insufficientFunds("Insufficient funds in source account");
             }
         } catch (SdkApiError e) {
@@ -61,6 +74,4 @@ public class TransactionValidator {
             throw e;
         }
     }
-
-
 }

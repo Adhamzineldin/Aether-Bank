@@ -1,5 +1,6 @@
 package com.maayn.transactionservice.aspects;
 
+import com.maayn.transactionservice.config.Keys;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -31,8 +32,7 @@ public class SecurityAuditAspect {
 
     @Value("${spring.application.name}")
     private String serviceName;
-
-    private static final UUID SYSTEM_USER_ID = UUID.fromString("00000000-0000-0000-0000-000000000000");
+    
 
     @AfterReturning(
             pointcut = "execution(* com.maayn.transactionservice.service.TransactionService.transfer(..)) && args(request)",
@@ -88,6 +88,6 @@ public class SecurityAuditAspect {
             log.warn("Could not extract identity from HTTP Context. Falling back to SYSTEM.");
         }
 
-        return SYSTEM_USER_ID;
+        return Keys.getSystemUserId();
     }
 }
