@@ -1,0 +1,8 @@
+// auth model
+
+model auth {
+  id: string
+  email: string
+  password: string
+}
+

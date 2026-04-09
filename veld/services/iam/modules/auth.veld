@@ -1,0 +1,20 @@
+// auth module
+import "../models/auth.veld"
+
+module auth {
+  description: ""
+  prefix: /api/auth
+
+  action register {
+    method: POST
+    path: /register
+    output: auth
+  }
+
+  action login {
+    method: POST
+    path: /login
+    output: auth
+  }
+}
+

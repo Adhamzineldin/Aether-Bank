@@ -4,34 +4,28 @@
     {
       "name": "Transaction",
       "description": "Transaction service",
-      "prefix": "/api/transaction",
+      "prefix": "/api/transaction_service/transaction",
       "actions": [
         {
-          "name": "ListTransaction",
-          "method": "GET",
-          "path": "/",
-          "input": "",
-          "output": "TransactionItem",
-          "outputArray": true,
-          "middleware": []
-        },
-        {
-          "name": "GetTransaction",
-          "method": "GET",
-          "path": "/:id",
-          "input": "",
-          "output": "TransactionItem",
-          "errors": [
-            "NotFound"
-          ],
-          "middleware": []
-        },
-        {
-          "name": "CreateTransaction",
+          "name": "transfer",
           "method": "POST",
-          "path": "/",
-          "input": "CreateTransactionInput",
-          "output": "TransactionItem",
+          "path": "/transfer",
+          "input": "TransferRequest",
+          "output": "TransactionResponse",
+          "errors": [
+            "InsufficientFunds",
+            "InvalidAccount",
+            "Unauthorized",
+            "InvalidAmount",
+            "invalidTarget"
+          ],
+          "errorStatuses": {
+            "InsufficientFunds": 403,
+            "InvalidAccount": 404,
+            "InvalidAmount": 400,
+            "Unauthorized": 401,
+            "invalidTarget": 400
+          },
           "middleware": []
         }
       ]
@@ -39,28 +33,93 @@
   ],
   "models": [
     {
-      "name": "TransactionItem",
-      "description": "A transaction entity",
+      "name": "TransferRequest",
       "fields": [
         {
-          "name": "id",
+          "name": "sourceAccountId",
           "type": "uuid"
         },
         {
-          "name": "name",
+          "name": "destinationAccountId",
+          "type": "uuid"
+        },
+        {
+          "name": "amount",
+          "type": "decimal"
+        },
+        {
+          "name": "currency",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "TransactionResponse",
+      "fields": [
+        {
+          "name": "referenceNumber",
           "type": "string"
         },
         {
-          "name": "createdAt",
+          "name": "amount",
+          "type": "decimal"
+        },
+        {
+          "name": "status",
+          "type": "TransactionStatus"
+        },
+        {
+          "name": "timestamp",
           "type": "datetime"
         }
       ]
     },
     {
-      "name": "CreateTransactionInput",
+      "name": "TransactionEvent",
       "fields": [
         {
-          "name": "name",
+          "name": "referenceNumber",
+          "type": "string"
+        },
+        {
+          "name": "sourceAccountId",
+          "type": "uuid"
+        },
+        {
+          "name": "destinationAccountId",
+          "type": "uuid"
+        },
+        {
+          "name": "amount",
+          "type": "decimal"
+        },
+        {
+          "name": "status",
+          "type": "TransactionStatus"
+        }
+      ]
+    },
+    {
+      "name": "TransferInitiatedEvent",
+      "fields": [
+        {
+          "name": "transactionId",
+          "type": "string"
+        },
+        {
+          "name": "sourceAccountId",
+          "type": "uuid"
+        },
+        {
+          "name": "destinationAccountId",
+          "type": "uuid"
+        },
+        {
+          "name": "amount",
+          "type": "decimal"
+        },
+        {
+          "name": "currency",
           "type": "string"
         }
       ]
