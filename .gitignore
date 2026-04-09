@@ -117,3 +117,5 @@ coverage/
 generated 
 
 
+/veld/.veld.lock.json
+/veld/.veld-cache.json
