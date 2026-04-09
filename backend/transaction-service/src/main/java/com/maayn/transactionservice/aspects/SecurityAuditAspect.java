@@ -1,6 +1,6 @@
 package com.maayn.transactionservice.aspects;
 
-import com.maayn.transactionservice.config.Keys;
+import maayn.veld.generated.sdk.account.constants.AccountSystemConfig;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -88,6 +88,6 @@ public class SecurityAuditAspect {
             log.warn("Could not extract identity from HTTP Context. Falling back to SYSTEM.");
         }
 
-        return Keys.getSystemUserId();
+        return AccountSystemConfig.SYSTEM_USER_ID;
     }
 }

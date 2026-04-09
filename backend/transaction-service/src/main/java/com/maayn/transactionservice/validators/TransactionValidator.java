@@ -1,6 +1,6 @@
 package com.maayn.transactionservice.validators;
 
-import com.maayn.transactionservice.config.Keys;
+import maayn.veld.generated.sdk.account.constants.AccountSystemConfig;
 import com.maayn.transactionservice.entity.Transaction;
 import lombok.RequiredArgsConstructor;
 import maayn.veld.generated.errors.TransactionErrors;
@@ -62,7 +62,7 @@ public class TransactionValidator {
 
             //TODO: replace with actual call to account service
             AccountBalanceResponse balanceResponse = new AccountBalanceResponse(
-                    Keys.getSystemUserId(), new BigDecimal("1000.00"), "EGP");
+                    AccountSystemConfig.SYSTEM_USER_ID, new BigDecimal("1000.00"), "EGP");
 
             if (balanceResponse.getBalance().compareTo(transaction.getAmount()) < 0) {
                 throw TransactionErrors.TransferErrors.insufficientFunds("Insufficient funds in source account");

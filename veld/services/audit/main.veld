@@ -4,6 +4,6 @@
 
 
 prefix: /api/audit_service
-import "./models/audit.model.veld"
-import "./modules/audit.veld"
+import "@models/*"
+import "@modules/*"
 

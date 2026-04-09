@@ -1,5 +1,8 @@
 package com.maayn.transactionservice.config;
 
+
+import maayn.veld.generated.constants.TransactionRabbitConfig;
+import maayn.veld.generated.sdk.audit.constants.AuditRabbitConfig;
 import org.springframework.amqp.core.*;
 import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.amqp.support.converter.JacksonJsonMessageConverter;
@@ -9,16 +12,19 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class RabbitMQConfig {
     
-    public static final String ROUTING_KEY = "transaction_routing_key";
-    public static final String TRANSACTION_EXCHANGE = "transaction_exchange";
-    public static final String TRANSACTION_QUEUE = "transaction_notification_queue";
-    public static final String AUDIT_EXCHANGE = "security_audit_exchange";
-    public static final String AUDIT_ROUTING_KEY = "audit.log";
+    public static final String ROUTING_KEY = TransactionRabbitConfig.ROUTING_KEY;
+    public static final String TRANSACTION_EXCHANGE = TransactionRabbitConfig.TRANSACTION_EXCHANGE;
+    public static final String TRANSACTION_QUEUE = TransactionRabbitConfig.TRANSACTION_QUEUE;
+    
+    public static final String AUDIT_EXCHANGE = AuditRabbitConfig.AUDIT_EXCHANGE;
+    public static final String AUDIT_ROUTING_KEY = AuditRabbitConfig.AUDIT_ROUTING_KEY;
+    
+    
     // SAGA Constants
-    public static final String SAGA_EXCHANGE = "bank_saga_exchange";
-    public static final String TRANSFER_INITIATED_ROUTING_KEY = "saga.transfer.initiated";
-    public static final String SAGA_SUCCESS_QUEUE = "saga_success_queue";
-    public static final String SAGA_FAILURE_QUEUE = "saga_failure_queue";
+    public static final String SAGA_EXCHANGE = TransactionRabbitConfig.SAGA_EXCHANGE;
+    public static final String TRANSFER_INITIATED_ROUTING_KEY = TransactionRabbitConfig.TRANSFER_INITIATED_ROUTING_KEY;
+    public static final String SAGA_SUCCESS_QUEUE = TransactionRabbitConfig.SAGA_SUCCESS_QUEUE;
+    public static final String SAGA_FAILURE_QUEUE =  TransactionRabbitConfig.SAGA_FAILURE_QUEUE;
 
     @Bean
     public Queue queue() {

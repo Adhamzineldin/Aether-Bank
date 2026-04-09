@@ -6,5 +6,5 @@
 
 prefix: /api/accounts_service
 
-import "./models/account.model.veld"
-import "./modules/account.veld"
+import "@models/*"
+import "@modules/*"
