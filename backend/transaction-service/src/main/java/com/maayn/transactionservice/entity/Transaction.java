@@ -63,6 +63,9 @@ public class Transaction {
     @Column(name = "failure_reason", length = 500)
     private String failureReason;
 
+    @Version
+    private Long version;
+
     @PrePersist
     private void ensureCreatedAt() {
         if (createdAt == null) {
