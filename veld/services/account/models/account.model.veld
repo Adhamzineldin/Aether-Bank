@@ -15,9 +15,7 @@
       reason: string
   }
   
-  constants AccountSystemConfig {
-      SYSTEM_USER_ID: uuid = "00000000-0000-0000-0000-000000000000"
-  }
+  
   
  
  

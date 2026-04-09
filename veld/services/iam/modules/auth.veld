@@ -1,5 +1,5 @@
 // auth module
-import "../models/auth.veld"
+import "../models/auth.model.veld"
 
 module auth {
   description: ""
