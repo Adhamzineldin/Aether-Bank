@@ -119,3 +119,5 @@ generated
 
 /veld/.veld.lock.json
 /veld/.veld-cache.json
+/.veld.lock.json
+/.veld-cache.json
