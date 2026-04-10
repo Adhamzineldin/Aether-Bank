@@ -2,10 +2,12 @@ package com.maayn.transactionservice.service;
 
 import com.maayn.transactionservice.entity.Transaction;
 import com.maayn.transactionservice.events.TransactionEventPublisher;
+import com.maayn.transactionservice.exceptions.LedgerNotInitializedException;
 import com.maayn.transactionservice.handlers.TransferIdempotencyHandler;
 import com.maayn.transactionservice.mappers.TransactionMapper;
 import com.maayn.transactionservice.repository.TransactionRepository;
 import com.maayn.transactionservice.validators.TransactionValidator;
+import maayn.veld.generated.errors.TransactionErrors;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -33,13 +35,13 @@ public class TransactionService implements ITransactionService {
     @Transactional
     @Override
     public TransactionResponse transfer(TransferRequest request) throws Exception {
-        if (idempotencyHandler.getIfAlreadyProcessed(request.getIdempotencyKey()).isPresent()) {
-            return idempotencyHandler.getIfAlreadyProcessed(request.getIdempotencyKey()).get();
-        }
 
+        Optional<TransactionResponse> cached = idempotencyHandler.getIfAlreadyProcessed(request.getIdempotencyKey());
+        if (cached.isPresent()) return cached.get();
+        
         Transaction transaction = initializeAndValidate(request);
-
-        ledgerService.executeTransferMath(transaction.getSourceAccountId(), transaction.getDestinationAccountId(), transaction.getAmount());
+        
+        executeMathSafely(transaction);
         
         return persistAndDispatch(transaction);
     }
@@ -57,6 +59,23 @@ public class TransactionService implements ITransactionService {
 
         return TransactionMapper.toPaginatedResponse(transactionPage);
     }
+
+
+    private void executeMathSafely(Transaction transaction) {
+        try {
+            ledgerService.executeTransferMath(
+                    transaction.getSourceAccountId(),
+                    transaction.getDestinationAccountId(),
+                    transaction.getAmount()
+            );
+        } catch (LedgerNotInitializedException e) {
+            log.warn("Transfer failed: {}", e.getMessage());
+            throw TransactionErrors.TransferErrors.invalidTarget(
+                    "Transfer failed: Account Ledger not initialized."
+            );
+        }
+    }
+    
     
     private Transaction initializeAndValidate(TransferRequest request) {
         Transaction transaction = TransactionMapper.toEntity(request);

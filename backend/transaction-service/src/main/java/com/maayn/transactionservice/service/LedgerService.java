@@ -1,6 +1,7 @@
 package com.maayn.transactionservice.service;
 
 import com.maayn.transactionservice.entity.LedgerBalance;
+import com.maayn.transactionservice.exceptions.LedgerNotInitializedException;
 import com.maayn.transactionservice.mappers.LedgerMapper;
 import com.maayn.transactionservice.repository.LedgerBalanceRepository;
 import lombok.RequiredArgsConstructor;
@@ -40,8 +41,8 @@ public class LedgerService implements ILedgerService {
     
     @Transactional(propagation = Propagation.MANDATORY)
     public void executeTransferMath(UUID sourceId, UUID destId, BigDecimal amount) {
-        LedgerBalance source = getOrCreateBalance(sourceId);
-        LedgerBalance dest = getOrCreateBalance(destId);
+        LedgerBalance source = getBalanceOrThrow(sourceId);
+        LedgerBalance dest = getBalanceOrThrow(destId);
 
         source.debit(amount);
         dest.credit(amount);
@@ -57,8 +58,10 @@ public class LedgerService implements ILedgerService {
         }
     }
 
-    private LedgerBalance getOrCreateBalance(UUID accountId) {
+    private LedgerBalance getBalanceOrThrow(UUID accountId) {
         return ledgerBalanceRepository.getLedgerBalanceByAccountId(accountId)
-                .orElse(new LedgerBalance(accountId));
+                .orElseThrow(() -> new LedgerNotInitializedException(
+                        "CRITICAL: Ledger balance missing or account does not exist for ID: " + accountId
+                ));
     }
 }
