@@ -1,6 +1,7 @@
 package com.maayn.transactionservice.service;
 
 import com.maayn.transactionservice.entity.LedgerBalance;
+import com.maayn.transactionservice.exceptions.LedgerNotInitializedException;
 import com.maayn.transactionservice.repository.LedgerBalanceRepository;
 import maayn.veld.generated.errors.GetAccountBalanceException;
 import maayn.veld.generated.errors.TransferException;
@@ -180,24 +181,18 @@ class LedgerServiceTest {
         }
 
         @Test
-        @DisplayName("Should create new balance for non-existing source account")
+        @DisplayName("Should throw LedgerNotInitializedException for non-existing source account")
         void executeTransferMath_newSourceAccount() {
-            LedgerBalance dest = new LedgerBalance(destId);
-            dest.setAvailableBalance(new BigDecimal("200.00"));
-            dest.setCurrency("USD");
-
             when(ledgerBalanceRepository.getLedgerBalanceByAccountId(sourceId))
                     .thenReturn(Optional.empty()); // Source doesn't exist
-            when(ledgerBalanceRepository.getLedgerBalanceByAccountId(destId))
-                    .thenReturn(Optional.of(dest));
 
-            // New balance starts at 0, so any transfer should fail with insufficient funds
+            // LedgerService throws LedgerNotInitializedException at the boundary; TransactionService translates it
             assertThatThrownBy(() -> ledgerService.executeTransferMath(sourceId, destId, new BigDecimal("100.00")))
-                    .isInstanceOf(TransferException.class);
+                    .isInstanceOf(LedgerNotInitializedException.class);
         }
 
         @Test
-        @DisplayName("Should create new balance for non-existing destination account")
+        @DisplayName("Should throw LedgerNotInitializedException for non-existing destination account")
         void executeTransferMath_newDestinationAccount() {
             LedgerBalance source = new LedgerBalance(sourceId);
             source.setAvailableBalance(new BigDecimal("1000.00"));
@@ -206,20 +201,14 @@ class LedgerServiceTest {
             when(ledgerBalanceRepository.getLedgerBalanceByAccountId(sourceId))
                     .thenReturn(Optional.of(source));
             when(ledgerBalanceRepository.getLedgerBalanceByAccountId(destId))
-                    .thenReturn(Optional.empty()); // Dest doesn't exist
+                    .thenReturn(Optional.empty()); // Dest ledger not yet provisioned
 
-            ledgerService.executeTransferMath(sourceId, destId, new BigDecimal("100.00"));
+            // Ledger balances are only created via AccountCreated events, never auto-generated here
+            assertThatThrownBy(() -> ledgerService.executeTransferMath(sourceId, destId, new BigDecimal("100.00")))
+                    .isInstanceOf(LedgerNotInitializedException.class)
+                    .hasMessageContaining(destId.toString());
 
-            assertThat(source.getAvailableBalance()).isEqualByComparingTo(new BigDecimal("900.00"));
-
-            @SuppressWarnings("unchecked")
-            ArgumentCaptor<List<LedgerBalance>> captor = ArgumentCaptor.forClass(List.class);
-            verify(ledgerBalanceRepository).saveAll(captor.capture());
-
-            LedgerBalance savedDest = captor.getValue().stream()
-                    .filter(b -> b.getAccountId().equals(destId))
-                    .findFirst().orElseThrow();
-            assertThat(savedDest.getAvailableBalance()).isEqualByComparingTo(new BigDecimal("100.00"));
+            verify(ledgerBalanceRepository, never()).saveAll(any());
         }
 
         @Test

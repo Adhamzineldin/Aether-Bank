@@ -74,7 +74,10 @@ class RabbitMQIntegrationSimulationTest {
     void setUp() {
         validator = new TransactionValidator();
         idempotencyHandler = new TransferIdempotencyHandler(transactionRepository);
-        eventPublisher = new TransactionEventPublisher(outboxRepository, new com.fasterxml.jackson.databind.ObjectMapper());
+        com.fasterxml.jackson.databind.ObjectMapper objectMapper = new com.fasterxml.jackson.databind.ObjectMapper()
+                .registerModule(new com.fasterxml.jackson.datatype.jsr310.JavaTimeModule())
+                .disable(com.fasterxml.jackson.databind.SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+        eventPublisher = new TransactionEventPublisher(outboxRepository, objectMapper);
         ledgerService = new LedgerService(ledgerBalanceRepository);
         transactionService = new TransactionService(
                 transactionRepository, ledgerService, eventPublisher, validator, idempotencyHandler

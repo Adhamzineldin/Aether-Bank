@@ -1,6 +1,8 @@
 package com.maayn.transactionservice.events;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.maayn.transactionservice.entity.OutboxMessage;
 import com.maayn.transactionservice.repository.OutboxRepository;
 import maayn.veld.generated.constants.TransactionRabbitConfig;
@@ -30,7 +32,9 @@ import static org.mockito.Mockito.*;
 class TransactionEventPublisherTest {
 
     @Mock private OutboxRepository outboxRepository;
-    @Spy  private ObjectMapper objectMapper = new ObjectMapper();
+    @Spy  private ObjectMapper objectMapper = new ObjectMapper()
+            .registerModule(new JavaTimeModule())
+            .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
 
     @InjectMocks private TransactionEventPublisher publisher;
 

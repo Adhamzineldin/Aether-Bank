@@ -3,10 +3,11 @@ package com.maayn.transactionservice.config;
 import maayn.veld.generated.constants.TransactionRabbitConfig;
 import maayn.veld.generated.sdk.audit.constants.AuditRabbitConfig;
 import org.springframework.amqp.core.*;
-import org.springframework.amqp.support.converter.JacksonJsonMessageConverter;
 import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.amqp.support.converter.JacksonJsonMessageConverter;
+
 
 @Configuration
 public class RabbitMQConfig {
@@ -41,8 +42,6 @@ public class RabbitMQConfig {
     public Queue sagaCommandsQueue() {
         return new Queue(SAGA_COMMANDS_QUEUE, true);
     }
-
- 
 
     @Bean
     public MessageConverter converter() {

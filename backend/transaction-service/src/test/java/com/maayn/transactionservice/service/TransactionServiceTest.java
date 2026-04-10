@@ -332,7 +332,7 @@ class TransactionServiceTest {
             assertThat(result.getContent()).hasSize(2);
             assertThat(result.getTotalElements()).isEqualTo(5L);
             assertThat(result.getTotalPages()).isEqualTo(3);
-            assertThat(result.isIsLast()).isFalse();
+            assertThat(result.getIsLast()).isFalse();
         }
 
         @Test
@@ -351,7 +351,7 @@ class TransactionServiceTest {
 
             PaginatedTransactionResponse result = transactionService.getAccountTransactions(sourceAccountId.toString(), input);
 
-            assertThat(result.isIsLast()).isTrue();
+            assertThat(result.getIsLast()).isTrue();
         }
     }
 

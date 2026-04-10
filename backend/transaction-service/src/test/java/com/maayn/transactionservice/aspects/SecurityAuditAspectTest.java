@@ -64,9 +64,8 @@ class SecurityAuditAspectTest {
     @DisplayName("aroundTransfer() — Fresh Transfers")
     class FreshTransferTests {
 
-        @Test
-        @DisplayName("Should send WARNING audit event for fresh successful transfer")
-        void aroundTransfer_freshSuccess_sendsWarningAudit() throws Throwable {
+        @Test @DisplayName("Should send SUCCESS audit event for fresh successful transfer")
+        void aroundTransfer_freshSuccess_sendsSuccessAudit() throws Throwable {
             when(idempotencyHandler.getIfAlreadyProcessed("idem-aspect-001"))
                     .thenReturn(Optional.empty());
 
@@ -88,9 +87,9 @@ class SecurityAuditAspectTest {
             AuditEvent auditEvent = captor.getValue();
             assertThat(auditEvent.getServiceName()).isEqualTo("transaction-service");
             assertThat(auditEvent.getAction()).isEqualTo(AuditAction.TRANSFER_FUNDS);
-            assertThat(auditEvent.getStatus()).isEqualTo(AuditStatus.WARNING);
+            assertThat(auditEvent.getStatus()).isEqualTo(AuditStatus.SUCCESS);
             assertThat(auditEvent.getDetails()).contains("TXN-AUDIT01");
-            assertThat(auditEvent.getDetails()).contains("initiated");
+            assertThat(auditEvent.getDetails()).contains("completed successfully");
         }
 
         @Test
@@ -110,7 +109,7 @@ class SecurityAuditAspectTest {
 
             AuditEvent auditEvent = captor.getValue();
             assertThat(auditEvent.getStatus()).isEqualTo(AuditStatus.FAILED);
-            assertThat(auditEvent.getDetails()).contains("failed at initiation");
+            assertThat(auditEvent.getDetails()).contains("Transfer failed at core engine");
             assertThat(auditEvent.getDetails()).contains("Insufficient funds");
         }
 

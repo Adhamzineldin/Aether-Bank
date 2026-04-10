@@ -245,7 +245,7 @@ class TransactionMapperTest {
             assertThat(response.getPageSize()).isEqualTo(10);
             assertThat(response.getTotalElements()).isEqualTo(1L);
             assertThat(response.getTotalPages()).isEqualTo(1);
-            assertThat(response.isIsLast()).isTrue();
+            assertThat(response.getIsLast()).isTrue();
         }
 
         @Test
@@ -257,7 +257,7 @@ class TransactionMapperTest {
 
             assertThat(response.getContent()).isEmpty();
             assertThat(response.getTotalElements()).isEqualTo(0L);
-            assertThat(response.isIsLast()).isTrue();
+            assertThat(response.getIsLast()).isTrue();
         }
 
         @Test
@@ -274,7 +274,7 @@ class TransactionMapperTest {
 
             PaginatedTransactionResponse response = TransactionMapper.toPaginatedResponse(page);
 
-            assertThat(response.isIsLast()).isFalse();
+            assertThat(response.getIsLast()).isFalse();
             assertThat(response.getTotalPages()).isEqualTo(5);
         }
     }
