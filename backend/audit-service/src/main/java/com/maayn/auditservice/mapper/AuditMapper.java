@@ -1,7 +1,8 @@
 package com.maayn.auditservice.mapper;
 
 import com.maayn.auditservice.entity.AuditLog;
-import maayn.veld.generated.models.AuditEvent;
+import maayn.veld.generated.models.shared.AuditEvent;
+
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;

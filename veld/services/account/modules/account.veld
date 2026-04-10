@@ -6,13 +6,7 @@ module Account {
   description: "Account service"
   prefix: /account
   
-  action getBalance {
-      method: GET
-      path: /:accountId/balance
-      output: AccountBalanceResponse
-      errors: [AccountNotFoundError]
-  }
-  
+ 
   action doesAccountExist {
       method: GET
       path: /:accountId/exists

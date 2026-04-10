@@ -15,21 +15,4 @@ public class TransferSagaPublisher {
 
     private final RabbitTemplate rabbitTemplate;
 
-    public void initiateTransferSaga(Transaction transaction) {
-        TransferInitiatedEvent sagaEvent = new TransferInitiatedEvent(
-                transaction.getReferenceNumber(),
-                transaction.getSourceAccountId(),
-                transaction.getDestinationAccountId(),
-                transaction.getAmount(),
-                transaction.getCurrency()
-        );
-
-        rabbitTemplate.convertAndSend(
-                RabbitMQConfig.SAGA_EXCHANGE,
-                RabbitMQConfig.TRANSFER_INITIATED_ROUTING_KEY,
-                sagaEvent
-        );
-
-        log.info("SAGA Initiated: TransferInitiatedEvent sent for TXN {}", transaction.getReferenceNumber());
-    }
 }

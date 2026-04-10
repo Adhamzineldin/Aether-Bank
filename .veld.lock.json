@@ -4,7 +4,7 @@
     {
       "name": "Transaction",
       "description": "Transaction service",
-      "prefix": "/api/transaction_service/transaction",
+      "prefix": "/api/transaction_service/transactions",
       "actions": [
         {
           "name": "transfer",
@@ -27,6 +27,14 @@
             "invalidTarget": 400
           },
           "middleware": []
+        },
+        {
+          "name": "getAccountTransactions",
+          "method": "GET",
+          "path": "/account/:acountId",
+          "input": "getAccountTransactionsRequest",
+          "output": "PaginatedTransactionResponse",
+          "middleware": []
         }
       ]
     }
@@ -35,6 +43,10 @@
     {
       "name": "TransferRequest",
       "fields": [
+        {
+          "name": "idempotencyKey",
+          "type": "string"
+        },
         {
           "name": "sourceAccountId",
           "type": "uuid"
@@ -50,6 +62,10 @@
         {
           "name": "currency",
           "type": "string"
+        },
+        {
+          "name": "type",
+          "type": "TransactionType"
         }
       ]
     },
@@ -71,6 +87,51 @@
         {
           "name": "timestamp",
           "type": "datetime"
+        }
+      ]
+    },
+    {
+      "name": "getAccountTransactionsRequest",
+      "fields": [
+        {
+          "name": "page",
+          "type": "int",
+          "default": "0"
+        },
+        {
+          "name": "pageSize",
+          "type": "int",
+          "default": "20"
+        }
+      ]
+    },
+    {
+      "name": "PaginatedTransactionResponse",
+      "fields": [
+        {
+          "name": "content",
+          "type": "TransactionResponse",
+          "isArray": true
+        },
+        {
+          "name": "pageNumber",
+          "type": "int"
+        },
+        {
+          "name": "pageSize",
+          "type": "int"
+        },
+        {
+          "name": "totalElements",
+          "type": "long"
+        },
+        {
+          "name": "totalPages",
+          "type": "int"
+        },
+        {
+          "name": "isLast",
+          "type": "bool"
         }
       ]
     },
