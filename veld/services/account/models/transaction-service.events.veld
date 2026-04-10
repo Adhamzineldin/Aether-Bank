@@ -1,0 +1,5 @@
+model AccountCreatedEvent {
+    accountId: uuid
+    currency: string
+    createdAt: datetime
+}

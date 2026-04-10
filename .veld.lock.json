@@ -134,56 +134,6 @@
           "type": "bool"
         }
       ]
-    },
-    {
-      "name": "TransactionEvent",
-      "fields": [
-        {
-          "name": "referenceNumber",
-          "type": "string"
-        },
-        {
-          "name": "sourceAccountId",
-          "type": "uuid"
-        },
-        {
-          "name": "destinationAccountId",
-          "type": "uuid"
-        },
-        {
-          "name": "amount",
-          "type": "decimal"
-        },
-        {
-          "name": "status",
-          "type": "TransactionStatus"
-        }
-      ]
-    },
-    {
-      "name": "TransferInitiatedEvent",
-      "fields": [
-        {
-          "name": "transactionId",
-          "type": "string"
-        },
-        {
-          "name": "sourceAccountId",
-          "type": "uuid"
-        },
-        {
-          "name": "destinationAccountId",
-          "type": "uuid"
-        },
-        {
-          "name": "amount",
-          "type": "decimal"
-        },
-        {
-          "name": "currency",
-          "type": "string"
-        }
-      ]
     }
   ]
 }

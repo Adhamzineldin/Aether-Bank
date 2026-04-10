@@ -1,12 +1,12 @@
 package com.maayn.transactionservice.events;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.maayn.transactionservice.config.RabbitMQConfig;
 import com.maayn.transactionservice.entity.OutboxMessage;
 import com.maayn.transactionservice.repository.OutboxRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import maayn.veld.generated.constants.TransactionRabbitConfig;
 import maayn.veld.generated.sdk.notification.models.shared.TransferFailedEvent;
 import maayn.veld.generated.sdk.notification.models.shared.TransferSuccessEvent;
 import org.springframework.stereotype.Component;
@@ -20,11 +20,19 @@ public class TransactionEventPublisher {
     private final ObjectMapper objectMapper;
 
     public void publish(TransferSuccessEvent event) {
-        saveToOutbox(RabbitMQConfig.TRANSACTION_EXCHANGE, RabbitMQConfig.ROUTING_KEY, event);
+        saveToOutbox(
+                TransactionRabbitConfig.BANKING_EXCHANGE,
+                TransactionRabbitConfig.TRANSFER_SUCCESS_ROUTING_KEY,
+                event
+        );
     }
 
     public void publish(TransferFailedEvent event) {
-        saveToOutbox(RabbitMQConfig.TRANSACTION_EXCHANGE, RabbitMQConfig.ROUTING_KEY, event);
+        saveToOutbox(
+                TransactionRabbitConfig.BANKING_EXCHANGE,
+                TransactionRabbitConfig.TRANSFER_FAILED_ROUTING_KEY,
+                event
+        );
     }
 
     @SneakyThrows

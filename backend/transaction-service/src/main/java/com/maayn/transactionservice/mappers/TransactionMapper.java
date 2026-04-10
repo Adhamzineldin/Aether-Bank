@@ -45,17 +45,7 @@ public class TransactionMapper {
                 createdAt
         );
     }
-    
-    public static TransactionEvent toEvent(Transaction entity) {
-        return new TransactionEvent(
-                entity.getReferenceNumber(),
-                entity.getSourceAccountId(),
-                entity.getDestinationAccountId(),
-                entity.getAmount(),
-                entity.getStatus()
-        );
-    }
-    
+
     public static TransferSuccessEvent toTransferSuccessEvent(Transaction entity) {
         
         return new TransferSuccessEvent(
@@ -73,6 +63,7 @@ public class TransactionMapper {
         return new TransferFailedEvent(
                 entity.getReferenceNumber(),
                 entity.getSourceAccountId(),
+                entity.getDestinationAccountId(),
                 entity.getAmount(),
                 entity.getCurrency(),
                 entity.getCreatedAt(),
