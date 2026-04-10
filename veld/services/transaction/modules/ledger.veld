@@ -1,0 +1,13 @@
+import "../models/ledger.model.veld"
+
+module Ledger {
+    description: "Ledger read service"
+    prefix: /ledger
+
+    action getAccountBalance {
+        method: GET
+        path: /:accountId/balance
+        output: BalanceResponse
+        errors: [AccountLedgerNotInitialized:404]
+    }
+}

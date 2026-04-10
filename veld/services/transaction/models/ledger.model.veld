@@ -1,0 +1,6 @@
+model BalanceResponse {
+    accountId: uuid
+    availableBalance: decimal
+    pendingHolds: decimal
+}
+

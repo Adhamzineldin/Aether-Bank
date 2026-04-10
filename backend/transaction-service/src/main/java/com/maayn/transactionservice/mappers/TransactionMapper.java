@@ -1,16 +1,12 @@
 package com.maayn.transactionservice.mappers;
 
 import com.maayn.transactionservice.entity.Transaction;
-import maayn.veld.generated.models.shared.TransactionEvent;
-import maayn.veld.generated.models.transaction.TransactionType;
 import maayn.veld.generated.models.transaction.TransactionStatus;
 import maayn.veld.generated.models.transaction.TransferRequest;
 import maayn.veld.generated.sdk.notification.models.shared.TransferFailedEvent;
 import maayn.veld.generated.sdk.notification.models.shared.TransferSuccessEvent;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.UUID;
 import org.springframework.data.domain.Page;
 import maayn.veld.generated.models.transaction.PaginatedTransactionResponse;
@@ -59,18 +55,6 @@ public class TransactionMapper {
         
     }
     
-    public static TransferFailedEvent toTransferFailedEvent(Transaction entity, String failureReason) {
-        return new TransferFailedEvent(
-                entity.getReferenceNumber(),
-                entity.getSourceAccountId(),
-                entity.getDestinationAccountId(),
-                entity.getAmount(),
-                entity.getCurrency(),
-                entity.getCreatedAt(),
-                failureReason
-        );
-    }
-
     public static PaginatedTransactionResponse toPaginatedResponse(Page<Transaction> page) {
 
         // Convert the raw entities to safe Veld DTOs
