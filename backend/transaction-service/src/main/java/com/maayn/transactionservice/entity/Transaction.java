@@ -1,9 +1,10 @@
 package com.maayn.transactionservice.entity;
 
-import maayn.veld.generated.models.TransactionStatus;
-import maayn.veld.generated.models.TransactionType;
+import maayn.veld.generated.models.transaction.TransactionStatus;
+
 
 import jakarta.persistence.*;
+import maayn.veld.generated.models.transaction.TransactionType;
 import org.hibernate.annotations.CreationTimestamp;
 import lombok.*;
 import org.hibernate.annotations.UpdateTimestamp;

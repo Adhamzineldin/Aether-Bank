@@ -7,19 +7,19 @@ import com.maayn.transactionservice.handlers.TransferIdempotencyHandler;
 import com.maayn.transactionservice.mappers.TransactionMapper;
 import com.maayn.transactionservice.repository.TransactionRepository;
 import com.maayn.transactionservice.validators.TransactionValidator;
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import maayn.veld.generated.models.TransactionEvent;
-import maayn.veld.generated.models.TransactionResponse;
-import maayn.veld.generated.models.TransactionStatus;
-import maayn.veld.generated.models.TransferRequest;
+import maayn.veld.generated.models.transaction.*;
 import maayn.veld.generated.errors.*;
-import maayn.veld.generated.sdk.iam.IamClient;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import maayn.veld.generated.services.ITransactionService;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
+import java.util.UUID;
 
 
 @Service
@@ -53,6 +53,21 @@ public class TransactionService implements ITransactionService {
         sagaPublisher.initiateTransferSaga(saved);
 
         return TransactionMapper.toResponse(saved);
+    }
+    
+    @Transactional(readOnly = true)
+    @Override
+    public PaginatedTransactionResponse getAccountTransactions(String accountId, getAccountTransactionsRequest input) throws Exception {
+        log.info("Fetching transaction history for account {} (Page: {}, Size: {})", accountId, input.getPage(), input.getPageSize());
+        
+        Pageable pageable = PageRequest.of(input.getPage(), input.getPageSize());
+
+        UUID accountIdAsUUID = UUID.fromString(accountId);
+        
+        Page<Transaction> transactionPage = transactionRepository
+                .findBySourceAccountIdOrDestinationAccountIdOrderByCreatedAtDesc(accountIdAsUUID, accountIdAsUUID, pageable);
+
+        return TransactionMapper.toPaginatedResponse(transactionPage);
     }
 
 

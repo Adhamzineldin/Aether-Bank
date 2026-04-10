@@ -2,9 +2,11 @@ package com.maayn.transactionservice.repository;
 
 
 import com.maayn.transactionservice.entity.Transaction;
-import maayn.veld.generated.models.TransactionStatus;
+import maayn.veld.generated.models.transaction.TransactionStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -23,4 +25,10 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
     Optional<Transaction> findByIdempotencyKey(String idempotencyKey);
 
     List<Transaction> findByStatusAndCreatedAtBefore(TransactionStatus status, LocalDateTime threshold);
+
+    Page<Transaction> findBySourceAccountIdOrDestinationAccountIdOrderByCreatedAtDesc(
+            UUID sourceAccountId,
+            UUID destinationAccountId,
+            Pageable pageable
+    );
 }

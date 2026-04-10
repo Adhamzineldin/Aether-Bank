@@ -5,7 +5,7 @@ import com.maayn.transactionservice.mappers.TransactionMapper;
 import com.maayn.transactionservice.repository.TransactionRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import maayn.veld.generated.models.TransactionResponse;
+import maayn.veld.generated.models.transaction.TransactionResponse;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;

@@ -6,7 +6,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import maayn.veld.generated.sdk.account.models.shared.FundsSecuredEvent;
 
-import maayn.veld.generated.models.TransactionStatus;
+import maayn.veld.generated.models.transaction.TransactionStatus;
 import maayn.veld.generated.sdk.account.models.shared.InsufficientFundsEvent;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Component;

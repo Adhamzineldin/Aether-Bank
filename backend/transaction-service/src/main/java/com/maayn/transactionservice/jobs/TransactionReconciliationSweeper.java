@@ -5,7 +5,7 @@ import com.maayn.transactionservice.repository.TransactionRepository;
 import com.maayn.transactionservice.service.TransactionService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import maayn.veld.generated.models.TransactionStatus;
+import maayn.veld.generated.models.transaction.TransactionStatus;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
