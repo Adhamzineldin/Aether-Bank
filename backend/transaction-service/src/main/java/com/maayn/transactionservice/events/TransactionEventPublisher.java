@@ -4,8 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.maayn.transactionservice.entity.OutboxMessage;
 import com.maayn.transactionservice.repository.OutboxRepository;
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+// REMOVE THIS: import lombok.SneakyThrows;
 import maayn.veld.generated.constants.TransactionRabbitConfig;
 import maayn.veld.generated.sdk.notification.models.shared.TransferFailedEvent;
 import maayn.veld.generated.sdk.notification.models.shared.TransferSuccessEvent;
@@ -35,13 +35,17 @@ public class TransactionEventPublisher {
         );
     }
 
-    @SneakyThrows
     private void saveToOutbox(String exchange, String routingKey, Object eventPayload) {
-        String jsonPayload = objectMapper.writeValueAsString(eventPayload);
+        try {
+            String jsonPayload = objectMapper.writeValueAsString(eventPayload);
 
-        OutboxMessage outboxMessage = new OutboxMessage(exchange, routingKey, jsonPayload);
-        outboxRepository.save(outboxMessage);
+            OutboxMessage outboxMessage = new OutboxMessage(exchange, routingKey, jsonPayload);
+            outboxRepository.save(outboxMessage);
 
-        log.info("Event safely stored in Outbox for routing key: {}", routingKey);
+            log.info("Event safely stored in Outbox for routing key: {}", routingKey);
+        } catch (Exception e) {
+            log.error("Failed to serialize Outbox event: {}", e.getMessage());
+            throw new RuntimeException("JSON serialization failed for Outbox message", e);
+        }
     }
 }
