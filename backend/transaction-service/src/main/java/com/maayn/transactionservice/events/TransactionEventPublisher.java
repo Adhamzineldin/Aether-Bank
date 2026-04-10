@@ -1,16 +1,14 @@
 package com.maayn.transactionservice.events;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.maayn.transactionservice.config.RabbitMQConfig;
-import com.maayn.transactionservice.entity.Transaction;
-import com.maayn.transactionservice.mappers.TransactionMapper;
+import com.maayn.transactionservice.entity.OutboxMessage;
+import com.maayn.transactionservice.repository.OutboxRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import maayn.veld.generated.models.shared.TransactionEvent;
-import maayn.veld.generated.models.transaction.TransactionStatus;
 import maayn.veld.generated.sdk.notification.models.shared.TransferFailedEvent;
 import maayn.veld.generated.sdk.notification.models.shared.TransferSuccessEvent;
-import org.springframework.amqp.rabbit.connection.CorrelationData;
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -18,47 +16,24 @@ import org.springframework.stereotype.Component;
 @Slf4j
 public class TransactionEventPublisher {
 
-    private final RabbitTemplate rabbitTemplate;
-
-    public void publish(TransactionEvent event) {
-        sendToBroker(event.getReferenceNumber(), event);
-    }
+    private final OutboxRepository outboxRepository;
+    private final ObjectMapper objectMapper;
 
     public void publish(TransferSuccessEvent event) {
-        sendToBroker(event.getReferenceNumber(), event);
+        saveToOutbox(RabbitMQConfig.TRANSACTION_EXCHANGE, RabbitMQConfig.ROUTING_KEY, event);
     }
 
     public void publish(TransferFailedEvent event) {
-        sendToBroker(event.getReferenceNumber(), event);
+        saveToOutbox(RabbitMQConfig.TRANSACTION_EXCHANGE, RabbitMQConfig.ROUTING_KEY, event);
     }
 
-    private <T> void sendToBroker(String referenceId, T eventPayload) {
-        CorrelationData correlationData = new CorrelationData(referenceId);
+    @SneakyThrows
+    private void saveToOutbox(String exchange, String routingKey, Object eventPayload) {
+        String jsonPayload = objectMapper.writeValueAsString(eventPayload);
 
-        rabbitTemplate.convertAndSend(
-                RabbitMQConfig.TRANSACTION_EXCHANGE,
-                RabbitMQConfig.ROUTING_KEY,
-                eventPayload,
-                correlationData
-        );
+        OutboxMessage outboxMessage = new OutboxMessage(exchange, routingKey, jsonPayload);
+        outboxRepository.save(outboxMessage);
 
-        correlationData.getFuture().whenComplete((result, ex) ->
-                handleBrokerConfirmation(referenceId, result, ex)
-        );
+        log.info("Event safely stored in Outbox for routing key: {}", routingKey);
     }
-
-    private void handleBrokerConfirmation(String referenceNumber, CorrelationData.Confirm result, Throwable ex) {
-        if (ex != null) {
-            log.error("Network error sending message to RabbitMQ for: {}", referenceNumber, ex);
-            return;
-        }
-
-        if (result != null && result.ack()) {
-            log.info("Safe! Message reached RabbitMQ for: {}", referenceNumber);
-        } else {
-            String reason = (result != null) ? result.reason() : "Unknown reason";
-            log.error("RabbitMQ rejected (Nack-ed) the message for: {}. Reason: {}", referenceNumber, reason);
-        }
-    }
-    
 }
