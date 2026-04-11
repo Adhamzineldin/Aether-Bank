@@ -1,22 +1,21 @@
 package com.maayn.transactionservice.aspects;
 
+import com.maayn.transactionservice.config.RabbitMQConfig;
 import com.maayn.transactionservice.handlers.TransferIdempotencyHandler;
-import maayn.veld.generated.sdk.iam.constants.AccountSystemConfig;
-import jakarta.servlet.http.HttpServletRequest;
+import com.maayn.transactionservice.utils.UserContextResolver;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import maayn.veld.generated.sdk.audit.models.shared.*;
 import maayn.veld.generated.models.transaction.TransactionResponse;
 import maayn.veld.generated.models.transaction.TransferRequest;
-import com.maayn.transactionservice.config.RabbitMQConfig;
+import maayn.veld.generated.sdk.audit.models.shared.AuditAction;
+import maayn.veld.generated.sdk.audit.models.shared.AuditEvent;
+import maayn.veld.generated.sdk.audit.models.shared.AuditStatus;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -29,82 +28,55 @@ public class SecurityAuditAspect {
 
     private final RabbitTemplate rabbitTemplate;
     private final TransferIdempotencyHandler idempotencyHandler;
+    private final UserContextResolver userContextResolver;
 
     @Value("${spring.application.name}")
     private String serviceName;
 
-    /**
-     * Wraps the atomic transfer() method to:
-     * 1. Detect idempotent replays and skip auditing them (prevents audit spam).
-     * 2. Audit successful execution instantly as SUCCESS.
-     * 3. Audit immediate failures (like insufficient funds) as FAILED.
-     */
     @Around("execution(* com.maayn.transactionservice.service.TransactionService.transfer(..)) && args(request)")
     public Object aroundTransfer(ProceedingJoinPoint pjp, TransferRequest request) throws Throwable {
 
-        // 1. Check if this is a double-click
-        boolean isIdempotentReplay =
-                idempotencyHandler.getIfAlreadyProcessed(request.getIdempotencyKey()).isPresent();
+        boolean isNewRequest = idempotencyHandler.getIfAlreadyProcessed(request.getIdempotencyKey()).isEmpty();
 
         try {
-            // 2. Proceed with the actual Ledger math
             Object result = pjp.proceed();
 
-            // 3. Audit fresh successes
-            if (!isIdempotentReplay) {
-                TransactionResponse response = (TransactionResponse) result;
-                String details = String.format(
-                        "Transfer %s completed successfully. Amount: %s",
-                        response.getReferenceNumber(), request.getAmount());
-
-                sendAuditMessage(AuditAction.TRANSFER_FUNDS, AuditStatus.SUCCESS, details, extractUserIdFromContext());
+            if (isNewRequest) {
+                auditSuccess(request, (TransactionResponse) result);
             }
-
             return result;
 
         } catch (Exception e) {
-            // 4. Audit fresh failures (e.g. Insufficient Funds thrown by LedgerService)
-            if (!isIdempotentReplay) {
-                String details = String.format("Transfer failed at core engine. Key: %s. Reason: %s",
-                        request.getIdempotencyKey(), e.getMessage());
-
-                sendAuditMessage(AuditAction.TRANSFER_FUNDS, AuditStatus.FAILED, details, extractUserIdFromContext());
+            if (isNewRequest) {
+                auditFailure(request, e);
             }
-            throw e; // Rethrow so the global exception handler or SAGA listener can catch it
+            throw e;
         }
     }
 
-    // --- PRIVATE HELPERS ---
+    // --- PRIVATE AUDIT HELPERS ---
 
-    private void sendAuditMessage(AuditAction action, AuditStatus status, String details, UUID userId) {
+    private void auditSuccess(TransferRequest request, TransactionResponse response) {
+        String details = String.format("Transfer %s completed successfully. Amount: %s",
+                response.getReferenceNumber(), request.getAmount());
+
+        publishEvent(AuditAction.TRANSFER_FUNDS, AuditStatus.SUCCESS, details, request);
+    }
+
+    private void auditFailure(TransferRequest request, Exception e) {
+        String details = String.format("Transfer failed at core engine. Key: %s. Reason: %s",
+                request.getIdempotencyKey(), e.getMessage());
+
+        publishEvent(AuditAction.TRANSFER_FUNDS, AuditStatus.FAILED, details, request);
+    }
+
+    private void publishEvent(AuditAction action, AuditStatus status, String details, TransferRequest request) {
+        UUID userId = userContextResolver.resolveUserId(request);
+
         AuditEvent event = new AuditEvent(
-                this.serviceName,
-                action,
-                status,
-                details,
-                userId,
-                LocalDateTime.now()
+                this.serviceName, action, status, details, userId, LocalDateTime.now()
         );
 
         rabbitTemplate.convertAndSend(RabbitMQConfig.AUDIT_EXCHANGE, RabbitMQConfig.AUDIT_ROUTING_KEY, event);
-    }
-
-    private UUID extractUserIdFromContext() {
-        try {
-            ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
-            if (attributes != null) {
-                HttpServletRequest httpRequest = attributes.getRequest();
-
-                String userIdHeader = httpRequest.getHeader("X-User-Id");
-
-                if (userIdHeader != null && !userIdHeader.isBlank()) {
-                    return UUID.fromString(userIdHeader);
-                }
-            }
-        } catch (Exception e) {
-            log.debug("No HTTP Context available (likely a background SAGA command). Falling back to SYSTEM_USER.");
-        }
-
-        return AccountSystemConfig.SYSTEM_USER_ID;
     }
 }
