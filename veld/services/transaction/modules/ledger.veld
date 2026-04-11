@@ -6,7 +6,7 @@ module Ledger {
 
     action getAccountBalance {
         method: GET
-        path: /:accountId/balance
+        path: /:accountId/:currency/balance
         output: BalanceResponse
         errors: [AccountLedgerNotInitialized:404]
     }

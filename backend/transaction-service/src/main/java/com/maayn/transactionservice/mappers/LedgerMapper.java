@@ -7,7 +7,8 @@ public class LedgerMapper {
 
     public static BalanceResponse toBalanceResponse(LedgerBalance balance) {
         BalanceResponse response = new BalanceResponse();
-        response.setAccountId(balance.getAccountId());
+        response.setAccountId(balance.getId().getAccountId());
+        response.setCurrency(balance.getId().getCurrency());
         response.setAvailableBalance(balance.getAvailableBalance());
         response.setPendingHolds(balance.getPendingHolds());
         return response;

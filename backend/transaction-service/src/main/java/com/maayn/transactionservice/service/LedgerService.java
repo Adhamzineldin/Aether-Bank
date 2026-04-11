@@ -1,5 +1,6 @@
 package com.maayn.transactionservice.service;
 
+import com.maayn.transactionservice.entity.LedgerAccountId;
 import com.maayn.transactionservice.entity.LedgerBalance;
 import com.maayn.transactionservice.exceptions.LedgerNotInitializedException;
 import com.maayn.transactionservice.mappers.LedgerMapper;
@@ -8,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import maayn.veld.generated.errors.LedgerErrors;
 import maayn.veld.generated.models.ledger.BalanceResponse;
+import maayn.veld.generated.sdk.account.constants.SystemAccounts;
 import maayn.veld.generated.services.ILedgerService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -26,28 +28,50 @@ public class LedgerService implements ILedgerService {
 
     @Transactional(readOnly = true)
     @Override
-    public BalanceResponse getAccountBalance(String accountId) throws Exception {
-        log.info("Fetching real-time ledger balance for account {}", accountId);
+    public BalanceResponse getAccountBalance(String accountId, String currency) throws Exception {
+        log.info("Fetching real-time {} ledger balance for account {}", currency, accountId);
 
         UUID accountIdAsUUID = parseAccountId(accountId);
 
-        LedgerBalance balance = ledgerBalanceRepository.getLedgerBalanceByAccountId(accountIdAsUUID)
+        LedgerAccountId id = new LedgerAccountId(accountIdAsUUID, currency);
+
+        LedgerBalance balance = ledgerBalanceRepository.findById(id)
                 .orElseThrow(() -> LedgerErrors.GetAccountBalanceErrors.accountLedgerNotInitialized(
-                        "Ledger balance not initialized for account: " + accountId
+                        "Ledger balance not initialized for account: " + accountId + " in currency: " + currency
                 ));
-        
+
         return LedgerMapper.toBalanceResponse(balance);
     }
-    
+
     @Transactional(propagation = Propagation.MANDATORY)
-    public void executeTransferMath(UUID sourceId, UUID destId, BigDecimal amount) {
-        LedgerBalance source = getBalanceOrThrow(sourceId);
-        LedgerBalance dest = getBalanceOrThrow(destId);
+    public void executeTransferMath(UUID sourceId, UUID destId, BigDecimal amount, String currency) {
+        LedgerBalance source = getBalanceOrThrow(sourceId, currency);
+        LedgerBalance dest = getBalanceOrThrow(destId, currency);
 
         source.debit(amount);
         dest.credit(amount);
 
         ledgerBalanceRepository.saveAll(List.of(source, dest));
+    }
+
+    @Transactional(propagation = Propagation.MANDATORY)
+    public void executeFxTransferMath(UUID sourceId, String sourceCurrency, BigDecimal sourceAmount,
+                                      UUID destId, String destCurrency, BigDecimal destAmount) {
+
+       
+        LedgerBalance sourceUser = getBalanceOrThrow(sourceId, sourceCurrency);
+        LedgerBalance fxVaultSource = getBalanceOrThrow(SystemAccounts.FX_MARKET_MAKER_ID, sourceCurrency);
+
+        sourceUser.debit(sourceAmount);
+        fxVaultSource.credit(sourceAmount);
+
+        LedgerBalance fxVaultDest = getBalanceOrThrow(SystemAccounts.FX_MARKET_MAKER_ID, destCurrency);
+        LedgerBalance destUser = getBalanceOrThrow(destId, destCurrency);
+
+        fxVaultDest.debit(destAmount);
+        destUser.credit(destAmount);
+
+        ledgerBalanceRepository.saveAll(List.of(sourceUser, fxVaultSource, fxVaultDest, destUser));
     }
     
     private UUID parseAccountId(String accountId) {
@@ -58,10 +82,11 @@ public class LedgerService implements ILedgerService {
         }
     }
 
-    private LedgerBalance getBalanceOrThrow(UUID accountId) {
-        return ledgerBalanceRepository.getLedgerBalanceByAccountId(accountId)
+    private LedgerBalance getBalanceOrThrow(UUID accountId, String currency) {
+        LedgerAccountId id = new LedgerAccountId(accountId, currency);
+        return ledgerBalanceRepository.findById(id)
                 .orElseThrow(() -> new LedgerNotInitializedException(
-                        "CRITICAL: Ledger balance missing or account does not exist for ID: " + accountId
+                        "Ledger missing for Account: " + accountId + " in Currency: " + currency
                 ));
     }
 }

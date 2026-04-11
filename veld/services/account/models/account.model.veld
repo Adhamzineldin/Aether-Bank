@@ -1,3 +1,7 @@
+  constant SystemAccounts {
+     CASH_VAULT_ID: uuid = "00000000-0000-0000-0000-000000000000"
+     FX_MARKET_MAKER_ID: uuid = "99999999-9999-9999-9999-999999999999"
+  }
   
   model AccountBalanceResponse {
        accountId: uuid

@@ -1,5 +1,6 @@
 model BalanceResponse {
     accountId: uuid
+    currency: string
     availableBalance: decimal
     pendingHolds: decimal
 }

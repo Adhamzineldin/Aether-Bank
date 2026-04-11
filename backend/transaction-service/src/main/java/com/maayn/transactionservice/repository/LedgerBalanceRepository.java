@@ -1,13 +1,10 @@
 package com.maayn.transactionservice.repository;
 
+import com.maayn.transactionservice.entity.LedgerAccountId;
 import com.maayn.transactionservice.entity.LedgerBalance;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
-
-public interface LedgerBalanceRepository extends JpaRepository<LedgerBalance, UUID> {
-    
-    Optional<LedgerBalance> getLedgerBalanceByAccountId(UUID accountId);
+@Repository
+public interface LedgerBalanceRepository extends JpaRepository<LedgerBalance, LedgerAccountId> {
 }
