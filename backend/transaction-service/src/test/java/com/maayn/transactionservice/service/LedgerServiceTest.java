@@ -1,10 +1,10 @@
 package com.maayn.transactionservice.service;
 
+import com.maayn.transactionservice.entity.LedgerAccountId;
 import com.maayn.transactionservice.entity.LedgerBalance;
 import com.maayn.transactionservice.exceptions.LedgerNotInitializedException;
 import com.maayn.transactionservice.repository.LedgerBalanceRepository;
 import maayn.veld.generated.errors.GetAccountBalanceException;
-import maayn.veld.generated.errors.TransferException;
 import maayn.veld.generated.models.ledger.BalanceResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -51,15 +51,14 @@ class LedgerServiceTest {
         @Test
         @DisplayName("Should return balance when ledger exists for the account")
         void getAccountBalance_success() throws Exception {
-            LedgerBalance balance = new LedgerBalance(accountId);
+            LedgerBalance balance = new LedgerBalance(accountId, "USD");
             balance.setAvailableBalance(new BigDecimal("500.00"));
-            balance.setCurrency("USD");
             balance.setPendingHolds(BigDecimal.ZERO);
 
-            when(ledgerBalanceRepository.getLedgerBalanceByAccountId(accountId))
+            when(ledgerBalanceRepository.findById(new LedgerAccountId(accountId, "USD")))
                     .thenReturn(Optional.of(balance));
 
-            BalanceResponse response = ledgerService.getAccountBalance(accountId.toString());
+            BalanceResponse response = ledgerService.getAccountBalance(accountId.toString(), "USD");
 
             assertThat(response).isNotNull();
             assertThat(response.getAccountId()).isEqualTo(accountId);
@@ -70,10 +69,10 @@ class LedgerServiceTest {
         @Test
         @DisplayName("Should throw exception when ledger not initialized")
         void getAccountBalance_notInitialized_throwsException() {
-            when(ledgerBalanceRepository.getLedgerBalanceByAccountId(accountId))
+            when(ledgerBalanceRepository.findById(new LedgerAccountId(accountId, "USD")))
                     .thenReturn(Optional.empty());
 
-            assertThatThrownBy(() -> ledgerService.getAccountBalance(accountId.toString()))
+            assertThatThrownBy(() -> ledgerService.getAccountBalance(accountId.toString(), "USD"))
                     .isInstanceOf(GetAccountBalanceException.class)
                     .hasMessageContaining("Ledger balance not initialized");
         }
@@ -81,34 +80,33 @@ class LedgerServiceTest {
         @Test
         @DisplayName("Should throw exception for invalid UUID format")
         void getAccountBalance_invalidUUID_throwsException() {
-            assertThatThrownBy(() -> ledgerService.getAccountBalance("not-a-uuid"))
+            assertThatThrownBy(() -> ledgerService.getAccountBalance("not-a-uuid", "USD"))
                     .isInstanceOf(IllegalArgumentException.class);
         }
 
         @Test
         @DisplayName("Should throw exception for empty account ID")
         void getAccountBalance_emptyAccountId_throwsException() {
-            assertThatThrownBy(() -> ledgerService.getAccountBalance(""))
+            assertThatThrownBy(() -> ledgerService.getAccountBalance("", "USD"))
                     .isInstanceOf(IllegalArgumentException.class);
         }
 
         @Test
         @DisplayName("Should throw exception for null-like account ID")
         void getAccountBalance_nullString_throwsException() {
-            assertThatThrownBy(() -> ledgerService.getAccountBalance("null"))
+            assertThatThrownBy(() -> ledgerService.getAccountBalance("null", "USD"))
                     .isInstanceOf(IllegalArgumentException.class);
         }
 
         @Test
         @DisplayName("Should return zero balance for newly initialized ledger")
         void getAccountBalance_zeroBalance() throws Exception {
-            LedgerBalance balance = new LedgerBalance(accountId);
-            balance.setCurrency("USD");
+            LedgerBalance balance = new LedgerBalance(accountId, "USD");
 
-            when(ledgerBalanceRepository.getLedgerBalanceByAccountId(accountId))
+            when(ledgerBalanceRepository.findById(new LedgerAccountId(accountId, "USD")))
                     .thenReturn(Optional.of(balance));
 
-            BalanceResponse response = ledgerService.getAccountBalance(accountId.toString());
+            BalanceResponse response = ledgerService.getAccountBalance(accountId.toString(), "USD");
 
             assertThat(response.getAvailableBalance()).isEqualByComparingTo(BigDecimal.ZERO);
             assertThat(response.getPendingHolds()).isEqualByComparingTo(BigDecimal.ZERO);
@@ -135,20 +133,18 @@ class LedgerServiceTest {
         @Test
         @DisplayName("Should debit source and credit destination for valid transfer")
         void executeTransferMath_success() {
-            LedgerBalance source = new LedgerBalance(sourceId);
+            LedgerBalance source = new LedgerBalance(sourceId, "USD");
             source.setAvailableBalance(new BigDecimal("1000.00"));
-            source.setCurrency("USD");
 
-            LedgerBalance dest = new LedgerBalance(destId);
+            LedgerBalance dest = new LedgerBalance(destId, "USD");
             dest.setAvailableBalance(new BigDecimal("200.00"));
-            dest.setCurrency("USD");
 
-            when(ledgerBalanceRepository.getLedgerBalanceByAccountId(sourceId))
+            when(ledgerBalanceRepository.findById(new LedgerAccountId(sourceId, "USD")))
                     .thenReturn(Optional.of(source));
-            when(ledgerBalanceRepository.getLedgerBalanceByAccountId(destId))
+            when(ledgerBalanceRepository.findById(new LedgerAccountId(destId, "USD")))
                     .thenReturn(Optional.of(dest));
 
-            ledgerService.executeTransferMath(sourceId, destId, new BigDecimal("300.00"));
+            ledgerService.executeTransferMath(sourceId, destId, new BigDecimal("300.00"), "USD");
 
             assertThat(source.getAvailableBalance()).isEqualByComparingTo(new BigDecimal("700.00"));
             assertThat(dest.getAvailableBalance()).isEqualByComparingTo(new BigDecimal("500.00"));
@@ -159,21 +155,19 @@ class LedgerServiceTest {
         @Test
         @DisplayName("Should throw exception when source has insufficient funds")
         void executeTransferMath_insufficientFunds() {
-            LedgerBalance source = new LedgerBalance(sourceId);
+            LedgerBalance source = new LedgerBalance(sourceId, "USD");
             source.setAvailableBalance(new BigDecimal("50.00"));
-            source.setCurrency("USD");
 
-            LedgerBalance dest = new LedgerBalance(destId);
+            LedgerBalance dest = new LedgerBalance(destId, "USD");
             dest.setAvailableBalance(new BigDecimal("200.00"));
-            dest.setCurrency("USD");
 
-            when(ledgerBalanceRepository.getLedgerBalanceByAccountId(sourceId))
+            when(ledgerBalanceRepository.findById(new LedgerAccountId(sourceId, "USD")))
                     .thenReturn(Optional.of(source));
-            when(ledgerBalanceRepository.getLedgerBalanceByAccountId(destId))
+            when(ledgerBalanceRepository.findById(new LedgerAccountId(destId, "USD")))
                     .thenReturn(Optional.of(dest));
 
-            assertThatThrownBy(() -> ledgerService.executeTransferMath(sourceId, destId, new BigDecimal("100.00")))
-                    .isInstanceOf(TransferException.class)
+            assertThatThrownBy(() -> ledgerService.executeTransferMath(sourceId, destId, new BigDecimal("100.00"), "USD"))
+                    .isInstanceOf(IllegalArgumentException.class)
                     .hasMessageContaining("Insufficient funds");
 
             // Destination should NOT have been credited
@@ -183,28 +177,25 @@ class LedgerServiceTest {
         @Test
         @DisplayName("Should throw LedgerNotInitializedException for non-existing source account")
         void executeTransferMath_newSourceAccount() {
-            when(ledgerBalanceRepository.getLedgerBalanceByAccountId(sourceId))
-                    .thenReturn(Optional.empty()); // Source doesn't exist
+            when(ledgerBalanceRepository.findById(new LedgerAccountId(sourceId, "USD")))
+                    .thenReturn(Optional.empty());
 
-            // LedgerService throws LedgerNotInitializedException at the boundary; TransactionService translates it
-            assertThatThrownBy(() -> ledgerService.executeTransferMath(sourceId, destId, new BigDecimal("100.00")))
+            assertThatThrownBy(() -> ledgerService.executeTransferMath(sourceId, destId, new BigDecimal("100.00"), "USD"))
                     .isInstanceOf(LedgerNotInitializedException.class);
         }
 
         @Test
         @DisplayName("Should throw LedgerNotInitializedException for non-existing destination account")
         void executeTransferMath_newDestinationAccount() {
-            LedgerBalance source = new LedgerBalance(sourceId);
+            LedgerBalance source = new LedgerBalance(sourceId, "USD");
             source.setAvailableBalance(new BigDecimal("1000.00"));
-            source.setCurrency("USD");
 
-            when(ledgerBalanceRepository.getLedgerBalanceByAccountId(sourceId))
+            when(ledgerBalanceRepository.findById(new LedgerAccountId(sourceId, "USD")))
                     .thenReturn(Optional.of(source));
-            when(ledgerBalanceRepository.getLedgerBalanceByAccountId(destId))
-                    .thenReturn(Optional.empty()); // Dest ledger not yet provisioned
+            when(ledgerBalanceRepository.findById(new LedgerAccountId(destId, "USD")))
+                    .thenReturn(Optional.empty());
 
-            // Ledger balances are only created via AccountCreated events, never auto-generated here
-            assertThatThrownBy(() -> ledgerService.executeTransferMath(sourceId, destId, new BigDecimal("100.00")))
+            assertThatThrownBy(() -> ledgerService.executeTransferMath(sourceId, destId, new BigDecimal("100.00"), "USD"))
                     .isInstanceOf(LedgerNotInitializedException.class)
                     .hasMessageContaining(destId.toString());
 
@@ -214,20 +205,18 @@ class LedgerServiceTest {
         @Test
         @DisplayName("Should handle transfer of exact source balance (drain to zero)")
         void executeTransferMath_drainToZero() {
-            LedgerBalance source = new LedgerBalance(sourceId);
+            LedgerBalance source = new LedgerBalance(sourceId, "USD");
             source.setAvailableBalance(new BigDecimal("500.00"));
-            source.setCurrency("USD");
 
-            LedgerBalance dest = new LedgerBalance(destId);
+            LedgerBalance dest = new LedgerBalance(destId, "USD");
             dest.setAvailableBalance(new BigDecimal("0.00"));
-            dest.setCurrency("USD");
 
-            when(ledgerBalanceRepository.getLedgerBalanceByAccountId(sourceId))
+            when(ledgerBalanceRepository.findById(new LedgerAccountId(sourceId, "USD")))
                     .thenReturn(Optional.of(source));
-            when(ledgerBalanceRepository.getLedgerBalanceByAccountId(destId))
+            when(ledgerBalanceRepository.findById(new LedgerAccountId(destId, "USD")))
                     .thenReturn(Optional.of(dest));
 
-            ledgerService.executeTransferMath(sourceId, destId, new BigDecimal("500.00"));
+            ledgerService.executeTransferMath(sourceId, destId, new BigDecimal("500.00"), "USD");
 
             assertThat(source.getAvailableBalance()).isEqualByComparingTo(BigDecimal.ZERO);
             assertThat(dest.getAvailableBalance()).isEqualByComparingTo(new BigDecimal("500.00"));
@@ -236,20 +225,18 @@ class LedgerServiceTest {
         @Test
         @DisplayName("Should correctly transfer very small amounts")
         void executeTransferMath_smallAmount() {
-            LedgerBalance source = new LedgerBalance(sourceId);
+            LedgerBalance source = new LedgerBalance(sourceId, "USD");
             source.setAvailableBalance(new BigDecimal("1.00"));
-            source.setCurrency("USD");
 
-            LedgerBalance dest = new LedgerBalance(destId);
+            LedgerBalance dest = new LedgerBalance(destId, "USD");
             dest.setAvailableBalance(new BigDecimal("0.00"));
-            dest.setCurrency("USD");
 
-            when(ledgerBalanceRepository.getLedgerBalanceByAccountId(sourceId))
+            when(ledgerBalanceRepository.findById(new LedgerAccountId(sourceId, "USD")))
                     .thenReturn(Optional.of(source));
-            when(ledgerBalanceRepository.getLedgerBalanceByAccountId(destId))
+            when(ledgerBalanceRepository.findById(new LedgerAccountId(destId, "USD")))
                     .thenReturn(Optional.of(dest));
 
-            ledgerService.executeTransferMath(sourceId, destId, new BigDecimal("0.01"));
+            ledgerService.executeTransferMath(sourceId, destId, new BigDecimal("0.01"), "USD");
 
             assertThat(source.getAvailableBalance()).isEqualByComparingTo(new BigDecimal("0.99"));
             assertThat(dest.getAvailableBalance()).isEqualByComparingTo(new BigDecimal("0.01"));
@@ -258,20 +245,18 @@ class LedgerServiceTest {
         @Test
         @DisplayName("Should save both balances in a single saveAll call")
         void executeTransferMath_savesBothBalancesAtOnce() {
-            LedgerBalance source = new LedgerBalance(sourceId);
+            LedgerBalance source = new LedgerBalance(sourceId, "USD");
             source.setAvailableBalance(new BigDecimal("1000.00"));
-            source.setCurrency("USD");
 
-            LedgerBalance dest = new LedgerBalance(destId);
+            LedgerBalance dest = new LedgerBalance(destId, "USD");
             dest.setAvailableBalance(new BigDecimal("200.00"));
-            dest.setCurrency("USD");
 
-            when(ledgerBalanceRepository.getLedgerBalanceByAccountId(sourceId))
+            when(ledgerBalanceRepository.findById(new LedgerAccountId(sourceId, "USD")))
                     .thenReturn(Optional.of(source));
-            when(ledgerBalanceRepository.getLedgerBalanceByAccountId(destId))
+            when(ledgerBalanceRepository.findById(new LedgerAccountId(destId, "USD")))
                     .thenReturn(Optional.of(dest));
 
-            ledgerService.executeTransferMath(sourceId, destId, new BigDecimal("100.00"));
+            ledgerService.executeTransferMath(sourceId, destId, new BigDecimal("100.00"), "USD");
 
             @SuppressWarnings("unchecked")
             ArgumentCaptor<List<LedgerBalance>> captor = ArgumentCaptor.forClass(List.class);

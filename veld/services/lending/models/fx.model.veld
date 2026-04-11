@@ -1,0 +1,11 @@
+model GetRatesRequest {
+  sourceCurrency: string
+  destinationCurrency: string
+}
+
+model GetRatesResponse {
+  sourceCurrency: string
+  destinationCurrency: string
+  exchangeRate: decimal
+  timestamp: datetime
+}

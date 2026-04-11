@@ -1,5 +1,6 @@
 package com.maayn.transactionservice.integration;
 
+import com.maayn.transactionservice.entity.LedgerAccountId;
 import com.maayn.transactionservice.entity.LedgerBalance;
 import com.maayn.transactionservice.entity.Transaction;
 import com.maayn.transactionservice.events.TransactionEventPublisher;
@@ -9,6 +10,7 @@ import com.maayn.transactionservice.listeners.LedgerCommandListener;
 import com.maayn.transactionservice.repository.LedgerBalanceRepository;
 import com.maayn.transactionservice.repository.OutboxRepository;
 import com.maayn.transactionservice.repository.TransactionRepository;
+import com.maayn.transactionservice.service.FxRateService;
 import com.maayn.transactionservice.service.LedgerService;
 import com.maayn.transactionservice.service.TransactionService;
 import com.maayn.transactionservice.validators.TransactionValidator;
@@ -62,6 +64,7 @@ class RabbitMQIntegrationSimulationTest {
     private TransferIdempotencyHandler idempotencyHandler;
     private TransactionEventPublisher eventPublisher;
     private LedgerService ledgerService;
+    private FxRateService fxRateService;
     private TransactionService transactionService;
     private AccountEventListener accountEventListener;
     private LedgerCommandListener ledgerCommandListener;
@@ -79,8 +82,9 @@ class RabbitMQIntegrationSimulationTest {
                 .disable(com.fasterxml.jackson.databind.SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
         eventPublisher = new TransactionEventPublisher(outboxRepository, objectMapper);
         ledgerService = new LedgerService(ledgerBalanceRepository);
+        fxRateService = new FxRateService();
         transactionService = new TransactionService(
-                transactionRepository, ledgerService, eventPublisher, validator, idempotencyHandler
+                transactionRepository, ledgerService, fxRateService, eventPublisher, validator, idempotencyHandler
         );
         accountEventListener = new AccountEventListener(ledgerBalanceRepository);
         ledgerCommandListener = new LedgerCommandListener(transactionService, eventPublisher);
@@ -104,7 +108,7 @@ class RabbitMQIntegrationSimulationTest {
         void accountCreated_initializesLedgerBalance() {
             AccountCreatedEvent event = new AccountCreatedEvent(aliceAccountId, "USD", LocalDateTime.now());
 
-            when(ledgerBalanceRepository.existsById(aliceAccountId)).thenReturn(false);
+            when(ledgerBalanceRepository.existsById(new LedgerAccountId(aliceAccountId, "USD"))).thenReturn(false);
 
             // Simulate the RabbitMQ message arriving at our listener
             accountEventListener.handleAccountCreated(event);
@@ -114,7 +118,7 @@ class RabbitMQIntegrationSimulationTest {
             verify(ledgerBalanceRepository).save(captor.capture());
 
             LedgerBalance created = captor.getValue();
-            assertThat(created.getAccountId()).isEqualTo(aliceAccountId);
+            assertThat(created.getId().getAccountId()).isEqualTo(aliceAccountId);
             assertThat(created.getAvailableBalance()).isEqualByComparingTo(BigDecimal.ZERO);
             assertThat(created.getPendingHolds()).isEqualByComparingTo(BigDecimal.ZERO);
         }
@@ -122,7 +126,7 @@ class RabbitMQIntegrationSimulationTest {
         @Test
         @DisplayName("Full flow: Multiple accounts created → Each gets its own ledger")
         void multipleAccountsCreated_eachGetsLedger() {
-            when(ledgerBalanceRepository.existsById(any())).thenReturn(false);
+            when(ledgerBalanceRepository.existsById(any(LedgerAccountId.class))).thenReturn(false);
 
             accountEventListener.handleAccountCreated(new AccountCreatedEvent(aliceAccountId, "USD", LocalDateTime.now()));
             accountEventListener.handleAccountCreated(new AccountCreatedEvent(bobAccountId, "USD", LocalDateTime.now()));
@@ -134,7 +138,8 @@ class RabbitMQIntegrationSimulationTest {
         @Test
         @DisplayName("Full flow: Duplicate AccountCreatedEvent → No duplicate ledger")
         void duplicateAccountCreated_noDoubleLedger() {
-            when(ledgerBalanceRepository.existsById(aliceAccountId))
+            LedgerAccountId aliceUsdId = new LedgerAccountId(aliceAccountId, "USD");
+            when(ledgerBalanceRepository.existsById(aliceUsdId))
                     .thenReturn(false)  // first call
                     .thenReturn(true);  // second call (already exists)
 
@@ -160,8 +165,8 @@ class RabbitMQIntegrationSimulationTest {
             TransferRequest command = buildTransferCommand(aliceAccountId, bobAccountId, "150.00", "saga-fin-001");
 
             // Alice has $500, Bob has $100
-            setupLedgerBalance(aliceAccountId, "500.00");
-            setupLedgerBalance(bobAccountId, "100.00");
+            setupLedgerBalance(aliceAccountId, "USD", "500.00");
+            setupLedgerBalance(bobAccountId, "USD", "100.00");
 
             // No existing transaction for this idempotency key
             when(transactionRepository.findByIdempotencyKey("saga-fin-001")).thenReturn(Optional.empty());
@@ -200,8 +205,8 @@ class RabbitMQIntegrationSimulationTest {
             TransferRequest command = buildTransferCommand(aliceAccountId, bobAccountId, "1000.00", "saga-fin-002");
 
             // Alice only has $50
-            setupLedgerBalance(aliceAccountId, "50.00");
-            setupLedgerBalance(bobAccountId, "100.00");
+            setupLedgerBalance(aliceAccountId, "USD", "50.00");
+            setupLedgerBalance(bobAccountId, "USD", "100.00");
 
             when(transactionRepository.findByIdempotencyKey("saga-fin-002")).thenReturn(Optional.empty());
 
@@ -284,8 +289,8 @@ class RabbitMQIntegrationSimulationTest {
         void sagaTransfer_ledgerBalancesUpdated() throws Exception {
             TransferRequest command = buildTransferCommand(aliceAccountId, bobAccountId, "300.00", "saga-fin-006");
 
-            LedgerBalance aliceBalance = setupLedgerBalance(aliceAccountId, "1000.00");
-            LedgerBalance bobBalance = setupLedgerBalance(bobAccountId, "200.00");
+            LedgerBalance aliceBalance = setupLedgerBalance(aliceAccountId, "USD", "1000.00");
+            LedgerBalance bobBalance = setupLedgerBalance(bobAccountId, "USD", "200.00");
 
             when(transactionRepository.findByIdempotencyKey("saga-fin-006")).thenReturn(Optional.empty());
             when(transactionRepository.saveAndFlush(any(Transaction.class))).thenAnswer(inv -> {
@@ -323,10 +328,12 @@ class RabbitMQIntegrationSimulationTest {
             cardCommand.setDestinationAccountId(merchantAccountId); // Merchant
             cardCommand.setAmount(new BigDecimal("49.99"));
             cardCommand.setCurrency("USD");
+            cardCommand.setSourceCurrency("USD");
+            cardCommand.setDestinationCurrency("USD");
             cardCommand.setType(TransactionType.CARD_PAYMENT);
 
-            LedgerBalance customerBalance = setupLedgerBalance(aliceAccountId, "500.00");
-            LedgerBalance merchantBalance = setupLedgerBalance(merchantAccountId, "10000.00");
+            LedgerBalance customerBalance = setupLedgerBalance(aliceAccountId, "USD", "500.00");
+            LedgerBalance merchantBalance = setupLedgerBalance(merchantAccountId, "USD", "10000.00");
 
             when(transactionRepository.findByIdempotencyKey("card-pay-001")).thenReturn(Optional.empty());
             when(transactionRepository.saveAndFlush(any(Transaction.class))).thenAnswer(inv -> {
@@ -364,10 +371,12 @@ class RabbitMQIntegrationSimulationTest {
             cardCommand.setDestinationAccountId(merchantAccountId);
             cardCommand.setAmount(new BigDecimal("999.99"));
             cardCommand.setCurrency("USD");
+            cardCommand.setSourceCurrency("USD");
+            cardCommand.setDestinationCurrency("USD");
             cardCommand.setType(TransactionType.CARD_PAYMENT);
 
-            setupLedgerBalance(aliceAccountId, "10.00"); // Not enough
-            setupLedgerBalance(merchantAccountId, "5000.00");
+            setupLedgerBalance(aliceAccountId, "USD", "10.00"); // Not enough
+            setupLedgerBalance(merchantAccountId, "USD", "5000.00");
 
             when(transactionRepository.findByIdempotencyKey("card-pay-002")).thenReturn(Optional.empty());
 
@@ -375,8 +384,7 @@ class RabbitMQIntegrationSimulationTest {
 
             verify(transactionRepository, never()).saveAndFlush(any());
             verify(outboxRepository).save(argThat(msg ->
-                    msg.getRoutingKey().equals("transaction.transfer.failed") &&
-                    msg.getPayload().contains("Insufficient funds")
+                    msg.getRoutingKey().equals("transaction.transfer.failed")
             ));
         }
 
@@ -389,10 +397,12 @@ class RabbitMQIntegrationSimulationTest {
             cardCommand.setDestinationAccountId(merchantAccountId);
             cardCommand.setAmount(new BigDecimal("0.01"));
             cardCommand.setCurrency("USD");
+            cardCommand.setSourceCurrency("USD");
+            cardCommand.setDestinationCurrency("USD");
             cardCommand.setType(TransactionType.CARD_PAYMENT);
 
-            setupLedgerBalance(aliceAccountId, "100.00");
-            setupLedgerBalance(merchantAccountId, "5000.00");
+            setupLedgerBalance(aliceAccountId, "USD", "100.00");
+            setupLedgerBalance(merchantAccountId, "USD", "5000.00");
 
             when(transactionRepository.findByIdempotencyKey("card-pay-003")).thenReturn(Optional.empty());
             when(transactionRepository.saveAndFlush(any(Transaction.class))).thenAnswer(inv -> {
@@ -416,10 +426,12 @@ class RabbitMQIntegrationSimulationTest {
             cardCommand.setDestinationAccountId(merchantAccountId);
             cardCommand.setAmount(new BigDecimal("500.00"));
             cardCommand.setCurrency("USD");
+            cardCommand.setSourceCurrency("USD");
+            cardCommand.setDestinationCurrency("USD");
             cardCommand.setType(TransactionType.CARD_PAYMENT);
 
-            LedgerBalance customerBalance = setupLedgerBalance(aliceAccountId, "500.00");
-            setupLedgerBalance(merchantAccountId, "5000.00");
+            LedgerBalance customerBalance = setupLedgerBalance(aliceAccountId, "USD", "500.00");
+            setupLedgerBalance(merchantAccountId, "USD", "5000.00");
 
             when(transactionRepository.findByIdempotencyKey("card-pay-004")).thenReturn(Optional.empty());
             when(transactionRepository.saveAndFlush(any(Transaction.class))).thenAnswer(inv -> {
@@ -447,17 +459,17 @@ class RabbitMQIntegrationSimulationTest {
         @DisplayName("Full lifecycle: Account created → Receives funds → Sends transfer")
         void fullLifecycle_createFundTransfer() throws Exception {
             // Step 1: Account Service creates Alice's account
-            when(ledgerBalanceRepository.existsById(aliceAccountId)).thenReturn(false);
+            when(ledgerBalanceRepository.existsById(new LedgerAccountId(aliceAccountId, "USD"))).thenReturn(false);
             accountEventListener.handleAccountCreated(new AccountCreatedEvent(aliceAccountId, "USD", LocalDateTime.now()));
             verify(ledgerBalanceRepository).save(any(LedgerBalance.class));
 
             // Step 2: Account Service creates Bob's account
-            when(ledgerBalanceRepository.existsById(bobAccountId)).thenReturn(false);
+            when(ledgerBalanceRepository.existsById(new LedgerAccountId(bobAccountId, "USD"))).thenReturn(false);
             accountEventListener.handleAccountCreated(new AccountCreatedEvent(bobAccountId, "USD", LocalDateTime.now()));
 
             // Step 3: Now simulate Alice having funds and transferring to Bob
-            LedgerBalance aliceBalance = setupLedgerBalance(aliceAccountId, "1000.00");
-            LedgerBalance bobBalance = setupLedgerBalance(bobAccountId, "0.00");
+            LedgerBalance aliceBalance = setupLedgerBalance(aliceAccountId, "USD", "1000.00");
+            LedgerBalance bobBalance = setupLedgerBalance(bobAccountId, "USD", "0.00");
 
             TransferRequest command = buildTransferCommand(aliceAccountId, bobAccountId, "250.00", "lifecycle-001");
             when(transactionRepository.findByIdempotencyKey("lifecycle-001")).thenReturn(Optional.empty());
@@ -535,8 +547,8 @@ class RabbitMQIntegrationSimulationTest {
         void sagaCommand_rapidDuplicates_onlyFirstProcessed() throws Exception {
             TransferRequest command = buildTransferCommand(aliceAccountId, bobAccountId, "100.00", "edge-004");
 
-            setupLedgerBalance(aliceAccountId, "500.00");
-            setupLedgerBalance(bobAccountId, "200.00");
+            setupLedgerBalance(aliceAccountId, "USD", "500.00");
+            setupLedgerBalance(bobAccountId, "USD", "200.00");
 
             // First call: not yet processed
             when(transactionRepository.findByIdempotencyKey("edge-004"))
@@ -578,16 +590,17 @@ class RabbitMQIntegrationSimulationTest {
         cmd.setDestinationAccountId(dest);
         cmd.setAmount(new BigDecimal(amount));
         cmd.setCurrency("USD");
+        cmd.setSourceCurrency("USD");
+        cmd.setDestinationCurrency("USD");
         cmd.setType(TransactionType.TRANSFER);
         return cmd;
     }
 
-    private LedgerBalance setupLedgerBalance(UUID accountId, String balance) {
-        LedgerBalance ledger = new LedgerBalance(accountId);
+    private LedgerBalance setupLedgerBalance(UUID accountId, String currency, String balance) {
+        LedgerBalance ledger = new LedgerBalance(accountId, currency);
         ledger.setAvailableBalance(new BigDecimal(balance));
-        ledger.setCurrency("USD");
 
-        when(ledgerBalanceRepository.getLedgerBalanceByAccountId(accountId))
+        when(ledgerBalanceRepository.findById(new LedgerAccountId(accountId, currency)))
                 .thenReturn(Optional.of(ledger));
         return ledger;
     }

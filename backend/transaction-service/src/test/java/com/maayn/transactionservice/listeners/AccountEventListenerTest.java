@@ -1,5 +1,6 @@
 package com.maayn.transactionservice.listeners;
 
+import com.maayn.transactionservice.entity.LedgerAccountId;
 import com.maayn.transactionservice.entity.LedgerBalance;
 import com.maayn.transactionservice.repository.LedgerBalanceRepository;
 import maayn.veld.generated.sdk.account.models.shared.AccountCreatedEvent;
@@ -42,7 +43,7 @@ class AccountEventListenerTest {
             UUID accountId = UUID.randomUUID();
             AccountCreatedEvent event = new AccountCreatedEvent(accountId, "USD", LocalDateTime.now());
 
-            when(ledgerBalanceRepository.existsById(accountId)).thenReturn(false);
+            when(ledgerBalanceRepository.existsById(new LedgerAccountId(accountId, "USD"))).thenReturn(false);
 
             listener.handleAccountCreated(event);
 
@@ -50,7 +51,7 @@ class AccountEventListenerTest {
             verify(ledgerBalanceRepository).save(captor.capture());
 
             LedgerBalance saved = captor.getValue();
-            assertThat(saved.getAccountId()).isEqualTo(accountId);
+            assertThat(saved.getId().getAccountId()).isEqualTo(accountId);
             assertThat(saved.getAvailableBalance()).isEqualByComparingTo(BigDecimal.ZERO);
             assertThat(saved.getPendingHolds()).isEqualByComparingTo(BigDecimal.ZERO);
         }
@@ -61,7 +62,7 @@ class AccountEventListenerTest {
             UUID accountId = UUID.randomUUID();
             AccountCreatedEvent event = new AccountCreatedEvent(accountId, "USD", LocalDateTime.now());
 
-            when(ledgerBalanceRepository.existsById(accountId)).thenReturn(true);
+            when(ledgerBalanceRepository.existsById(new LedgerAccountId(accountId, "USD"))).thenReturn(true);
 
             listener.handleAccountCreated(event);
 
@@ -74,7 +75,7 @@ class AccountEventListenerTest {
             UUID accountId = UUID.randomUUID();
             AccountCreatedEvent event = new AccountCreatedEvent(accountId, "EUR", LocalDateTime.now());
 
-            when(ledgerBalanceRepository.existsById(accountId)).thenReturn(false);
+            when(ledgerBalanceRepository.existsById(new LedgerAccountId(accountId, "EUR"))).thenReturn(false);
 
             listener.handleAccountCreated(event);
 
@@ -88,11 +89,11 @@ class AccountEventListenerTest {
             AccountCreatedEvent event = new AccountCreatedEvent(accountId, "USD", LocalDateTime.now());
 
             // First call: account doesn't exist
-            when(ledgerBalanceRepository.existsById(accountId)).thenReturn(false);
+            when(ledgerBalanceRepository.existsById(new LedgerAccountId(accountId, "USD"))).thenReturn(false);
             listener.handleAccountCreated(event);
 
             // Second call: account now exists
-            when(ledgerBalanceRepository.existsById(accountId)).thenReturn(true);
+            when(ledgerBalanceRepository.existsById(new LedgerAccountId(accountId, "USD"))).thenReturn(true);
             listener.handleAccountCreated(event);
 
             verify(ledgerBalanceRepository, times(1)).save(any(LedgerBalance.class));
@@ -104,7 +105,7 @@ class AccountEventListenerTest {
             UUID accountId = UUID.randomUUID();
             AccountCreatedEvent event = new AccountCreatedEvent(accountId, "USD", LocalDateTime.now());
 
-            when(ledgerBalanceRepository.existsById(accountId)).thenReturn(false);
+            when(ledgerBalanceRepository.existsById(new LedgerAccountId(accountId, "USD"))).thenReturn(false);
 
             listener.handleAccountCreated(event);
 
@@ -125,7 +126,7 @@ class AccountEventListenerTest {
             AccountCreatedEvent event1 = new AccountCreatedEvent(accountId1, "USD", LocalDateTime.now());
             AccountCreatedEvent event2 = new AccountCreatedEvent(accountId2, "GBP", LocalDateTime.now());
 
-            when(ledgerBalanceRepository.existsById(any())).thenReturn(false);
+            when(ledgerBalanceRepository.existsById(any(LedgerAccountId.class))).thenReturn(false);
 
             listener.handleAccountCreated(event1);
             listener.handleAccountCreated(event2);

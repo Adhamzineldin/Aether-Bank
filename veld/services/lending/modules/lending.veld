@@ -6,23 +6,4 @@ module Lending {
   description: "Lending service"
   prefix: /api/lending
 
-  action ListLending {
-    method: GET
-    path: /
-    output: LendingItem[]
-  }
-
-  action GetLending {
-    method: GET
-    path: /:id
-    output: LendingItem
-    errors: [NotFound]
-  }
-
-  action CreateLending {
-    method: POST
-    path: /
-    input: CreateLendingInput
-    output: LendingItem
-  }
 }

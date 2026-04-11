@@ -20,6 +20,8 @@ model TransferRequest {
   destinationAccountId: uuid
   amount: decimal
   currency: string
+  sourceCurrency: string
+  destinationCurrency: string
   type: TransactionType
 }
 

@@ -1,5 +1,6 @@
 package com.maayn.transactionservice.listeners;
 
+import com.maayn.transactionservice.entity.LedgerAccountId;
 import com.maayn.transactionservice.entity.LedgerBalance;
 import com.maayn.transactionservice.repository.LedgerBalanceRepository;
 import lombok.RequiredArgsConstructor;
@@ -16,18 +17,27 @@ import org.springframework.transaction.annotation.Transactional;
 public class AccountEventListener {
 
     private final LedgerBalanceRepository ledgerBalanceRepository;
-    
+
     @RabbitListener(queues = TransactionRabbitConfig.ACCOUNT_EVENTS_QUEUE)
     @Transactional
     public void handleAccountCreated(AccountCreatedEvent event) {
-        log.info("Received AccountCreatedEvent for Account ID: {}", event.getAccountId());
+        
+        String requestedCurrency = event.getCurrency();
 
-        boolean exists = ledgerBalanceRepository.existsById(event.getAccountId());
+        log.info("Received AccountCreatedEvent for Account ID: {} with Base Currency: {}",
+                event.getAccountId(), requestedCurrency);
+
+        LedgerAccountId id = new LedgerAccountId(event.getAccountId(), requestedCurrency);
+
+        boolean exists = ledgerBalanceRepository.existsById(id);
 
         if (!exists) {
-            LedgerBalance newBalance = new LedgerBalance(event.getAccountId());
+            LedgerBalance newBalance = new LedgerBalance(event.getAccountId(), requestedCurrency);
             ledgerBalanceRepository.save(newBalance);
-            log.info("Successfully initialized $0.00 Ledger Balance for new account.");
+
+            log.info("Successfully initialized 0.00 {} Ledger Balance for new account.", requestedCurrency);
+        } else {
+            log.warn("Wallet {} already exists for account {}", requestedCurrency, event.getAccountId());
         }
     }
 }

@@ -36,6 +36,7 @@ import java.util.UUID;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.lenient;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayName("TransactionService Unit Tests")
@@ -43,6 +44,7 @@ class TransactionServiceTest {
 
     @Mock private TransactionRepository transactionRepository;
     @Mock private LedgerService ledgerService;
+    @Mock private FxRateService fxRateService;
     @Mock private TransactionEventPublisher eventPublisher;
     @Mock private TransactionValidator validator;
     @Mock private TransferIdempotencyHandler idempotencyHandler;
@@ -64,7 +66,14 @@ class TransactionServiceTest {
         validRequest.setDestinationAccountId(destinationAccountId);
         validRequest.setAmount(new BigDecimal("100.00"));
         validRequest.setCurrency("USD");
+        validRequest.setSourceCurrency("USD");
+        validRequest.setDestinationCurrency("USD");
         validRequest.setType(TransactionType.TRANSFER);
+
+        // Default FX stubs for same-currency transfers
+        lenient().when(fxRateService.getRate(anyString(), anyString())).thenReturn(BigDecimal.ONE);
+        lenient().when(fxRateService.calculateDestinationAmount(any(BigDecimal.class), any(BigDecimal.class)))
+                .thenAnswer(inv -> inv.<BigDecimal>getArgument(0).multiply(inv.<BigDecimal>getArgument(1)).setScale(2, java.math.RoundingMode.HALF_EVEN));
     }
 
     // ════════════════════════════════════════════════════════════════
@@ -91,7 +100,7 @@ class TransactionServiceTest {
             assertThat(response.getAmount()).isEqualByComparingTo(new BigDecimal("100.00"));
 
             verify(validator).validateTransfer(any(Transaction.class));
-            verify(ledgerService).executeTransferMath(eq(sourceAccountId), eq(destinationAccountId), eq(new BigDecimal("100.00")));
+            verify(ledgerService).executeTransferMath(eq(sourceAccountId), eq(destinationAccountId), eq(new BigDecimal("100.00")), eq("USD"));
             verify(transactionRepository).saveAndFlush(any(Transaction.class));
             verify(eventPublisher).publish(any(maayn.veld.generated.sdk.notification.models.shared.TransferSuccessEvent.class));
         }
@@ -111,7 +120,7 @@ class TransactionServiceTest {
 
             assertThat(response.getReferenceNumber()).isEqualTo("TXN-EXISTING");
             verify(transactionRepository, never()).saveAndFlush(any());
-            verify(ledgerService, never()).executeTransferMath(any(), any(), any());
+            verify(ledgerService, never()).executeTransferMath(any(), any(), any(), any());
             verify(eventPublisher, never()).publish(any(maayn.veld.generated.sdk.notification.models.shared.TransferSuccessEvent.class));
         }
 
@@ -156,7 +165,7 @@ class TransactionServiceTest {
                     .thenReturn(Optional.empty());
 
             doThrow(TransferException.insufficientFunds("Insufficient funds in account"))
-                    .when(ledgerService).executeTransferMath(any(), any(), any());
+                    .when(ledgerService).executeTransferMath(any(), any(), any(), any());
 
             assertThatThrownBy(() -> transactionService.transfer(validRequest))
                     .isInstanceOf(TransferException.class)

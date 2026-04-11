@@ -53,6 +53,18 @@ public class Transaction {
     @Column(nullable = false)
     private String currency;
 
+    @Column(name = "source_currency")
+    private String sourceCurrency;
+
+    @Column(name = "destination_currency")
+    private String destinationCurrency;
+
+    @Column(name = "destination_amount")
+    private BigDecimal destinationAmount;
+
+    @Column(name = "exchange_rate")
+    private BigDecimal exchangeRate;
+
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;

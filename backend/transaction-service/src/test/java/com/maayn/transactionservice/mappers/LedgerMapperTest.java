@@ -17,7 +17,7 @@ class LedgerMapperTest {
     @DisplayName("Should map LedgerBalance to BalanceResponse correctly")
     void toBalanceResponse_mapsAllFields() {
         UUID accountId = UUID.randomUUID();
-        LedgerBalance balance = new LedgerBalance(accountId);
+        LedgerBalance balance = new LedgerBalance(accountId, "USD");
         balance.setAvailableBalance(new BigDecimal("1234.56"));
         balance.setPendingHolds(new BigDecimal("50.00"));
 
@@ -32,7 +32,7 @@ class LedgerMapperTest {
     @DisplayName("Should handle zero balances")
     void toBalanceResponse_zeroBalances() {
         UUID accountId = UUID.randomUUID();
-        LedgerBalance balance = new LedgerBalance(accountId);
+        LedgerBalance balance = new LedgerBalance(accountId, "USD");
 
         BalanceResponse response = LedgerMapper.toBalanceResponse(balance);
 
@@ -44,7 +44,7 @@ class LedgerMapperTest {
     @DisplayName("Should preserve large balance values")
     void toBalanceResponse_largeBalance() {
         UUID accountId = UUID.randomUUID();
-        LedgerBalance balance = new LedgerBalance(accountId);
+        LedgerBalance balance = new LedgerBalance(accountId, "USD");
         balance.setAvailableBalance(new BigDecimal("99999999999.99"));
         balance.setPendingHolds(new BigDecimal("12345678.01"));
 
