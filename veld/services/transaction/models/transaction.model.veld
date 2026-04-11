@@ -23,6 +23,7 @@ model TransferRequest {
   sourceCurrency: string
   destinationCurrency: string
   type: TransactionType
+  initiatedByUserId ?: uuid
 }
 
 model TransactionResponse {
