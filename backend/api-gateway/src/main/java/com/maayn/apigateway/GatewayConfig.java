@@ -1,6 +1,5 @@
 package com.maayn.apigateway;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.gateway.server.mvc.filter.LoadBalancerFilterFunctions;
 import org.springframework.cloud.gateway.server.mvc.handler.GatewayRouterFunctions;
 import org.springframework.cloud.gateway.server.mvc.handler.HandlerFunctions;
@@ -14,14 +13,17 @@ import static org.springframework.web.servlet.function.RequestPredicates.path;
 @Configuration
 public class GatewayConfig {
 
-    @Value("${jwt.secret}")
-    private String jwtSecret;
+    private final PublicKeyProvider publicKeyProvider;
+
+    public GatewayConfig(PublicKeyProvider publicKeyProvider) {
+        this.publicKeyProvider = publicKeyProvider;
+    }
 
     @Bean
     public RouterFunction<ServerResponse> transactionServiceRoute() {
         return GatewayRouterFunctions.route("transaction-service-route")
                 .route(path("/api/transaction_service/**"), HandlerFunctions.http())
-                .filter(JwtAuthFilter.withJwtAuth(jwtSecret))   // verify JWT, strip + inject X-User-Id
+                .filter(JwtAuthFilter.withJwtAuth(publicKeyProvider))
                 .filter(LoadBalancerFilterFunctions.lb("transaction-service"))
                 .build();
     }
