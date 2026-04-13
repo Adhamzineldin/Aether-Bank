@@ -50,11 +50,11 @@ public class TransactionService implements ITransactionService {
     @Transactional(readOnly = true)
     @Override
     public PaginatedTransactionResponse getAccountTransactions(String accountId, getAccountTransactionsRequest input) {
-        log.info("Fetching transaction history for account {}", accountId);
+        log.info("Fetching transaction history for account {} in currency {}", accountId, input.getCurrency());
 
         UUID accountIdAsUUID = UUID.fromString(accountId);
-        Page<Transaction> page = transactionRepository.findBySourceAccountIdOrDestinationAccountIdOrderByCreatedAtDesc(
-                accountIdAsUUID, accountIdAsUUID, PageRequest.of(input.getPage(), input.getPageSize())
+        Page<Transaction> page = transactionRepository.findByAccountWallet(
+                accountIdAsUUID, input.getCurrency(), PageRequest.of(input.getPage(), input.getPageSize())
         );
 
         return TransactionMapper.toPaginatedResponse(page);

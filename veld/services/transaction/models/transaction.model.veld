@@ -34,6 +34,7 @@ model TransactionResponse {
 }
 
 model getAccountTransactionsRequest {
+  currency: string
   page: int = 0
   pageSize: int = 20
 }
