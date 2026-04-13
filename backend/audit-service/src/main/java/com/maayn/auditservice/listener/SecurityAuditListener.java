@@ -6,7 +6,7 @@ import com.maayn.auditservice.config.RabbitMQConfig;
 import com.maayn.auditservice.mapper.AuditMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import maayn.veld.generated.models.AuditEvent;
+import maayn.veld.generated.models.shared.AuditEvent;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Component;
 
@@ -21,8 +21,7 @@ public class SecurityAuditListener {
     public void receiveAuditLog(AuditEvent event) {
         log.info("SECURITY AUDIT CAUGHT: [{}] action '{}' from {}",
                 event.getStatus(), event.getAction(), event.getServiceName());
-
-    
+        
         AuditLog logEntry = AuditMapper.toEntity(event);
         
         repository.save(logEntry);

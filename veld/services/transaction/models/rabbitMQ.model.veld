@@ -1,13 +1,18 @@
+import "transaction.model.veld"
+
 constants TransactionRabbitConfig {
-    TRANSACTION_EXCHANGE: string = "transaction_exchange"
-    ROUTING_KEY: string = "transaction_routing_key"
-    TRANSACTION_QUEUE: string = "transaction_notification_queue"
     
-//    Saga
-    SAGA_EXCHANGE: string = "bank_saga_exchange"
-    TRANSFER_INITIATED_ROUTING_KEY: string = "saga.transfer.initiated"
-    SAGA_SUCCESS_QUEUE: string = "saga_success_queue"
-    SAGA_FAILURE_QUEUE: string = "saga_failure_queue"
+    // 1. Where the Ledger shouts to the world (The Outbox)
+    BANKING_EXCHANGE: string = "banking.exchange"
+    TRANSFER_SUCCESS_ROUTING_KEY: string = "transaction.transfer.success"
+    TRANSFER_FAILED_ROUTING_KEY: string = "transaction.transfer.failed"
+
+    // 2. Where the Ledger listens (The Ears)
+    ACCOUNT_EVENTS_QUEUE: string = "ledger.account.events.queue"
+    SAGA_COMMANDS_QUEUE: string = "ledger.commands.queue"
 }
 
+
+// --- INCOMING EVENTS (What the Ledger hears) ---
+// in account service 
 

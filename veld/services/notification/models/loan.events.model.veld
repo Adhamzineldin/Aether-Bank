@@ -1,0 +1,32 @@
+
+// EXAMPLE
+model LoanAppliedEvent {
+  eventId: uuid
+  eventType: string
+  version: int
+  timestamp: datetime
+  source: string
+  correlationId?: uuid
+  userId?: uuid
+
+  loanId: uuid
+  amount: decimal
+  tenureMonths: int
+  applicantName: string
+  createdAt: datetime
+}
+
+model LoanApprovedEvent {
+  eventId: uuid
+  eventType: string
+  version: int
+  timestamp: datetime
+  source: string
+  correlationId?: uuid
+  userId?: uuid
+
+  loanId: uuid
+  approvedBy: uuid
+  approvedAmount: decimal
+  approvedAt: datetime
+}

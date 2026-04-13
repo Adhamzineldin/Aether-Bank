@@ -780,19 +780,15 @@ a { color: inherit; text-decoration: none; }
       <div class="nav-svc-label" onclick="toggleSvc(this)"><span>iam</span><span class="nav-toggle">▾</span></div>
       <div class="nav-svc-body">
         <div class="nav-mod">
-          <div class="nav-mod-label" onclick="toggleMod(this)"><span>Iam</span><span class="nav-badge">3</span></div>
+          <div class="nav-mod-label" onclick="toggleMod(this)"><span>auth</span><span class="nav-badge">2</span></div>
           <div class="nav-mod-body">
-            <a class="nav-ep" href="#action-iam-iam-listiam" data-target="action-iam-iam-listiam" data-search="listiam get /" onclick="navigateTo('action-iam-iam-listiam');return false;">
-              <span class="nav-method nav-method-GET">GET</span>
-              <span class="nav-ep-name">ListIam</span>
-            </a>
-            <a class="nav-ep" href="#action-iam-iam-getiam" data-target="action-iam-iam-getiam" data-search="getiam get /:id" onclick="navigateTo('action-iam-iam-getiam');return false;">
-              <span class="nav-method nav-method-GET">GET</span>
-              <span class="nav-ep-name">GetIam</span>
-            </a>
-            <a class="nav-ep" href="#action-iam-iam-createiam" data-target="action-iam-iam-createiam" data-search="createiam post /" onclick="navigateTo('action-iam-iam-createiam');return false;">
+            <a class="nav-ep" href="#action-iam-auth-register" data-target="action-iam-auth-register" data-search="register post /register" onclick="navigateTo('action-iam-auth-register');return false;">
               <span class="nav-method nav-method-POST">POST</span>
-              <span class="nav-ep-name">CreateIam</span>
+              <span class="nav-ep-name">register</span>
+            </a>
+            <a class="nav-ep" href="#action-iam-auth-login" data-target="action-iam-auth-login" data-search="login post /login" onclick="navigateTo('action-iam-auth-login');return false;">
+              <span class="nav-method nav-method-POST">POST</span>
+              <span class="nav-ep-name">login</span>
             </a>
           </div>
         </div>
@@ -824,19 +820,11 @@ a { color: inherit; text-decoration: none; }
       <div class="nav-svc-label" onclick="toggleSvc(this)"><span>account</span><span class="nav-toggle">▾</span></div>
       <div class="nav-svc-body">
         <div class="nav-mod">
-          <div class="nav-mod-label" onclick="toggleMod(this)"><span>Account</span><span class="nav-badge">3</span></div>
+          <div class="nav-mod-label" onclick="toggleMod(this)"><span>Account</span><span class="nav-badge">1</span></div>
           <div class="nav-mod-body">
-            <a class="nav-ep" href="#action-account-account-listaccount" data-target="action-account-account-listaccount" data-search="listaccount get /" onclick="navigateTo('action-account-account-listaccount');return false;">
+            <a class="nav-ep" href="#action-account-account-doesaccountexist" data-target="action-account-account-doesaccountexist" data-search="doesaccountexist get /:accountid/exists" onclick="navigateTo('action-account-account-doesaccountexist');return false;">
               <span class="nav-method nav-method-GET">GET</span>
-              <span class="nav-ep-name">ListAccount</span>
-            </a>
-            <a class="nav-ep" href="#action-account-account-getaccount" data-target="action-account-account-getaccount" data-search="getaccount get /:id" onclick="navigateTo('action-account-account-getaccount');return false;">
-              <span class="nav-method nav-method-GET">GET</span>
-              <span class="nav-ep-name">GetAccount</span>
-            </a>
-            <a class="nav-ep" href="#action-account-account-createaccount" data-target="action-account-account-createaccount" data-search="createaccount post /" onclick="navigateTo('action-account-account-createaccount');return false;">
-              <span class="nav-method nav-method-POST">POST</span>
-              <span class="nav-ep-name">CreateAccount</span>
+              <span class="nav-ep-name">doesAccountExist</span>
             </a>
           </div>
         </div>
@@ -846,20 +834,17 @@ a { color: inherit; text-decoration: none; }
       <div class="nav-svc-label" onclick="toggleSvc(this)"><span>lending</span><span class="nav-toggle">▾</span></div>
       <div class="nav-svc-body">
         <div class="nav-mod">
-          <div class="nav-mod-label" onclick="toggleMod(this)"><span>Lending</span><span class="nav-badge">3</span></div>
+          <div class="nav-mod-label" onclick="toggleMod(this)"><span>FX</span><span class="nav-badge">1</span></div>
           <div class="nav-mod-body">
-            <a class="nav-ep" href="#action-lending-lending-listlending" data-target="action-lending-lending-listlending" data-search="listlending get /" onclick="navigateTo('action-lending-lending-listlending');return false;">
+            <a class="nav-ep" href="#action-lending-fx-getexchangerate" data-target="action-lending-fx-getexchangerate" data-search="getexchangerate get /exchange-rate" onclick="navigateTo('action-lending-fx-getexchangerate');return false;">
               <span class="nav-method nav-method-GET">GET</span>
-              <span class="nav-ep-name">ListLending</span>
+              <span class="nav-ep-name">getExchangeRate</span>
             </a>
-            <a class="nav-ep" href="#action-lending-lending-getlending" data-target="action-lending-lending-getlending" data-search="getlending get /:id" onclick="navigateTo('action-lending-lending-getlending');return false;">
-              <span class="nav-method nav-method-GET">GET</span>
-              <span class="nav-ep-name">GetLending</span>
-            </a>
-            <a class="nav-ep" href="#action-lending-lending-createlending" data-target="action-lending-lending-createlending" data-search="createlending post /" onclick="navigateTo('action-lending-lending-createlending');return false;">
-              <span class="nav-method nav-method-POST">POST</span>
-              <span class="nav-ep-name">CreateLending</span>
-            </a>
+          </div>
+        </div>
+        <div class="nav-mod">
+          <div class="nav-mod-label" onclick="toggleMod(this)"><span>Lending</span><span class="nav-badge">0</span></div>
+          <div class="nav-mod-body">
           </div>
         </div>
       </div>
@@ -868,19 +853,72 @@ a { color: inherit; text-decoration: none; }
       <div class="nav-svc-label" onclick="toggleSvc(this)"><span>notification</span><span class="nav-toggle">▾</span></div>
       <div class="nav-svc-body">
         <div class="nav-mod">
-          <div class="nav-mod-label" onclick="toggleMod(this)"><span>Notification</span><span class="nav-badge">3</span></div>
+          <div class="nav-mod-label" onclick="toggleMod(this)"><span>Notification</span><span class="nav-badge">9</span></div>
           <div class="nav-mod-body">
-            <a class="nav-ep" href="#action-notification-notification-listnotification" data-target="action-notification-notification-listnotification" data-search="listnotification get /" onclick="navigateTo('action-notification-notification-listnotification');return false;">
+            <a class="nav-ep" href="#action-notification-notification-listnotifications" data-target="action-notification-notification-listnotifications" data-search="listnotifications get /" onclick="navigateTo('action-notification-notification-listnotifications');return false;">
               <span class="nav-method nav-method-GET">GET</span>
-              <span class="nav-ep-name">ListNotification</span>
+              <span class="nav-ep-name">ListNotifications</span>
             </a>
             <a class="nav-ep" href="#action-notification-notification-getnotification" data-target="action-notification-notification-getnotification" data-search="getnotification get /:id" onclick="navigateTo('action-notification-notification-getnotification');return false;">
               <span class="nav-method nav-method-GET">GET</span>
               <span class="nav-ep-name">GetNotification</span>
             </a>
-            <a class="nav-ep" href="#action-notification-notification-createnotification" data-target="action-notification-notification-createnotification" data-search="createnotification post /" onclick="navigateTo('action-notification-notification-createnotification');return false;">
+            <a class="nav-ep" href="#action-notification-notification-sendnotification" data-target="action-notification-notification-sendnotification" data-search="sendnotification post /send" onclick="navigateTo('action-notification-notification-sendnotification');return false;">
               <span class="nav-method nav-method-POST">POST</span>
-              <span class="nav-ep-name">CreateNotification</span>
+              <span class="nav-ep-name">SendNotification</span>
+            </a>
+            <a class="nav-ep" href="#action-notification-notification-retrynotification" data-target="action-notification-notification-retrynotification" data-search="retrynotification post /:id/retry" onclick="navigateTo('action-notification-notification-retrynotification');return false;">
+              <span class="nav-method nav-method-POST">POST</span>
+              <span class="nav-ep-name">RetryNotification</span>
+            </a>
+            <a class="nav-ep" href="#action-notification-notification-listtemplates" data-target="action-notification-notification-listtemplates" data-search="listtemplates get /templates" onclick="navigateTo('action-notification-notification-listtemplates');return false;">
+              <span class="nav-method nav-method-GET">GET</span>
+              <span class="nav-ep-name">ListTemplates</span>
+            </a>
+            <a class="nav-ep" href="#action-notification-notification-gettemplate" data-target="action-notification-notification-gettemplate" data-search="gettemplate get /templates/:id" onclick="navigateTo('action-notification-notification-gettemplate');return false;">
+              <span class="nav-method nav-method-GET">GET</span>
+              <span class="nav-ep-name">GetTemplate</span>
+            </a>
+            <a class="nav-ep" href="#action-notification-notification-createtemplate" data-target="action-notification-notification-createtemplate" data-search="createtemplate post /templates" onclick="navigateTo('action-notification-notification-createtemplate');return false;">
+              <span class="nav-method nav-method-POST">POST</span>
+              <span class="nav-ep-name">CreateTemplate</span>
+            </a>
+            <a class="nav-ep" href="#action-notification-notification-updatetemplate" data-target="action-notification-notification-updatetemplate" data-search="updatetemplate put /templates/:id" onclick="navigateTo('action-notification-notification-updatetemplate');return false;">
+              <span class="nav-method nav-method-PUT">PUT</span>
+              <span class="nav-ep-name">UpdateTemplate</span>
+            </a>
+            <a class="nav-ep" href="#action-notification-notification-deactivatetemplate" data-target="action-notification-notification-deactivatetemplate" data-search="deactivatetemplate post /templates/:id/deactivate" onclick="navigateTo('action-notification-notification-deactivatetemplate');return false;">
+              <span class="nav-method nav-method-POST">POST</span>
+              <span class="nav-ep-name">DeactivateTemplate</span>
+            </a>
+          </div>
+        </div>
+        <div class="nav-mod">
+          <div class="nav-mod-label" onclick="toggleMod(this)"><span>Workflow</span><span class="nav-badge">6</span></div>
+          <div class="nav-mod-body">
+            <a class="nav-ep" href="#action-notification-workflow-createworkflow" data-target="action-notification-workflow-createworkflow" data-search="createworkflow post /" onclick="navigateTo('action-notification-workflow-createworkflow');return false;">
+              <span class="nav-method nav-method-POST">POST</span>
+              <span class="nav-ep-name">CreateWorkflow</span>
+            </a>
+            <a class="nav-ep" href="#action-notification-workflow-updateworkflow" data-target="action-notification-workflow-updateworkflow" data-search="updateworkflow put /:id" onclick="navigateTo('action-notification-workflow-updateworkflow');return false;">
+              <span class="nav-method nav-method-PUT">PUT</span>
+              <span class="nav-ep-name">UpdateWorkflow</span>
+            </a>
+            <a class="nav-ep" href="#action-notification-workflow-getworkflow" data-target="action-notification-workflow-getworkflow" data-search="getworkflow get /:id" onclick="navigateTo('action-notification-workflow-getworkflow');return false;">
+              <span class="nav-method nav-method-GET">GET</span>
+              <span class="nav-ep-name">GetWorkflow</span>
+            </a>
+            <a class="nav-ep" href="#action-notification-workflow-getworkflows" data-target="action-notification-workflow-getworkflows" data-search="getworkflows get /" onclick="navigateTo('action-notification-workflow-getworkflows');return false;">
+              <span class="nav-method nav-method-GET">GET</span>
+              <span class="nav-ep-name">GetWorkflows</span>
+            </a>
+            <a class="nav-ep" href="#action-notification-workflow-gettasks" data-target="action-notification-workflow-gettasks" data-search="gettasks get /tasks/:id" onclick="navigateTo('action-notification-workflow-gettasks');return false;">
+              <span class="nav-method nav-method-GET">GET</span>
+              <span class="nav-ep-name">GetTasks</span>
+            </a>
+            <a class="nav-ep" href="#action-notification-workflow-decidetask" data-target="action-notification-workflow-decidetask" data-search="decidetask post /tasks/:taskid/decision" onclick="navigateTo('action-notification-workflow-decidetask');return false;">
+              <span class="nav-method nav-method-POST">POST</span>
+              <span class="nav-ep-name">DecideTask</span>
             </a>
           </div>
         </div>
@@ -895,11 +933,24 @@ a { color: inherit; text-decoration: none; }
       <div class="nav-svc-label" onclick="toggleSvc(this)"><span>transaction</span><span class="nav-toggle">▾</span></div>
       <div class="nav-svc-body">
         <div class="nav-mod">
-          <div class="nav-mod-label" onclick="toggleMod(this)"><span>Transaction</span><span class="nav-badge">1</span></div>
+          <div class="nav-mod-label" onclick="toggleMod(this)"><span>Ledger</span><span class="nav-badge">1</span></div>
+          <div class="nav-mod-body">
+            <a class="nav-ep" href="#action-transaction-ledger-getaccountbalance" data-target="action-transaction-ledger-getaccountbalance" data-search="getaccountbalance get /:accountid/:currency/balance" onclick="navigateTo('action-transaction-ledger-getaccountbalance');return false;">
+              <span class="nav-method nav-method-GET">GET</span>
+              <span class="nav-ep-name">getAccountBalance</span>
+            </a>
+          </div>
+        </div>
+        <div class="nav-mod">
+          <div class="nav-mod-label" onclick="toggleMod(this)"><span>Transaction</span><span class="nav-badge">2</span></div>
           <div class="nav-mod-body">
             <a class="nav-ep" href="#action-transaction-transaction-transfer" data-target="action-transaction-transaction-transfer" data-search="transfer post /transfer" onclick="navigateTo('action-transaction-transaction-transfer');return false;">
               <span class="nav-method nav-method-POST">POST</span>
               <span class="nav-ep-name">transfer</span>
+            </a>
+            <a class="nav-ep" href="#action-transaction-transaction-getaccounttransactions" data-target="action-transaction-transaction-getaccounttransactions" data-search="getaccounttransactions get /account/:acountid" onclick="navigateTo('action-transaction-transaction-getaccounttransactions');return false;">
+              <span class="nav-method nav-method-GET">GET</span>
+              <span class="nav-ep-name">getAccountTransactions</span>
             </a>
           </div>
         </div>
@@ -908,23 +959,6 @@ a { color: inherit; text-decoration: none; }
     <div class="nav-svc" id="nav-svc-frontend">
       <div class="nav-svc-label" onclick="toggleSvc(this)"><span>frontend</span><span class="nav-toggle">▾</span></div>
       <div class="nav-svc-body">
-        <div class="nav-mod">
-          <div class="nav-mod-label" onclick="toggleMod(this)"><span>Iam</span><span class="nav-badge">3</span></div>
-          <div class="nav-mod-body">
-            <a class="nav-ep" href="#action-frontend-iam-listiam" data-target="action-frontend-iam-listiam" data-search="listiam get /" onclick="navigateTo('action-frontend-iam-listiam');return false;">
-              <span class="nav-method nav-method-GET">GET</span>
-              <span class="nav-ep-name">ListIam</span>
-            </a>
-            <a class="nav-ep" href="#action-frontend-iam-getiam" data-target="action-frontend-iam-getiam" data-search="getiam get /:id" onclick="navigateTo('action-frontend-iam-getiam');return false;">
-              <span class="nav-method nav-method-GET">GET</span>
-              <span class="nav-ep-name">GetIam</span>
-            </a>
-            <a class="nav-ep" href="#action-frontend-iam-createiam" data-target="action-frontend-iam-createiam" data-search="createiam post /" onclick="navigateTo('action-frontend-iam-createiam');return false;">
-              <span class="nav-method nav-method-POST">POST</span>
-              <span class="nav-ep-name">CreateIam</span>
-            </a>
-          </div>
-        </div>
         <div class="nav-mod">
           <div class="nav-mod-label" onclick="toggleMod(this)"><span>Card</span><span class="nav-badge">3</span></div>
           <div class="nav-mod-body">
@@ -942,90 +976,57 @@ a { color: inherit; text-decoration: none; }
             </a>
           </div>
         </div>
-        <div class="nav-mod">
-          <div class="nav-mod-label" onclick="toggleMod(this)"><span>Account</span><span class="nav-badge">3</span></div>
-          <div class="nav-mod-body">
-            <a class="nav-ep" href="#action-frontend-account-listaccount" data-target="action-frontend-account-listaccount" data-search="listaccount get /" onclick="navigateTo('action-frontend-account-listaccount');return false;">
-              <span class="nav-method nav-method-GET">GET</span>
-              <span class="nav-ep-name">ListAccount</span>
-            </a>
-            <a class="nav-ep" href="#action-frontend-account-getaccount" data-target="action-frontend-account-getaccount" data-search="getaccount get /:id" onclick="navigateTo('action-frontend-account-getaccount');return false;">
-              <span class="nav-method nav-method-GET">GET</span>
-              <span class="nav-ep-name">GetAccount</span>
-            </a>
-            <a class="nav-ep" href="#action-frontend-account-createaccount" data-target="action-frontend-account-createaccount" data-search="createaccount post /" onclick="navigateTo('action-frontend-account-createaccount');return false;">
-              <span class="nav-method nav-method-POST">POST</span>
-              <span class="nav-ep-name">CreateAccount</span>
-            </a>
-          </div>
-        </div>
-        <div class="nav-mod">
-          <div class="nav-mod-label" onclick="toggleMod(this)"><span>Lending</span><span class="nav-badge">3</span></div>
-          <div class="nav-mod-body">
-            <a class="nav-ep" href="#action-frontend-lending-listlending" data-target="action-frontend-lending-listlending" data-search="listlending get /" onclick="navigateTo('action-frontend-lending-listlending');return false;">
-              <span class="nav-method nav-method-GET">GET</span>
-              <span class="nav-ep-name">ListLending</span>
-            </a>
-            <a class="nav-ep" href="#action-frontend-lending-getlending" data-target="action-frontend-lending-getlending" data-search="getlending get /:id" onclick="navigateTo('action-frontend-lending-getlending');return false;">
-              <span class="nav-method nav-method-GET">GET</span>
-              <span class="nav-ep-name">GetLending</span>
-            </a>
-            <a class="nav-ep" href="#action-frontend-lending-createlending" data-target="action-frontend-lending-createlending" data-search="createlending post /" onclick="navigateTo('action-frontend-lending-createlending');return false;">
-              <span class="nav-method nav-method-POST">POST</span>
-              <span class="nav-ep-name">CreateLending</span>
-            </a>
-          </div>
-        </div>
-        <div class="nav-mod">
-          <div class="nav-mod-label" onclick="toggleMod(this)"><span>Notification</span><span class="nav-badge">3</span></div>
-          <div class="nav-mod-body">
-            <a class="nav-ep" href="#action-frontend-notification-listnotification" data-target="action-frontend-notification-listnotification" data-search="listnotification get /" onclick="navigateTo('action-frontend-notification-listnotification');return false;">
-              <span class="nav-method nav-method-GET">GET</span>
-              <span class="nav-ep-name">ListNotification</span>
-            </a>
-            <a class="nav-ep" href="#action-frontend-notification-getnotification" data-target="action-frontend-notification-getnotification" data-search="getnotification get /:id" onclick="navigateTo('action-frontend-notification-getnotification');return false;">
-              <span class="nav-method nav-method-GET">GET</span>
-              <span class="nav-ep-name">GetNotification</span>
-            </a>
-            <a class="nav-ep" href="#action-frontend-notification-createnotification" data-target="action-frontend-notification-createnotification" data-search="createnotification post /" onclick="navigateTo('action-frontend-notification-createnotification');return false;">
-              <span class="nav-method nav-method-POST">POST</span>
-              <span class="nav-ep-name">CreateNotification</span>
-            </a>
-          </div>
-        </div>
-        <div class="nav-mod">
-          <div class="nav-mod-label" onclick="toggleMod(this)"><span>Transaction</span><span class="nav-badge">1</span></div>
-          <div class="nav-mod-body">
-            <a class="nav-ep" href="#action-frontend-transaction-transfer" data-target="action-frontend-transaction-transfer" data-search="transfer post /transfer" onclick="navigateTo('action-frontend-transaction-transfer');return false;">
-              <span class="nav-method nav-method-POST">POST</span>
-              <span class="nav-ep-name">transfer</span>
-            </a>
-          </div>
-        </div>
       </div>
     </div>
     <div class="nav-group">
-      <div class="nav-group-label" onclick="toggleGroup(this)">Models <span class="nav-badge">14</span></div>
+      <div class="nav-group-label" onclick="toggleGroup(this)">Models <span class="nav-badge">31</span></div>
       <div class="nav-group-body">
-        <a class="nav-type" href="#model-iamitem" data-target="model-iamitem" data-search="iamitem" onclick="navigateTo('model-iamitem');return false;">IamItem</a>
-        <a class="nav-type" href="#model-createiaminput" data-target="model-createiaminput" data-search="createiaminput" onclick="navigateTo('model-createiaminput');return false;">CreateIamInput</a>
+        <a class="nav-type" href="#model-auth" data-target="model-auth" data-search="auth" onclick="navigateTo('model-auth');return false;">auth</a>
         <a class="nav-type" href="#model-carditem" data-target="model-carditem" data-search="carditem" onclick="navigateTo('model-carditem');return false;">CardItem</a>
         <a class="nav-type" href="#model-createcardinput" data-target="model-createcardinput" data-search="createcardinput" onclick="navigateTo('model-createcardinput');return false;">CreateCardInput</a>
-        <a class="nav-type" href="#model-accountitem" data-target="model-accountitem" data-search="accountitem" onclick="navigateTo('model-accountitem');return false;">AccountItem</a>
-        <a class="nav-type" href="#model-createaccountinput" data-target="model-createaccountinput" data-search="createaccountinput" onclick="navigateTo('model-createaccountinput');return false;">CreateAccountInput</a>
-        <a class="nav-type" href="#model-lendingitem" data-target="model-lendingitem" data-search="lendingitem" onclick="navigateTo('model-lendingitem');return false;">LendingItem</a>
-        <a class="nav-type" href="#model-createlendinginput" data-target="model-createlendinginput" data-search="createlendinginput" onclick="navigateTo('model-createlendinginput');return false;">CreateLendingInput</a>
+        <a class="nav-type" href="#model-accountbalanceresponse" data-target="model-accountbalanceresponse" data-search="accountbalanceresponse" onclick="navigateTo('model-accountbalanceresponse');return false;">AccountBalanceResponse</a>
+        <a class="nav-type" href="#model-fundssecuredevent" data-target="model-fundssecuredevent" data-search="fundssecuredevent" onclick="navigateTo('model-fundssecuredevent');return false;">FundsSecuredEvent</a>
+        <a class="nav-type" href="#model-insufficientfundsevent" data-target="model-insufficientfundsevent" data-search="insufficientfundsevent" onclick="navigateTo('model-insufficientfundsevent');return false;">InsufficientFundsEvent</a>
+        <a class="nav-type" href="#model-accountcreatedevent" data-target="model-accountcreatedevent" data-search="accountcreatedevent" onclick="navigateTo('model-accountcreatedevent');return false;">AccountCreatedEvent</a>
+        <a class="nav-type" href="#model-getratesrequest" data-target="model-getratesrequest" data-search="getratesrequest" onclick="navigateTo('model-getratesrequest');return false;">GetRatesRequest</a>
+        <a class="nav-type" href="#model-getratesresponse" data-target="model-getratesresponse" data-search="getratesresponse" onclick="navigateTo('model-getratesresponse');return false;">GetRatesResponse</a>
+        <a class="nav-type" href="#model-notificationtemplate" data-target="model-notificationtemplate" data-search="notificationtemplate" onclick="navigateTo('model-notificationtemplate');return false;">NotificationTemplate</a>
         <a class="nav-type" href="#model-notificationitem" data-target="model-notificationitem" data-search="notificationitem" onclick="navigateTo('model-notificationitem');return false;">NotificationItem</a>
-        <a class="nav-type" href="#model-createnotificationinput" data-target="model-createnotificationinput" data-search="createnotificationinput" onclick="navigateTo('model-createnotificationinput');return false;">CreateNotificationInput</a>
+        <a class="nav-type" href="#model-sendnotificationinput" data-target="model-sendnotificationinput" data-search="sendnotificationinput" onclick="navigateTo('model-sendnotificationinput');return false;">SendNotificationInput</a>
+        <a class="nav-type" href="#model-createtemplateinput" data-target="model-createtemplateinput" data-search="createtemplateinput" onclick="navigateTo('model-createtemplateinput');return false;">CreateTemplateInput</a>
+        <a class="nav-type" href="#model-updatetemplateinput" data-target="model-updatetemplateinput" data-search="updatetemplateinput" onclick="navigateTo('model-updatetemplateinput');return false;">UpdateTemplateInput</a>
+        <a class="nav-type" href="#model-workflowtemplate" data-target="model-workflowtemplate" data-search="workflowtemplate" onclick="navigateTo('model-workflowtemplate');return false;">WorkflowTemplate</a>
+        <a class="nav-type" href="#model-workflowstep" data-target="model-workflowstep" data-search="workflowstep" onclick="navigateTo('model-workflowstep');return false;">WorkflowStep</a>
+        <a class="nav-type" href="#model-workflowinstance" data-target="model-workflowinstance" data-search="workflowinstance" onclick="navigateTo('model-workflowinstance');return false;">WorkflowInstance</a>
+        <a class="nav-type" href="#model-approvaltask" data-target="model-approvaltask" data-search="approvaltask" onclick="navigateTo('model-approvaltask');return false;">ApprovalTask</a>
+        <a class="nav-type" href="#model-createworkflowinput" data-target="model-createworkflowinput" data-search="createworkflowinput" onclick="navigateTo('model-createworkflowinput');return false;">CreateWorkflowInput</a>
+        <a class="nav-type" href="#model-updateworkflowinput" data-target="model-updateworkflowinput" data-search="updateworkflowinput" onclick="navigateTo('model-updateworkflowinput');return false;">UpdateWorkflowInput</a>
+        <a class="nav-type" href="#model-taskactioninput" data-target="model-taskactioninput" data-search="taskactioninput" onclick="navigateTo('model-taskactioninput');return false;">TaskActionInput</a>
+        <a class="nav-type" href="#model-loanappliedevent" data-target="model-loanappliedevent" data-search="loanappliedevent" onclick="navigateTo('model-loanappliedevent');return false;">LoanAppliedEvent</a>
+        <a class="nav-type" href="#model-loanapprovedevent" data-target="model-loanapprovedevent" data-search="loanapprovedevent" onclick="navigateTo('model-loanapprovedevent');return false;">LoanApprovedEvent</a>
+        <a class="nav-type" href="#model-transfersuccessevent" data-target="model-transfersuccessevent" data-search="transfersuccessevent" onclick="navigateTo('model-transfersuccessevent');return false;">TransferSuccessEvent</a>
+        <a class="nav-type" href="#model-transferfailedevent" data-target="model-transferfailedevent" data-search="transferfailedevent" onclick="navigateTo('model-transferfailedevent');return false;">TransferFailedEvent</a>
         <a class="nav-type" href="#model-auditevent" data-target="model-auditevent" data-search="auditevent" onclick="navigateTo('model-auditevent');return false;">AuditEvent</a>
+        <a class="nav-type" href="#model-balanceresponse" data-target="model-balanceresponse" data-search="balanceresponse" onclick="navigateTo('model-balanceresponse');return false;">BalanceResponse</a>
         <a class="nav-type" href="#model-transferrequest" data-target="model-transferrequest" data-search="transferrequest" onclick="navigateTo('model-transferrequest');return false;">TransferRequest</a>
         <a class="nav-type" href="#model-transactionresponse" data-target="model-transactionresponse" data-search="transactionresponse" onclick="navigateTo('model-transactionresponse');return false;">TransactionResponse</a>
-        <a class="nav-type" href="#model-transactionevent" data-target="model-transactionevent" data-search="transactionevent" onclick="navigateTo('model-transactionevent');return false;">TransactionEvent</a>
+        <a class="nav-type" href="#model-getaccounttransactionsrequest" data-target="model-getaccounttransactionsrequest" data-search="getaccounttransactionsrequest" onclick="navigateTo('model-getaccounttransactionsrequest');return false;">getAccountTransactionsRequest</a>
+        <a class="nav-type" href="#model-paginatedtransactionresponse" data-target="model-paginatedtransactionresponse" data-search="paginatedtransactionresponse" onclick="navigateTo('model-paginatedtransactionresponse');return false;">PaginatedTransactionResponse</a>
       </div>
     </div>
     <div class="nav-group">
-      <div class="nav-group-label" onclick="toggleGroup(this)">Enums <span class="nav-badge">4</span></div>
+      <div class="nav-group-label" onclick="toggleGroup(this)">Enums <span class="nav-badge">14</span></div>
       <div class="nav-group-body">
+        <a class="nav-type" href="#enum-notificationstatus" data-target="enum-notificationstatus" data-search="notificationstatus" onclick="navigateTo('enum-notificationstatus');return false;">NotificationStatus</a>
+        <a class="nav-type" href="#enum-notificationchannel" data-target="enum-notificationchannel" data-search="notificationchannel" onclick="navigateTo('enum-notificationchannel');return false;">NotificationChannel</a>
+        <a class="nav-type" href="#enum-notificationtype" data-target="enum-notificationtype" data-search="notificationtype" onclick="navigateTo('enum-notificationtype');return false;">NotificationType</a>
+        <a class="nav-type" href="#enum-notificationeventtype" data-target="enum-notificationeventtype" data-search="notificationeventtype" onclick="navigateTo('enum-notificationeventtype');return false;">NotificationEventType</a>
+        <a class="nav-type" href="#enum-workflowstatus" data-target="enum-workflowstatus" data-search="workflowstatus" onclick="navigateTo('enum-workflowstatus');return false;">WorkflowStatus</a>
+        <a class="nav-type" href="#enum-taskstatus" data-target="enum-taskstatus" data-search="taskstatus" onclick="navigateTo('enum-taskstatus');return false;">TaskStatus</a>
+        <a class="nav-type" href="#enum-decisionstatus" data-target="enum-decisionstatus" data-search="decisionstatus" onclick="navigateTo('enum-decisionstatus');return false;">DecisionStatus</a>
+        <a class="nav-type" href="#enum-taskdecision" data-target="enum-taskdecision" data-search="taskdecision" onclick="navigateTo('enum-taskdecision');return false;">TaskDecision</a>
+        <a class="nav-type" href="#enum-steprole" data-target="enum-steprole" data-search="steprole" onclick="navigateTo('enum-steprole');return false;">StepRole</a>
+        <a class="nav-type" href="#enum-stepaction" data-target="enum-stepaction" data-search="stepaction" onclick="navigateTo('enum-stepaction');return false;">StepAction</a>
         <a class="nav-type" href="#enum-auditstatus" data-target="enum-auditstatus" data-search="auditstatus" onclick="navigateTo('enum-auditstatus');return false;">AuditStatus</a>
         <a class="nav-type" href="#enum-auditaction" data-target="enum-auditaction" data-search="auditaction" onclick="navigateTo('enum-auditaction');return false;">AuditAction</a>
         <a class="nav-type" href="#enum-transactiontype" data-target="enum-transactiontype" data-search="transactiontype" onclick="navigateTo('enum-transactiontype');return false;">TransactionType</a>
@@ -1044,67 +1045,48 @@ a { color: inherit; text-decoration: none; }
   <div class="content">
     <div class="stats-row">
       <div class="stat-card"><div class="stat-num">8</div><div class="stat-lbl">Services</div></div>
-      <div class="stat-card"><div class="stat-num">6</div><div class="stat-lbl">Modules</div></div>
-      <div class="stat-card"><div class="stat-num">16</div><div class="stat-lbl">Endpoints</div></div>
-      <div class="stat-card"><div class="stat-num">14</div><div class="stat-lbl">Models</div></div>
-      <div class="stat-card"><div class="stat-num">4</div><div class="stat-lbl">Enums</div></div>
+      <div class="stat-card"><div class="stat-num">9</div><div class="stat-lbl">Modules</div></div>
+      <div class="stat-card"><div class="stat-num">25</div><div class="stat-lbl">Endpoints</div></div>
+      <div class="stat-card"><div class="stat-num">31</div><div class="stat-lbl">Models</div></div>
+      <div class="stat-card"><div class="stat-num">14</div><div class="stat-lbl">Enums</div></div>
     </div>
 
     <div class="svc-block" id="service-iam" data-bc="iam">
       <h2 class="svc-title">iam <code class="svc-url">http://localhost:4333</code></h2>
       <p class="svc-desc">iam</p>
     </div>
-    <div class="mod-header" id="mod-iam-iam" data-bc="iam › Iam">
-      <h3 class="mod-title">Iam <code class="mod-prefix">/api/iam</code></h3>
-      <p class="mod-desc">Iam service</p>
+    <div class="mod-header" id="mod-iam-auth" data-bc="iam › auth">
+      <h3 class="mod-title">auth <code class="mod-prefix">/api/auth</code></h3>
     </div>
-    <div class="ep ep-GET" id="action-iam-iam-listiam" data-bc="iam › Iam › ListIam">
-      <div class="ep-head" onclick="toggleEp(this)">
-        <span class="mtag mtag-GET">GET</span>
-        <span class="ep-path">/api/iam/</span>
-        <span class="ep-info">
-          <span class="ep-name">ListIam</span>
-          <button class="copy-btn" data-path="/api/iam/" onclick="copyPath(event,this.dataset.path)" title="Copy path">⎘</button>
-        </span>
-        <span class="chevron">▶</span>
-      </div>
-      <div class="ep-detail">
-        <dl class="ep-meta">
-          <dt>Output</dt><dd><a class="type-chip" href="#model-iamitem" onclick="navigateTo('model-iamitem');return false">IamItem[]</a></dd>
-        </dl>
-      </div>
-    </div>
-    <div class="ep ep-GET" id="action-iam-iam-getiam" data-bc="iam › Iam › GetIam">
-      <div class="ep-head" onclick="toggleEp(this)">
-        <span class="mtag mtag-GET">GET</span>
-        <span class="ep-path">/api/iam/<span class="path-param">:id</span></span>
-        <span class="ep-info">
-          <span class="ep-name">GetIam</span>
-          <button class="copy-btn" data-path="/api/iam/:id" onclick="copyPath(event,this.dataset.path)" title="Copy path">⎘</button>
-        </span>
-        <span class="chevron">▶</span>
-      </div>
-      <div class="ep-detail">
-        <dl class="ep-meta">
-          <dt>Output</dt><dd><a class="type-chip" href="#model-iamitem" onclick="navigateTo('model-iamitem');return false">IamItem</a></dd>
-          <dt>Errors</dt><dd><span class="err-chip">NotFound</span></dd>
-        </dl>
-      </div>
-    </div>
-    <div class="ep ep-POST" id="action-iam-iam-createiam" data-bc="iam › Iam › CreateIam">
+    <div class="ep ep-POST" id="action-iam-auth-register" data-bc="iam › auth › register">
       <div class="ep-head" onclick="toggleEp(this)">
         <span class="mtag mtag-POST">POST</span>
-        <span class="ep-path">/api/iam/</span>
+        <span class="ep-path">/api/auth/register</span>
         <span class="ep-info">
-          <span class="ep-name">CreateIam</span>
-          <button class="copy-btn" data-path="/api/iam/" onclick="copyPath(event,this.dataset.path)" title="Copy path">⎘</button>
+          <span class="ep-name">register</span>
+          <button class="copy-btn" data-path="/api/auth/register" onclick="copyPath(event,this.dataset.path)" title="Copy path">⎘</button>
         </span>
         <span class="chevron">▶</span>
       </div>
       <div class="ep-detail">
         <dl class="ep-meta">
-          <dt>Input</dt><dd><a class="type-chip" href="#model-createiaminput" onclick="navigateTo('model-createiaminput');return false">CreateIamInput</a></dd>
-          <dt>Output</dt><dd><a class="type-chip" href="#model-iamitem" onclick="navigateTo('model-iamitem');return false">IamItem</a></dd>
+          <dt>Output</dt><dd><a class="type-chip" href="#model-auth" onclick="navigateTo('model-auth');return false">auth</a></dd>
+        </dl>
+      </div>
+    </div>
+    <div class="ep ep-POST" id="action-iam-auth-login" data-bc="iam › auth › login">
+      <div class="ep-head" onclick="toggleEp(this)">
+        <span class="mtag mtag-POST">POST</span>
+        <span class="ep-path">/api/auth/login</span>
+        <span class="ep-info">
+          <span class="ep-name">login</span>
+          <button class="copy-btn" data-path="/api/auth/login" onclick="copyPath(event,this.dataset.path)" title="Copy path">⎘</button>
+        </span>
+        <span class="chevron">▶</span>
+      </div>
+      <div class="ep-detail">
+        <dl class="ep-meta">
+          <dt>Output</dt><dd><a class="type-chip" href="#model-auth" onclick="navigateTo('model-auth');return false">auth</a></dd>
         </dl>
       </div>
     </div>
@@ -1171,56 +1153,22 @@ a { color: inherit; text-decoration: none; }
       <p class="svc-desc">account</p>
     </div>
     <div class="mod-header" id="mod-account-account" data-bc="account › Account">
-      <h3 class="mod-title">Account <code class="mod-prefix">/api/account</code></h3>
+      <h3 class="mod-title">Account <code class="mod-prefix">/api/accounts_service/account</code></h3>
       <p class="mod-desc">Account service</p>
     </div>
-    <div class="ep ep-GET" id="action-account-account-listaccount" data-bc="account › Account › ListAccount">
+    <div class="ep ep-GET" id="action-account-account-doesaccountexist" data-bc="account › Account › doesAccountExist">
       <div class="ep-head" onclick="toggleEp(this)">
         <span class="mtag mtag-GET">GET</span>
-        <span class="ep-path">/api/account/</span>
+        <span class="ep-path">/api/accounts_service/account/<span class="path-param">:accountId</span>/exists</span>
         <span class="ep-info">
-          <span class="ep-name">ListAccount</span>
-          <button class="copy-btn" data-path="/api/account/" onclick="copyPath(event,this.dataset.path)" title="Copy path">⎘</button>
+          <span class="ep-name">doesAccountExist</span>
+          <button class="copy-btn" data-path="/api/accounts_service/account/:accountId/exists" onclick="copyPath(event,this.dataset.path)" title="Copy path">⎘</button>
         </span>
         <span class="chevron">▶</span>
       </div>
       <div class="ep-detail">
         <dl class="ep-meta">
-          <dt>Output</dt><dd><a class="type-chip" href="#model-accountitem" onclick="navigateTo('model-accountitem');return false">AccountItem[]</a></dd>
-        </dl>
-      </div>
-    </div>
-    <div class="ep ep-GET" id="action-account-account-getaccount" data-bc="account › Account › GetAccount">
-      <div class="ep-head" onclick="toggleEp(this)">
-        <span class="mtag mtag-GET">GET</span>
-        <span class="ep-path">/api/account/<span class="path-param">:id</span></span>
-        <span class="ep-info">
-          <span class="ep-name">GetAccount</span>
-          <button class="copy-btn" data-path="/api/account/:id" onclick="copyPath(event,this.dataset.path)" title="Copy path">⎘</button>
-        </span>
-        <span class="chevron">▶</span>
-      </div>
-      <div class="ep-detail">
-        <dl class="ep-meta">
-          <dt>Output</dt><dd><a class="type-chip" href="#model-accountitem" onclick="navigateTo('model-accountitem');return false">AccountItem</a></dd>
-          <dt>Errors</dt><dd><span class="err-chip">NotFound</span></dd>
-        </dl>
-      </div>
-    </div>
-    <div class="ep ep-POST" id="action-account-account-createaccount" data-bc="account › Account › CreateAccount">
-      <div class="ep-head" onclick="toggleEp(this)">
-        <span class="mtag mtag-POST">POST</span>
-        <span class="ep-path">/api/account/</span>
-        <span class="ep-info">
-          <span class="ep-name">CreateAccount</span>
-          <button class="copy-btn" data-path="/api/account/" onclick="copyPath(event,this.dataset.path)" title="Copy path">⎘</button>
-        </span>
-        <span class="chevron">▶</span>
-      </div>
-      <div class="ep-detail">
-        <dl class="ep-meta">
-          <dt>Input</dt><dd><a class="type-chip" href="#model-createaccountinput" onclick="navigateTo('model-createaccountinput');return false">CreateAccountInput</a></dd>
-          <dt>Output</dt><dd><a class="type-chip" href="#model-accountitem" onclick="navigateTo('model-accountitem');return false">AccountItem</a></dd>
+          <dt>Output</dt><dd><span class="plain-chip">bool</span></dd>
         </dl>
       </div>
     </div>
@@ -1228,59 +1176,31 @@ a { color: inherit; text-decoration: none; }
       <h2 class="svc-title">lending <code class="svc-url">http://lending-service:3004</code></h2>
       <p class="svc-desc">lending</p>
     </div>
-    <div class="mod-header" id="mod-lending-lending" data-bc="lending › Lending">
-      <h3 class="mod-title">Lending <code class="mod-prefix">/api/lending</code></h3>
+    <div class="mod-header" id="mod-lending-fx" data-bc="lending › FX">
+      <h3 class="mod-title">FX <code class="mod-prefix">/api/financial_service/fx</code></h3>
       <p class="mod-desc">Lending service</p>
     </div>
-    <div class="ep ep-GET" id="action-lending-lending-listlending" data-bc="lending › Lending › ListLending">
+    <div class="ep ep-GET" id="action-lending-fx-getexchangerate" data-bc="lending › FX › getExchangeRate">
       <div class="ep-head" onclick="toggleEp(this)">
         <span class="mtag mtag-GET">GET</span>
-        <span class="ep-path">/api/lending/</span>
+        <span class="ep-path">/api/financial_service/fx/exchange-rate</span>
         <span class="ep-info">
-          <span class="ep-name">ListLending</span>
-          <button class="copy-btn" data-path="/api/lending/" onclick="copyPath(event,this.dataset.path)" title="Copy path">⎘</button>
+          <span class="ep-name">getExchangeRate</span>
+          <button class="copy-btn" data-path="/api/financial_service/fx/exchange-rate" onclick="copyPath(event,this.dataset.path)" title="Copy path">⎘</button>
         </span>
         <span class="chevron">▶</span>
       </div>
       <div class="ep-detail">
         <dl class="ep-meta">
-          <dt>Output</dt><dd><a class="type-chip" href="#model-lendingitem" onclick="navigateTo('model-lendingitem');return false">LendingItem[]</a></dd>
+          <dt>Input</dt><dd><a class="type-chip" href="#model-getratesrequest" onclick="navigateTo('model-getratesrequest');return false">GetRatesRequest</a></dd>
+          <dt>Output</dt><dd><a class="type-chip" href="#model-getratesresponse" onclick="navigateTo('model-getratesresponse');return false">GetRatesResponse</a></dd>
+          <dt>Errors</dt><dd><span class="err-chip">InvalidCurrencyPair <em>400</em></span></dd>
         </dl>
       </div>
     </div>
-    <div class="ep ep-GET" id="action-lending-lending-getlending" data-bc="lending › Lending › GetLending">
-      <div class="ep-head" onclick="toggleEp(this)">
-        <span class="mtag mtag-GET">GET</span>
-        <span class="ep-path">/api/lending/<span class="path-param">:id</span></span>
-        <span class="ep-info">
-          <span class="ep-name">GetLending</span>
-          <button class="copy-btn" data-path="/api/lending/:id" onclick="copyPath(event,this.dataset.path)" title="Copy path">⎘</button>
-        </span>
-        <span class="chevron">▶</span>
-      </div>
-      <div class="ep-detail">
-        <dl class="ep-meta">
-          <dt>Output</dt><dd><a class="type-chip" href="#model-lendingitem" onclick="navigateTo('model-lendingitem');return false">LendingItem</a></dd>
-          <dt>Errors</dt><dd><span class="err-chip">NotFound</span></dd>
-        </dl>
-      </div>
-    </div>
-    <div class="ep ep-POST" id="action-lending-lending-createlending" data-bc="lending › Lending › CreateLending">
-      <div class="ep-head" onclick="toggleEp(this)">
-        <span class="mtag mtag-POST">POST</span>
-        <span class="ep-path">/api/lending/</span>
-        <span class="ep-info">
-          <span class="ep-name">CreateLending</span>
-          <button class="copy-btn" data-path="/api/lending/" onclick="copyPath(event,this.dataset.path)" title="Copy path">⎘</button>
-        </span>
-        <span class="chevron">▶</span>
-      </div>
-      <div class="ep-detail">
-        <dl class="ep-meta">
-          <dt>Input</dt><dd><a class="type-chip" href="#model-createlendinginput" onclick="navigateTo('model-createlendinginput');return false">CreateLendingInput</a></dd>
-          <dt>Output</dt><dd><a class="type-chip" href="#model-lendingitem" onclick="navigateTo('model-lendingitem');return false">LendingItem</a></dd>
-        </dl>
-      </div>
+    <div class="mod-header" id="mod-lending-lending" data-bc="lending › Lending">
+      <h3 class="mod-title">Lending <code class="mod-prefix">/api/financial_service/api/lending</code></h3>
+      <p class="mod-desc">Lending service</p>
     </div>
     <div class="svc-block" id="service-notification" data-bc="notification">
       <h2 class="svc-title">notification <code class="svc-url">http://notification-service:3005</code></h2>
@@ -1288,14 +1208,14 @@ a { color: inherit; text-decoration: none; }
     </div>
     <div class="mod-header" id="mod-notification-notification" data-bc="notification › Notification">
       <h3 class="mod-title">Notification <code class="mod-prefix">/api/notification</code></h3>
-      <p class="mod-desc">Notification service</p>
+      <p class="mod-desc">Notification Service</p>
     </div>
-    <div class="ep ep-GET" id="action-notification-notification-listnotification" data-bc="notification › Notification › ListNotification">
+    <div class="ep ep-GET" id="action-notification-notification-listnotifications" data-bc="notification › Notification › ListNotifications">
       <div class="ep-head" onclick="toggleEp(this)">
         <span class="mtag mtag-GET">GET</span>
         <span class="ep-path">/api/notification/</span>
         <span class="ep-info">
-          <span class="ep-name">ListNotification</span>
+          <span class="ep-name">ListNotifications</span>
           <button class="copy-btn" data-path="/api/notification/" onclick="copyPath(event,this.dataset.path)" title="Copy path">⎘</button>
         </span>
         <span class="chevron">▶</span>
@@ -1319,24 +1239,230 @@ a { color: inherit; text-decoration: none; }
       <div class="ep-detail">
         <dl class="ep-meta">
           <dt>Output</dt><dd><a class="type-chip" href="#model-notificationitem" onclick="navigateTo('model-notificationitem');return false">NotificationItem</a></dd>
-          <dt>Errors</dt><dd><span class="err-chip">NotFound</span></dd>
+          <dt>Errors</dt><dd><span class="err-chip">NotFound</span> <span class="err-chip">Forbidden</span></dd>
         </dl>
       </div>
     </div>
-    <div class="ep ep-POST" id="action-notification-notification-createnotification" data-bc="notification › Notification › CreateNotification">
+    <div class="ep ep-POST" id="action-notification-notification-sendnotification" data-bc="notification › Notification › SendNotification">
       <div class="ep-head" onclick="toggleEp(this)">
         <span class="mtag mtag-POST">POST</span>
-        <span class="ep-path">/api/notification/</span>
+        <span class="ep-path">/api/notification/send</span>
         <span class="ep-info">
-          <span class="ep-name">CreateNotification</span>
-          <button class="copy-btn" data-path="/api/notification/" onclick="copyPath(event,this.dataset.path)" title="Copy path">⎘</button>
+          <span class="ep-name">SendNotification</span>
+          <button class="copy-btn" data-path="/api/notification/send" onclick="copyPath(event,this.dataset.path)" title="Copy path">⎘</button>
         </span>
         <span class="chevron">▶</span>
       </div>
       <div class="ep-detail">
         <dl class="ep-meta">
-          <dt>Input</dt><dd><a class="type-chip" href="#model-createnotificationinput" onclick="navigateTo('model-createnotificationinput');return false">CreateNotificationInput</a></dd>
+          <dt>Input</dt><dd><a class="type-chip" href="#model-sendnotificationinput" onclick="navigateTo('model-sendnotificationinput');return false">SendNotificationInput</a></dd>
           <dt>Output</dt><dd><a class="type-chip" href="#model-notificationitem" onclick="navigateTo('model-notificationitem');return false">NotificationItem</a></dd>
+          <dt>Errors</dt><dd><span class="err-chip">NotFound</span> <span class="err-chip">BadRequest</span></dd>
+        </dl>
+      </div>
+    </div>
+    <div class="ep ep-POST" id="action-notification-notification-retrynotification" data-bc="notification › Notification › RetryNotification">
+      <div class="ep-head" onclick="toggleEp(this)">
+        <span class="mtag mtag-POST">POST</span>
+        <span class="ep-path">/api/notification/<span class="path-param">:id</span>/retry</span>
+        <span class="ep-info">
+          <span class="ep-name">RetryNotification</span>
+          <button class="copy-btn" data-path="/api/notification/:id/retry" onclick="copyPath(event,this.dataset.path)" title="Copy path">⎘</button>
+        </span>
+        <span class="chevron">▶</span>
+      </div>
+      <div class="ep-detail">
+        <dl class="ep-meta">
+          <dt>Output</dt><dd><a class="type-chip" href="#model-notificationitem" onclick="navigateTo('model-notificationitem');return false">NotificationItem</a></dd>
+          <dt>Errors</dt><dd><span class="err-chip">NotFound</span> <span class="err-chip">BadRequest</span></dd>
+        </dl>
+      </div>
+    </div>
+    <div class="ep ep-GET" id="action-notification-notification-listtemplates" data-bc="notification › Notification › ListTemplates">
+      <div class="ep-head" onclick="toggleEp(this)">
+        <span class="mtag mtag-GET">GET</span>
+        <span class="ep-path">/api/notification/templates</span>
+        <span class="ep-info">
+          <span class="ep-name">ListTemplates</span>
+          <button class="copy-btn" data-path="/api/notification/templates" onclick="copyPath(event,this.dataset.path)" title="Copy path">⎘</button>
+        </span>
+        <span class="chevron">▶</span>
+      </div>
+      <div class="ep-detail">
+        <dl class="ep-meta">
+          <dt>Output</dt><dd><a class="type-chip" href="#model-notificationtemplate" onclick="navigateTo('model-notificationtemplate');return false">NotificationTemplate[]</a></dd>
+        </dl>
+      </div>
+    </div>
+    <div class="ep ep-GET" id="action-notification-notification-gettemplate" data-bc="notification › Notification › GetTemplate">
+      <div class="ep-head" onclick="toggleEp(this)">
+        <span class="mtag mtag-GET">GET</span>
+        <span class="ep-path">/api/notification/templates/<span class="path-param">:id</span></span>
+        <span class="ep-info">
+          <span class="ep-name">GetTemplate</span>
+          <button class="copy-btn" data-path="/api/notification/templates/:id" onclick="copyPath(event,this.dataset.path)" title="Copy path">⎘</button>
+        </span>
+        <span class="chevron">▶</span>
+      </div>
+      <div class="ep-detail">
+        <dl class="ep-meta">
+          <dt>Output</dt><dd><a class="type-chip" href="#model-notificationtemplate" onclick="navigateTo('model-notificationtemplate');return false">NotificationTemplate</a></dd>
+          <dt>Errors</dt><dd><span class="err-chip">NotFound</span></dd>
+        </dl>
+      </div>
+    </div>
+    <div class="ep ep-POST" id="action-notification-notification-createtemplate" data-bc="notification › Notification › CreateTemplate">
+      <div class="ep-head" onclick="toggleEp(this)">
+        <span class="mtag mtag-POST">POST</span>
+        <span class="ep-path">/api/notification/templates</span>
+        <span class="ep-info">
+          <span class="ep-name">CreateTemplate</span>
+          <button class="copy-btn" data-path="/api/notification/templates" onclick="copyPath(event,this.dataset.path)" title="Copy path">⎘</button>
+        </span>
+        <span class="chevron">▶</span>
+      </div>
+      <div class="ep-detail">
+        <dl class="ep-meta">
+          <dt>Input</dt><dd><a class="type-chip" href="#model-createtemplateinput" onclick="navigateTo('model-createtemplateinput');return false">CreateTemplateInput</a></dd>
+          <dt>Output</dt><dd><a class="type-chip" href="#model-notificationtemplate" onclick="navigateTo('model-notificationtemplate');return false">NotificationTemplate</a></dd>
+          <dt>Errors</dt><dd><span class="err-chip">BadRequest</span></dd>
+        </dl>
+      </div>
+    </div>
+    <div class="ep ep-PUT" id="action-notification-notification-updatetemplate" data-bc="notification › Notification › UpdateTemplate">
+      <div class="ep-head" onclick="toggleEp(this)">
+        <span class="mtag mtag-PUT">PUT</span>
+        <span class="ep-path">/api/notification/templates/<span class="path-param">:id</span></span>
+        <span class="ep-info">
+          <span class="ep-name">UpdateTemplate</span>
+          <button class="copy-btn" data-path="/api/notification/templates/:id" onclick="copyPath(event,this.dataset.path)" title="Copy path">⎘</button>
+        </span>
+        <span class="chevron">▶</span>
+      </div>
+      <div class="ep-detail">
+        <dl class="ep-meta">
+          <dt>Input</dt><dd><a class="type-chip" href="#model-updatetemplateinput" onclick="navigateTo('model-updatetemplateinput');return false">UpdateTemplateInput</a></dd>
+          <dt>Output</dt><dd><a class="type-chip" href="#model-notificationtemplate" onclick="navigateTo('model-notificationtemplate');return false">NotificationTemplate</a></dd>
+          <dt>Errors</dt><dd><span class="err-chip">NotFound</span> <span class="err-chip">BadRequest</span></dd>
+        </dl>
+      </div>
+    </div>
+    <div class="ep ep-POST" id="action-notification-notification-deactivatetemplate" data-bc="notification › Notification › DeactivateTemplate">
+      <div class="ep-head" onclick="toggleEp(this)">
+        <span class="mtag mtag-POST">POST</span>
+        <span class="ep-path">/api/notification/templates/<span class="path-param">:id</span>/deactivate</span>
+        <span class="ep-info">
+          <span class="ep-name">DeactivateTemplate</span>
+          <button class="copy-btn" data-path="/api/notification/templates/:id/deactivate" onclick="copyPath(event,this.dataset.path)" title="Copy path">⎘</button>
+        </span>
+        <span class="chevron">▶</span>
+      </div>
+      <div class="ep-detail">
+        <dl class="ep-meta">
+          <dt>Output</dt><dd><a class="type-chip" href="#model-notificationtemplate" onclick="navigateTo('model-notificationtemplate');return false">NotificationTemplate</a></dd>
+          <dt>Errors</dt><dd><span class="err-chip">NotFound</span></dd>
+        </dl>
+      </div>
+    </div>
+    <div class="mod-header" id="mod-notification-workflow" data-bc="notification › Workflow">
+      <h3 class="mod-title">Workflow <code class="mod-prefix">/api/workflow</code></h3>
+    </div>
+    <div class="ep ep-POST" id="action-notification-workflow-createworkflow" data-bc="notification › Workflow › CreateWorkflow">
+      <div class="ep-head" onclick="toggleEp(this)">
+        <span class="mtag mtag-POST">POST</span>
+        <span class="ep-path">/api/workflow/</span>
+        <span class="ep-info">
+          <span class="ep-name">CreateWorkflow</span>
+          <button class="copy-btn" data-path="/api/workflow/" onclick="copyPath(event,this.dataset.path)" title="Copy path">⎘</button>
+        </span>
+        <span class="chevron">▶</span>
+      </div>
+      <div class="ep-detail">
+        <dl class="ep-meta">
+          <dt>Input</dt><dd><a class="type-chip" href="#model-createworkflowinput" onclick="navigateTo('model-createworkflowinput');return false">CreateWorkflowInput</a></dd>
+          <dt>Output</dt><dd><a class="type-chip" href="#model-workflowinstance" onclick="navigateTo('model-workflowinstance');return false">WorkflowInstance</a></dd>
+        </dl>
+      </div>
+    </div>
+    <div class="ep ep-PUT" id="action-notification-workflow-updateworkflow" data-bc="notification › Workflow › UpdateWorkflow">
+      <div class="ep-head" onclick="toggleEp(this)">
+        <span class="mtag mtag-PUT">PUT</span>
+        <span class="ep-path">/api/workflow/<span class="path-param">:id</span></span>
+        <span class="ep-info">
+          <span class="ep-name">UpdateWorkflow</span>
+          <button class="copy-btn" data-path="/api/workflow/:id" onclick="copyPath(event,this.dataset.path)" title="Copy path">⎘</button>
+        </span>
+        <span class="chevron">▶</span>
+      </div>
+      <div class="ep-detail">
+        <dl class="ep-meta">
+          <dt>Input</dt><dd><a class="type-chip" href="#model-updateworkflowinput" onclick="navigateTo('model-updateworkflowinput');return false">UpdateWorkflowInput</a></dd>
+          <dt>Output</dt><dd><a class="type-chip" href="#model-workflowinstance" onclick="navigateTo('model-workflowinstance');return false">WorkflowInstance</a></dd>
+        </dl>
+      </div>
+    </div>
+    <div class="ep ep-GET" id="action-notification-workflow-getworkflow" data-bc="notification › Workflow › GetWorkflow">
+      <div class="ep-head" onclick="toggleEp(this)">
+        <span class="mtag mtag-GET">GET</span>
+        <span class="ep-path">/api/workflow/<span class="path-param">:id</span></span>
+        <span class="ep-info">
+          <span class="ep-name">GetWorkflow</span>
+          <button class="copy-btn" data-path="/api/workflow/:id" onclick="copyPath(event,this.dataset.path)" title="Copy path">⎘</button>
+        </span>
+        <span class="chevron">▶</span>
+      </div>
+      <div class="ep-detail">
+        <dl class="ep-meta">
+          <dt>Output</dt><dd><a class="type-chip" href="#model-workflowinstance" onclick="navigateTo('model-workflowinstance');return false">WorkflowInstance</a></dd>
+        </dl>
+      </div>
+    </div>
+    <div class="ep ep-GET" id="action-notification-workflow-getworkflows" data-bc="notification › Workflow › GetWorkflows">
+      <div class="ep-head" onclick="toggleEp(this)">
+        <span class="mtag mtag-GET">GET</span>
+        <span class="ep-path">/api/workflow/</span>
+        <span class="ep-info">
+          <span class="ep-name">GetWorkflows</span>
+          <button class="copy-btn" data-path="/api/workflow/" onclick="copyPath(event,this.dataset.path)" title="Copy path">⎘</button>
+        </span>
+        <span class="chevron">▶</span>
+      </div>
+      <div class="ep-detail">
+        <dl class="ep-meta">
+          <dt>Output</dt><dd><a class="type-chip" href="#model-workflowinstance" onclick="navigateTo('model-workflowinstance');return false">WorkflowInstance[]</a></dd>
+        </dl>
+      </div>
+    </div>
+    <div class="ep ep-GET" id="action-notification-workflow-gettasks" data-bc="notification › Workflow › GetTasks">
+      <div class="ep-head" onclick="toggleEp(this)">
+        <span class="mtag mtag-GET">GET</span>
+        <span class="ep-path">/api/workflow/tasks/<span class="path-param">:id</span></span>
+        <span class="ep-info">
+          <span class="ep-name">GetTasks</span>
+          <button class="copy-btn" data-path="/api/workflow/tasks/:id" onclick="copyPath(event,this.dataset.path)" title="Copy path">⎘</button>
+        </span>
+        <span class="chevron">▶</span>
+      </div>
+      <div class="ep-detail">
+        <dl class="ep-meta">
+          <dt>Output</dt><dd><a class="type-chip" href="#model-approvaltask" onclick="navigateTo('model-approvaltask');return false">ApprovalTask[]</a></dd>
+        </dl>
+      </div>
+    </div>
+    <div class="ep ep-POST" id="action-notification-workflow-decidetask" data-bc="notification › Workflow › DecideTask">
+      <div class="ep-head" onclick="toggleEp(this)">
+        <span class="mtag mtag-POST">POST</span>
+        <span class="ep-path">/api/workflow/tasks/<span class="path-param">:taskId</span>/decision</span>
+        <span class="ep-info">
+          <span class="ep-name">DecideTask</span>
+          <button class="copy-btn" data-path="/api/workflow/tasks/:taskId/decision" onclick="copyPath(event,this.dataset.path)" title="Copy path">⎘</button>
+        </span>
+        <span class="chevron">▶</span>
+      </div>
+      <div class="ep-detail">
+        <dl class="ep-meta">
+          <dt>Input</dt><dd><a class="type-chip" href="#model-taskactioninput" onclick="navigateTo('model-taskactioninput');return false">TaskActionInput</a></dd>
+          <dt>Output</dt><dd><a class="type-chip" href="#model-approvaltask" onclick="navigateTo('model-approvaltask');return false">ApprovalTask</a></dd>
         </dl>
       </div>
     </div>
@@ -1348,17 +1474,38 @@ a { color: inherit; text-decoration: none; }
       <h2 class="svc-title">transaction <code class="svc-url">http://localhost:2501</code></h2>
       <p class="svc-desc">transaction</p>
     </div>
+    <div class="mod-header" id="mod-transaction-ledger" data-bc="transaction › Ledger">
+      <h3 class="mod-title">Ledger <code class="mod-prefix">/api/transaction_service/ledger</code></h3>
+      <p class="mod-desc">Ledger read service</p>
+    </div>
+    <div class="ep ep-GET" id="action-transaction-ledger-getaccountbalance" data-bc="transaction › Ledger › getAccountBalance">
+      <div class="ep-head" onclick="toggleEp(this)">
+        <span class="mtag mtag-GET">GET</span>
+        <span class="ep-path">/api/transaction_service/ledger/<span class="path-param">:accountId</span>/<span class="path-param">:currency</span>/balance</span>
+        <span class="ep-info">
+          <span class="ep-name">getAccountBalance</span>
+          <button class="copy-btn" data-path="/api/transaction_service/ledger/:accountId/:currency/balance" onclick="copyPath(event,this.dataset.path)" title="Copy path">⎘</button>
+        </span>
+        <span class="chevron">▶</span>
+      </div>
+      <div class="ep-detail">
+        <dl class="ep-meta">
+          <dt>Output</dt><dd><a class="type-chip" href="#model-balanceresponse" onclick="navigateTo('model-balanceresponse');return false">BalanceResponse</a></dd>
+          <dt>Errors</dt><dd><span class="err-chip">AccountLedgerNotInitialized <em>404</em></span></dd>
+        </dl>
+      </div>
+    </div>
     <div class="mod-header" id="mod-transaction-transaction" data-bc="transaction › Transaction">
-      <h3 class="mod-title">Transaction <code class="mod-prefix">/api/transaction_service/transaction</code></h3>
+      <h3 class="mod-title">Transaction <code class="mod-prefix">/api/transaction_service/transactions</code></h3>
       <p class="mod-desc">Transaction service</p>
     </div>
     <div class="ep ep-POST" id="action-transaction-transaction-transfer" data-bc="transaction › Transaction › transfer">
       <div class="ep-head" onclick="toggleEp(this)">
         <span class="mtag mtag-POST">POST</span>
-        <span class="ep-path">/api/transaction_service/transaction/transfer</span>
+        <span class="ep-path">/api/transaction_service/transactions/transfer</span>
         <span class="ep-info">
           <span class="ep-name">transfer</span>
-          <button class="copy-btn" data-path="/api/transaction_service/transaction/transfer" onclick="copyPath(event,this.dataset.path)" title="Copy path">⎘</button>
+          <button class="copy-btn" data-path="/api/transaction_service/transactions/transfer" onclick="copyPath(event,this.dataset.path)" title="Copy path">⎘</button>
         </span>
         <span class="chevron">▶</span>
       </div>
@@ -1370,63 +1517,26 @@ a { color: inherit; text-decoration: none; }
         </dl>
       </div>
     </div>
+    <div class="ep ep-GET" id="action-transaction-transaction-getaccounttransactions" data-bc="transaction › Transaction › getAccountTransactions">
+      <div class="ep-head" onclick="toggleEp(this)">
+        <span class="mtag mtag-GET">GET</span>
+        <span class="ep-path">/api/transaction_service/transactions/account/<span class="path-param">:acountId</span></span>
+        <span class="ep-info">
+          <span class="ep-name">getAccountTransactions</span>
+          <button class="copy-btn" data-path="/api/transaction_service/transactions/account/:acountId" onclick="copyPath(event,this.dataset.path)" title="Copy path">⎘</button>
+        </span>
+        <span class="chevron">▶</span>
+      </div>
+      <div class="ep-detail">
+        <dl class="ep-meta">
+          <dt>Input</dt><dd><a class="type-chip" href="#model-getaccounttransactionsrequest" onclick="navigateTo('model-getaccounttransactionsrequest');return false">getAccountTransactionsRequest</a></dd>
+          <dt>Output</dt><dd><a class="type-chip" href="#model-paginatedtransactionresponse" onclick="navigateTo('model-paginatedtransactionresponse');return false">PaginatedTransactionResponse</a></dd>
+        </dl>
+      </div>
+    </div>
     <div class="svc-block" id="service-frontend" data-bc="frontend">
       <h2 class="svc-title">frontend <code class="svc-url">http://localhost:3000</code></h2>
       <p class="svc-desc">Frontend SDK — auto-consumes all backend services</p>
-    </div>
-    <div class="mod-header" id="mod-frontend-iam" data-bc="frontend › Iam">
-      <h3 class="mod-title">Iam <code class="mod-prefix">/api/iam</code></h3>
-      <p class="mod-desc">Iam service</p>
-    </div>
-    <div class="ep ep-GET" id="action-frontend-iam-listiam" data-bc="frontend › Iam › ListIam">
-      <div class="ep-head" onclick="toggleEp(this)">
-        <span class="mtag mtag-GET">GET</span>
-        <span class="ep-path">/api/iam/</span>
-        <span class="ep-info">
-          <span class="ep-name">ListIam</span>
-          <button class="copy-btn" data-path="/api/iam/" onclick="copyPath(event,this.dataset.path)" title="Copy path">⎘</button>
-        </span>
-        <span class="chevron">▶</span>
-      </div>
-      <div class="ep-detail">
-        <dl class="ep-meta">
-          <dt>Output</dt><dd><a class="type-chip" href="#model-iamitem" onclick="navigateTo('model-iamitem');return false">IamItem[]</a></dd>
-        </dl>
-      </div>
-    </div>
-    <div class="ep ep-GET" id="action-frontend-iam-getiam" data-bc="frontend › Iam › GetIam">
-      <div class="ep-head" onclick="toggleEp(this)">
-        <span class="mtag mtag-GET">GET</span>
-        <span class="ep-path">/api/iam/<span class="path-param">:id</span></span>
-        <span class="ep-info">
-          <span class="ep-name">GetIam</span>
-          <button class="copy-btn" data-path="/api/iam/:id" onclick="copyPath(event,this.dataset.path)" title="Copy path">⎘</button>
-        </span>
-        <span class="chevron">▶</span>
-      </div>
-      <div class="ep-detail">
-        <dl class="ep-meta">
-          <dt>Output</dt><dd><a class="type-chip" href="#model-iamitem" onclick="navigateTo('model-iamitem');return false">IamItem</a></dd>
-          <dt>Errors</dt><dd><span class="err-chip">NotFound</span></dd>
-        </dl>
-      </div>
-    </div>
-    <div class="ep ep-POST" id="action-frontend-iam-createiam" data-bc="frontend › Iam › CreateIam">
-      <div class="ep-head" onclick="toggleEp(this)">
-        <span class="mtag mtag-POST">POST</span>
-        <span class="ep-path">/api/iam/</span>
-        <span class="ep-info">
-          <span class="ep-name">CreateIam</span>
-          <button class="copy-btn" data-path="/api/iam/" onclick="copyPath(event,this.dataset.path)" title="Copy path">⎘</button>
-        </span>
-        <span class="chevron">▶</span>
-      </div>
-      <div class="ep-detail">
-        <dl class="ep-meta">
-          <dt>Input</dt><dd><a class="type-chip" href="#model-createiaminput" onclick="navigateTo('model-createiaminput');return false">CreateIamInput</a></dd>
-          <dt>Output</dt><dd><a class="type-chip" href="#model-iamitem" onclick="navigateTo('model-iamitem');return false">IamItem</a></dd>
-        </dl>
-      </div>
     </div>
     <div class="mod-header" id="mod-frontend-card" data-bc="frontend › Card">
       <h3 class="mod-title">Card <code class="mod-prefix">/api/card</code></h3>
@@ -1482,210 +1592,16 @@ a { color: inherit; text-decoration: none; }
         </dl>
       </div>
     </div>
-    <div class="mod-header" id="mod-frontend-account" data-bc="frontend › Account">
-      <h3 class="mod-title">Account <code class="mod-prefix">/api/account</code></h3>
-      <p class="mod-desc">Account service</p>
-    </div>
-    <div class="ep ep-GET" id="action-frontend-account-listaccount" data-bc="frontend › Account › ListAccount">
-      <div class="ep-head" onclick="toggleEp(this)">
-        <span class="mtag mtag-GET">GET</span>
-        <span class="ep-path">/api/account/</span>
-        <span class="ep-info">
-          <span class="ep-name">ListAccount</span>
-          <button class="copy-btn" data-path="/api/account/" onclick="copyPath(event,this.dataset.path)" title="Copy path">⎘</button>
-        </span>
-        <span class="chevron">▶</span>
-      </div>
-      <div class="ep-detail">
-        <dl class="ep-meta">
-          <dt>Output</dt><dd><a class="type-chip" href="#model-accountitem" onclick="navigateTo('model-accountitem');return false">AccountItem[]</a></dd>
-        </dl>
-      </div>
-    </div>
-    <div class="ep ep-GET" id="action-frontend-account-getaccount" data-bc="frontend › Account › GetAccount">
-      <div class="ep-head" onclick="toggleEp(this)">
-        <span class="mtag mtag-GET">GET</span>
-        <span class="ep-path">/api/account/<span class="path-param">:id</span></span>
-        <span class="ep-info">
-          <span class="ep-name">GetAccount</span>
-          <button class="copy-btn" data-path="/api/account/:id" onclick="copyPath(event,this.dataset.path)" title="Copy path">⎘</button>
-        </span>
-        <span class="chevron">▶</span>
-      </div>
-      <div class="ep-detail">
-        <dl class="ep-meta">
-          <dt>Output</dt><dd><a class="type-chip" href="#model-accountitem" onclick="navigateTo('model-accountitem');return false">AccountItem</a></dd>
-          <dt>Errors</dt><dd><span class="err-chip">NotFound</span></dd>
-        </dl>
-      </div>
-    </div>
-    <div class="ep ep-POST" id="action-frontend-account-createaccount" data-bc="frontend › Account › CreateAccount">
-      <div class="ep-head" onclick="toggleEp(this)">
-        <span class="mtag mtag-POST">POST</span>
-        <span class="ep-path">/api/account/</span>
-        <span class="ep-info">
-          <span class="ep-name">CreateAccount</span>
-          <button class="copy-btn" data-path="/api/account/" onclick="copyPath(event,this.dataset.path)" title="Copy path">⎘</button>
-        </span>
-        <span class="chevron">▶</span>
-      </div>
-      <div class="ep-detail">
-        <dl class="ep-meta">
-          <dt>Input</dt><dd><a class="type-chip" href="#model-createaccountinput" onclick="navigateTo('model-createaccountinput');return false">CreateAccountInput</a></dd>
-          <dt>Output</dt><dd><a class="type-chip" href="#model-accountitem" onclick="navigateTo('model-accountitem');return false">AccountItem</a></dd>
-        </dl>
-      </div>
-    </div>
-    <div class="mod-header" id="mod-frontend-lending" data-bc="frontend › Lending">
-      <h3 class="mod-title">Lending <code class="mod-prefix">/api/lending</code></h3>
-      <p class="mod-desc">Lending service</p>
-    </div>
-    <div class="ep ep-GET" id="action-frontend-lending-listlending" data-bc="frontend › Lending › ListLending">
-      <div class="ep-head" onclick="toggleEp(this)">
-        <span class="mtag mtag-GET">GET</span>
-        <span class="ep-path">/api/lending/</span>
-        <span class="ep-info">
-          <span class="ep-name">ListLending</span>
-          <button class="copy-btn" data-path="/api/lending/" onclick="copyPath(event,this.dataset.path)" title="Copy path">⎘</button>
-        </span>
-        <span class="chevron">▶</span>
-      </div>
-      <div class="ep-detail">
-        <dl class="ep-meta">
-          <dt>Output</dt><dd><a class="type-chip" href="#model-lendingitem" onclick="navigateTo('model-lendingitem');return false">LendingItem[]</a></dd>
-        </dl>
-      </div>
-    </div>
-    <div class="ep ep-GET" id="action-frontend-lending-getlending" data-bc="frontend › Lending › GetLending">
-      <div class="ep-head" onclick="toggleEp(this)">
-        <span class="mtag mtag-GET">GET</span>
-        <span class="ep-path">/api/lending/<span class="path-param">:id</span></span>
-        <span class="ep-info">
-          <span class="ep-name">GetLending</span>
-          <button class="copy-btn" data-path="/api/lending/:id" onclick="copyPath(event,this.dataset.path)" title="Copy path">⎘</button>
-        </span>
-        <span class="chevron">▶</span>
-      </div>
-      <div class="ep-detail">
-        <dl class="ep-meta">
-          <dt>Output</dt><dd><a class="type-chip" href="#model-lendingitem" onclick="navigateTo('model-lendingitem');return false">LendingItem</a></dd>
-          <dt>Errors</dt><dd><span class="err-chip">NotFound</span></dd>
-        </dl>
-      </div>
-    </div>
-    <div class="ep ep-POST" id="action-frontend-lending-createlending" data-bc="frontend › Lending › CreateLending">
-      <div class="ep-head" onclick="toggleEp(this)">
-        <span class="mtag mtag-POST">POST</span>
-        <span class="ep-path">/api/lending/</span>
-        <span class="ep-info">
-          <span class="ep-name">CreateLending</span>
-          <button class="copy-btn" data-path="/api/lending/" onclick="copyPath(event,this.dataset.path)" title="Copy path">⎘</button>
-        </span>
-        <span class="chevron">▶</span>
-      </div>
-      <div class="ep-detail">
-        <dl class="ep-meta">
-          <dt>Input</dt><dd><a class="type-chip" href="#model-createlendinginput" onclick="navigateTo('model-createlendinginput');return false">CreateLendingInput</a></dd>
-          <dt>Output</dt><dd><a class="type-chip" href="#model-lendingitem" onclick="navigateTo('model-lendingitem');return false">LendingItem</a></dd>
-        </dl>
-      </div>
-    </div>
-    <div class="mod-header" id="mod-frontend-notification" data-bc="frontend › Notification">
-      <h3 class="mod-title">Notification <code class="mod-prefix">/api/notification</code></h3>
-      <p class="mod-desc">Notification service</p>
-    </div>
-    <div class="ep ep-GET" id="action-frontend-notification-listnotification" data-bc="frontend › Notification › ListNotification">
-      <div class="ep-head" onclick="toggleEp(this)">
-        <span class="mtag mtag-GET">GET</span>
-        <span class="ep-path">/api/notification/</span>
-        <span class="ep-info">
-          <span class="ep-name">ListNotification</span>
-          <button class="copy-btn" data-path="/api/notification/" onclick="copyPath(event,this.dataset.path)" title="Copy path">⎘</button>
-        </span>
-        <span class="chevron">▶</span>
-      </div>
-      <div class="ep-detail">
-        <dl class="ep-meta">
-          <dt>Output</dt><dd><a class="type-chip" href="#model-notificationitem" onclick="navigateTo('model-notificationitem');return false">NotificationItem[]</a></dd>
-        </dl>
-      </div>
-    </div>
-    <div class="ep ep-GET" id="action-frontend-notification-getnotification" data-bc="frontend › Notification › GetNotification">
-      <div class="ep-head" onclick="toggleEp(this)">
-        <span class="mtag mtag-GET">GET</span>
-        <span class="ep-path">/api/notification/<span class="path-param">:id</span></span>
-        <span class="ep-info">
-          <span class="ep-name">GetNotification</span>
-          <button class="copy-btn" data-path="/api/notification/:id" onclick="copyPath(event,this.dataset.path)" title="Copy path">⎘</button>
-        </span>
-        <span class="chevron">▶</span>
-      </div>
-      <div class="ep-detail">
-        <dl class="ep-meta">
-          <dt>Output</dt><dd><a class="type-chip" href="#model-notificationitem" onclick="navigateTo('model-notificationitem');return false">NotificationItem</a></dd>
-          <dt>Errors</dt><dd><span class="err-chip">NotFound</span></dd>
-        </dl>
-      </div>
-    </div>
-    <div class="ep ep-POST" id="action-frontend-notification-createnotification" data-bc="frontend › Notification › CreateNotification">
-      <div class="ep-head" onclick="toggleEp(this)">
-        <span class="mtag mtag-POST">POST</span>
-        <span class="ep-path">/api/notification/</span>
-        <span class="ep-info">
-          <span class="ep-name">CreateNotification</span>
-          <button class="copy-btn" data-path="/api/notification/" onclick="copyPath(event,this.dataset.path)" title="Copy path">⎘</button>
-        </span>
-        <span class="chevron">▶</span>
-      </div>
-      <div class="ep-detail">
-        <dl class="ep-meta">
-          <dt>Input</dt><dd><a class="type-chip" href="#model-createnotificationinput" onclick="navigateTo('model-createnotificationinput');return false">CreateNotificationInput</a></dd>
-          <dt>Output</dt><dd><a class="type-chip" href="#model-notificationitem" onclick="navigateTo('model-notificationitem');return false">NotificationItem</a></dd>
-        </dl>
-      </div>
-    </div>
-    <div class="mod-header" id="mod-frontend-transaction" data-bc="frontend › Transaction">
-      <h3 class="mod-title">Transaction <code class="mod-prefix">/api/transaction_service/transaction</code></h3>
-      <p class="mod-desc">Transaction service</p>
-    </div>
-    <div class="ep ep-POST" id="action-frontend-transaction-transfer" data-bc="frontend › Transaction › transfer">
-      <div class="ep-head" onclick="toggleEp(this)">
-        <span class="mtag mtag-POST">POST</span>
-        <span class="ep-path">/api/transaction_service/transaction/transfer</span>
-        <span class="ep-info">
-          <span class="ep-name">transfer</span>
-          <button class="copy-btn" data-path="/api/transaction_service/transaction/transfer" onclick="copyPath(event,this.dataset.path)" title="Copy path">⎘</button>
-        </span>
-        <span class="chevron">▶</span>
-      </div>
-      <div class="ep-detail">
-        <dl class="ep-meta">
-          <dt>Input</dt><dd><a class="type-chip" href="#model-transferrequest" onclick="navigateTo('model-transferrequest');return false">TransferRequest</a></dd>
-          <dt>Output</dt><dd><a class="type-chip" href="#model-transactionresponse" onclick="navigateTo('model-transactionresponse');return false">TransactionResponse</a></dd>
-          <dt>Errors</dt><dd><span class="err-chip">InsufficientFunds <em>403</em></span> <span class="err-chip">InvalidAccount <em>404</em></span> <span class="err-chip">Unauthorized <em>401</em></span> <span class="err-chip">InvalidAmount <em>400</em></span> <span class="err-chip">invalidTarget <em>400</em></span></dd>
-        </dl>
-      </div>
-    </div>
     <h2 class="types-title" id="section-models" data-bc="Models">Models</h2>
-    <div class="type-card" id="model-iamitem" data-bc="Models › IamItem">
+    <div class="type-card" id="model-auth" data-bc="Models › auth">
       <div class="type-head">
-        <span class="type-name">IamItem</span>
-        <span class="type-desc">A iam entity</span>
-        <span class="used-by">Used by: <span class="ub-chip">Iam.ListIam</span>, <span class="ub-chip">Iam.GetIam</span>, <span class="ub-chip">Iam.CreateIam</span></span>
+        <span class="type-name">auth</span>
+        <span class="used-by">Used by: <span class="ub-chip">auth.register</span>, <span class="ub-chip">auth.login</span></span>
       </div>
       <table class="fields-table"><thead><tr><th>Field</th><th>Type</th><th>Attributes</th></tr></thead><tbody>
-        <tr><td class="fn">id</td><td><span class="plain-chip">uuid</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
-        <tr><td class="fn">name</td><td><span class="plain-chip">string</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
-        <tr><td class="fn">createdAt</td><td><span class="plain-chip">datetime</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
-      </tbody></table>
-    </div>
-    <div class="type-card" id="model-createiaminput" data-bc="Models › CreateIamInput">
-      <div class="type-head">
-        <span class="type-name">CreateIamInput</span>
-        <span class="used-by">Used by: <span class="ub-chip">Iam.CreateIam</span></span>
-      </div>
-      <table class="fields-table"><thead><tr><th>Field</th><th>Type</th><th>Attributes</th></tr></thead><tbody>
-        <tr><td class="fn">name</td><td><span class="plain-chip">string</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">id</td><td><span class="plain-chip">string</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">email</td><td><span class="plain-chip">string</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">password</td><td><span class="plain-chip">string</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
       </tbody></table>
     </div>
     <div class="type-card" id="model-carditem" data-bc="Models › CardItem">
@@ -1709,67 +1625,299 @@ a { color: inherit; text-decoration: none; }
         <tr><td class="fn">name</td><td><span class="plain-chip">string</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
       </tbody></table>
     </div>
-    <div class="type-card" id="model-accountitem" data-bc="Models › AccountItem">
+    <div class="type-card" id="model-accountbalanceresponse" data-bc="Models › AccountBalanceResponse">
       <div class="type-head">
-        <span class="type-name">AccountItem</span>
-        <span class="type-desc">A account entity</span>
-        <span class="used-by">Used by: <span class="ub-chip">Account.ListAccount</span>, <span class="ub-chip">Account.GetAccount</span>, <span class="ub-chip">Account.CreateAccount</span></span>
+        <span class="type-name">AccountBalanceResponse</span>
       </div>
       <table class="fields-table"><thead><tr><th>Field</th><th>Type</th><th>Attributes</th></tr></thead><tbody>
-        <tr><td class="fn">id</td><td><span class="plain-chip">uuid</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
-        <tr><td class="fn">name</td><td><span class="plain-chip">string</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">accountId</td><td><span class="plain-chip">uuid</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">balance</td><td><span class="plain-chip">decimal</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">currency</td><td><span class="plain-chip">string</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+      </tbody></table>
+    </div>
+    <div class="type-card" id="model-fundssecuredevent" data-bc="Models › FundsSecuredEvent">
+      <div class="type-head">
+        <span class="type-name">FundsSecuredEvent</span>
+      </div>
+      <table class="fields-table"><thead><tr><th>Field</th><th>Type</th><th>Attributes</th></tr></thead><tbody>
+        <tr><td class="fn">transactionId</td><td><span class="plain-chip">string</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">status</td><td><span class="plain-chip">string</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+      </tbody></table>
+    </div>
+    <div class="type-card" id="model-insufficientfundsevent" data-bc="Models › InsufficientFundsEvent">
+      <div class="type-head">
+        <span class="type-name">InsufficientFundsEvent</span>
+      </div>
+      <table class="fields-table"><thead><tr><th>Field</th><th>Type</th><th>Attributes</th></tr></thead><tbody>
+        <tr><td class="fn">transactionId</td><td><span class="plain-chip">string</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">reason</td><td><span class="plain-chip">string</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+      </tbody></table>
+    </div>
+    <div class="type-card" id="model-accountcreatedevent" data-bc="Models › AccountCreatedEvent">
+      <div class="type-head">
+        <span class="type-name">AccountCreatedEvent</span>
+      </div>
+      <table class="fields-table"><thead><tr><th>Field</th><th>Type</th><th>Attributes</th></tr></thead><tbody>
+        <tr><td class="fn">accountId</td><td><span class="plain-chip">uuid</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">currency</td><td><span class="plain-chip">string</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
         <tr><td class="fn">createdAt</td><td><span class="plain-chip">datetime</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
       </tbody></table>
     </div>
-    <div class="type-card" id="model-createaccountinput" data-bc="Models › CreateAccountInput">
+    <div class="type-card" id="model-getratesrequest" data-bc="Models › GetRatesRequest">
       <div class="type-head">
-        <span class="type-name">CreateAccountInput</span>
-        <span class="used-by">Used by: <span class="ub-chip">Account.CreateAccount</span></span>
+        <span class="type-name">GetRatesRequest</span>
+        <span class="used-by">Used by: <span class="ub-chip">FX.getExchangeRate</span></span>
       </div>
       <table class="fields-table"><thead><tr><th>Field</th><th>Type</th><th>Attributes</th></tr></thead><tbody>
-        <tr><td class="fn">name</td><td><span class="plain-chip">string</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">sourceCurrency</td><td><span class="plain-chip">string</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">destinationCurrency</td><td><span class="plain-chip">string</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
       </tbody></table>
     </div>
-    <div class="type-card" id="model-lendingitem" data-bc="Models › LendingItem">
+    <div class="type-card" id="model-getratesresponse" data-bc="Models › GetRatesResponse">
       <div class="type-head">
-        <span class="type-name">LendingItem</span>
-        <span class="type-desc">A lending entity</span>
-        <span class="used-by">Used by: <span class="ub-chip">Lending.ListLending</span>, <span class="ub-chip">Lending.GetLending</span>, <span class="ub-chip">Lending.CreateLending</span></span>
+        <span class="type-name">GetRatesResponse</span>
+        <span class="used-by">Used by: <span class="ub-chip">FX.getExchangeRate</span></span>
+      </div>
+      <table class="fields-table"><thead><tr><th>Field</th><th>Type</th><th>Attributes</th></tr></thead><tbody>
+        <tr><td class="fn">sourceCurrency</td><td><span class="plain-chip">string</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">destinationCurrency</td><td><span class="plain-chip">string</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">exchangeRate</td><td><span class="plain-chip">decimal</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">timestamp</td><td><span class="plain-chip">datetime</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+      </tbody></table>
+    </div>
+    <div class="type-card" id="model-notificationtemplate" data-bc="Models › NotificationTemplate">
+      <div class="type-head">
+        <span class="type-name">NotificationTemplate</span>
+        <span class="used-by">Used by: <span class="ub-chip">Notification.ListTemplates</span>, <span class="ub-chip">Notification.GetTemplate</span>, <span class="ub-chip">Notification.CreateTemplate</span>, <span class="ub-chip">Notification.UpdateTemplate</span>, <span class="ub-chip">Notification.DeactivateTemplate</span></span>
       </div>
       <table class="fields-table"><thead><tr><th>Field</th><th>Type</th><th>Attributes</th></tr></thead><tbody>
         <tr><td class="fn">id</td><td><span class="plain-chip">uuid</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
-        <tr><td class="fn">name</td><td><span class="plain-chip">string</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">eventType</td><td><a class="type-chip" href="#enum-notificationeventtype" onclick="navigateTo('enum-notificationeventtype');return false">NotificationEventType</a></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">channel</td><td><a class="type-chip" href="#enum-notificationchannel" onclick="navigateTo('enum-notificationchannel');return false">NotificationChannel</a></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">titleTemplate</td><td><span class="plain-chip">string</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">bodyTemplate</td><td><span class="plain-chip">string</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">version</td><td><span class="plain-chip">int</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">isActive</td><td><span class="plain-chip">bool</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
         <tr><td class="fn">createdAt</td><td><span class="plain-chip">datetime</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
-      </tbody></table>
-    </div>
-    <div class="type-card" id="model-createlendinginput" data-bc="Models › CreateLendingInput">
-      <div class="type-head">
-        <span class="type-name">CreateLendingInput</span>
-        <span class="used-by">Used by: <span class="ub-chip">Lending.CreateLending</span></span>
-      </div>
-      <table class="fields-table"><thead><tr><th>Field</th><th>Type</th><th>Attributes</th></tr></thead><tbody>
-        <tr><td class="fn">name</td><td><span class="plain-chip">string</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">updatedAt</td><td><span class="plain-chip">datetime</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
       </tbody></table>
     </div>
     <div class="type-card" id="model-notificationitem" data-bc="Models › NotificationItem">
       <div class="type-head">
         <span class="type-name">NotificationItem</span>
-        <span class="type-desc">A notification entity</span>
-        <span class="used-by">Used by: <span class="ub-chip">Notification.ListNotification</span>, <span class="ub-chip">Notification.GetNotification</span>, <span class="ub-chip">Notification.CreateNotification</span></span>
+        <span class="used-by">Used by: <span class="ub-chip">Notification.ListNotifications</span>, <span class="ub-chip">Notification.GetNotification</span>, <span class="ub-chip">Notification.SendNotification</span>, <span class="ub-chip">Notification.RetryNotification</span></span>
       </div>
       <table class="fields-table"><thead><tr><th>Field</th><th>Type</th><th>Attributes</th></tr></thead><tbody>
         <tr><td class="fn">id</td><td><span class="plain-chip">uuid</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
-        <tr><td class="fn">name</td><td><span class="plain-chip">string</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">userId</td><td><span class="plain-chip">uuid</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">type</td><td><a class="type-chip" href="#enum-notificationtype" onclick="navigateTo('enum-notificationtype');return false">NotificationType</a></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">channel</td><td><a class="type-chip" href="#enum-notificationchannel" onclick="navigateTo('enum-notificationchannel');return false">NotificationChannel</a></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">eventType</td><td><a class="type-chip" href="#enum-notificationeventtype" onclick="navigateTo('enum-notificationeventtype');return false">NotificationEventType</a></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">correlationId</td><td><span class="plain-chip">uuid</span></td><td><div class="attr-wrap"><span class="fa-opt">optional</span></div></td></tr>
+        <tr><td class="fn">templateId</td><td><span class="plain-chip">uuid</span></td><td><div class="attr-wrap"><span class="fa-opt">optional</span></div></td></tr>
+        <tr><td class="fn">templateVersion</td><td><span class="plain-chip">int</span></td><td><div class="attr-wrap"><span class="fa-opt">optional</span></div></td></tr>
+        <tr><td class="fn">title</td><td><span class="plain-chip">string</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">message</td><td><span class="plain-chip">string</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">status</td><td><a class="type-chip" href="#enum-notificationstatus" onclick="navigateTo('enum-notificationstatus');return false">NotificationStatus</a></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">retryCount</td><td><span class="plain-chip">int</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">processedAt</td><td><span class="plain-chip">datetime</span></td><td><div class="attr-wrap"><span class="fa-opt">optional</span></div></td></tr>
+        <tr><td class="fn">sentAt</td><td><span class="plain-chip">datetime</span></td><td><div class="attr-wrap"><span class="fa-opt">optional</span></div></td></tr>
+        <tr><td class="fn">failedReason</td><td><span class="plain-chip">string</span></td><td><div class="attr-wrap"><span class="fa-opt">optional</span></div></td></tr>
         <tr><td class="fn">createdAt</td><td><span class="plain-chip">datetime</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
       </tbody></table>
     </div>
-    <div class="type-card" id="model-createnotificationinput" data-bc="Models › CreateNotificationInput">
+    <div class="type-card" id="model-sendnotificationinput" data-bc="Models › SendNotificationInput">
       <div class="type-head">
-        <span class="type-name">CreateNotificationInput</span>
-        <span class="used-by">Used by: <span class="ub-chip">Notification.CreateNotification</span></span>
+        <span class="type-name">SendNotificationInput</span>
+        <span class="used-by">Used by: <span class="ub-chip">Notification.SendNotification</span></span>
       </div>
       <table class="fields-table"><thead><tr><th>Field</th><th>Type</th><th>Attributes</th></tr></thead><tbody>
-        <tr><td class="fn">name</td><td><span class="plain-chip">string</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">userId</td><td><span class="plain-chip">uuid</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">eventType</td><td><a class="type-chip" href="#enum-notificationeventtype" onclick="navigateTo('enum-notificationeventtype');return false">NotificationEventType</a></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">channel</td><td><a class="type-chip" href="#enum-notificationchannel" onclick="navigateTo('enum-notificationchannel');return false">NotificationChannel</a></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">type</td><td><a class="type-chip" href="#enum-notificationtype" onclick="navigateTo('enum-notificationtype');return false">NotificationType</a></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">correlationId</td><td><span class="plain-chip">uuid</span></td><td><div class="attr-wrap"><span class="fa-opt">optional</span></div></td></tr>
+        <tr><td class="fn">title</td><td><span class="plain-chip">string</span></td><td><div class="attr-wrap"><span class="fa-opt">optional</span></div></td></tr>
+        <tr><td class="fn">message</td><td><span class="plain-chip">string</span></td><td><div class="attr-wrap"><span class="fa-opt">optional</span></div></td></tr>
+      </tbody></table>
+    </div>
+    <div class="type-card" id="model-createtemplateinput" data-bc="Models › CreateTemplateInput">
+      <div class="type-head">
+        <span class="type-name">CreateTemplateInput</span>
+        <span class="used-by">Used by: <span class="ub-chip">Notification.CreateTemplate</span></span>
+      </div>
+      <table class="fields-table"><thead><tr><th>Field</th><th>Type</th><th>Attributes</th></tr></thead><tbody>
+        <tr><td class="fn">eventType</td><td><a class="type-chip" href="#enum-notificationeventtype" onclick="navigateTo('enum-notificationeventtype');return false">NotificationEventType</a></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">channel</td><td><a class="type-chip" href="#enum-notificationchannel" onclick="navigateTo('enum-notificationchannel');return false">NotificationChannel</a></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">titleTemplate</td><td><span class="plain-chip">string</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">bodyTemplate</td><td><span class="plain-chip">string</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+      </tbody></table>
+    </div>
+    <div class="type-card" id="model-updatetemplateinput" data-bc="Models › UpdateTemplateInput">
+      <div class="type-head">
+        <span class="type-name">UpdateTemplateInput</span>
+        <span class="used-by">Used by: <span class="ub-chip">Notification.UpdateTemplate</span></span>
+      </div>
+      <table class="fields-table"><thead><tr><th>Field</th><th>Type</th><th>Attributes</th></tr></thead><tbody>
+        <tr><td class="fn">titleTemplate</td><td><span class="plain-chip">string</span></td><td><div class="attr-wrap"><span class="fa-opt">optional</span></div></td></tr>
+        <tr><td class="fn">bodyTemplate</td><td><span class="plain-chip">string</span></td><td><div class="attr-wrap"><span class="fa-opt">optional</span></div></td></tr>
+      </tbody></table>
+    </div>
+    <div class="type-card" id="model-workflowtemplate" data-bc="Models › WorkflowTemplate">
+      <div class="type-head">
+        <span class="type-name">WorkflowTemplate</span>
+      </div>
+      <table class="fields-table"><thead><tr><th>Field</th><th>Type</th><th>Attributes</th></tr></thead><tbody>
+        <tr><td class="fn">id</td><td><span class="plain-chip">uuid</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">entityType</td><td><span class="plain-chip">string</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">steps</td><td><a class="type-chip" href="#model-workflowstep" onclick="navigateTo('model-workflowstep');return false">WorkflowStep[]</a></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">createdAt</td><td><span class="plain-chip">datetime</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">updatedAt</td><td><span class="plain-chip">datetime</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+      </tbody></table>
+    </div>
+    <div class="type-card" id="model-workflowstep" data-bc="Models › WorkflowStep">
+      <div class="type-head">
+        <span class="type-name">WorkflowStep</span>
+      </div>
+      <table class="fields-table"><thead><tr><th>Field</th><th>Type</th><th>Attributes</th></tr></thead><tbody>
+        <tr><td class="fn">id</td><td><span class="plain-chip">uuid</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">step</td><td><span class="plain-chip">int</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">role</td><td><a class="type-chip" href="#enum-steprole" onclick="navigateTo('enum-steprole');return false">StepRole</a></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">action</td><td><a class="type-chip" href="#enum-stepaction" onclick="navigateTo('enum-stepaction');return false">StepAction</a></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+      </tbody></table>
+    </div>
+    <div class="type-card" id="model-workflowinstance" data-bc="Models › WorkflowInstance">
+      <div class="type-head">
+        <span class="type-name">WorkflowInstance</span>
+        <span class="used-by">Used by: <span class="ub-chip">Workflow.CreateWorkflow</span>, <span class="ub-chip">Workflow.UpdateWorkflow</span>, <span class="ub-chip">Workflow.GetWorkflow</span>, <span class="ub-chip">Workflow.GetWorkflows</span></span>
+      </div>
+      <table class="fields-table"><thead><tr><th>Field</th><th>Type</th><th>Attributes</th></tr></thead><tbody>
+        <tr><td class="fn">id</td><td><span class="plain-chip">uuid</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">templateId</td><td><span class="plain-chip">uuid</span></td><td><div class="attr-wrap"><span class="fa-opt">optional</span></div></td></tr>
+        <tr><td class="fn">entityType</td><td><span class="plain-chip">string</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">entityId</td><td><span class="plain-chip">uuid</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">status</td><td><a class="type-chip" href="#enum-workflowstatus" onclick="navigateTo('enum-workflowstatus');return false">WorkflowStatus</a></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">currentStep</td><td><span class="plain-chip">int</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">steps</td><td><a class="type-chip" href="#model-workflowstep" onclick="navigateTo('model-workflowstep');return false">WorkflowStep[]</a></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">version</td><td><span class="plain-chip">int</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">createdAt</td><td><span class="plain-chip">datetime</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">updatedAt</td><td><span class="plain-chip">datetime</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+      </tbody></table>
+    </div>
+    <div class="type-card" id="model-approvaltask" data-bc="Models › ApprovalTask">
+      <div class="type-head">
+        <span class="type-name">ApprovalTask</span>
+        <span class="used-by">Used by: <span class="ub-chip">Workflow.GetTasks</span>, <span class="ub-chip">Workflow.DecideTask</span></span>
+      </div>
+      <table class="fields-table"><thead><tr><th>Field</th><th>Type</th><th>Attributes</th></tr></thead><tbody>
+        <tr><td class="fn">id</td><td><span class="plain-chip">uuid</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">workflowId</td><td><span class="plain-chip">uuid</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">step</td><td><span class="plain-chip">int</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">role</td><td><a class="type-chip" href="#enum-steprole" onclick="navigateTo('enum-steprole');return false">StepRole</a></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">assignedTo</td><td><span class="plain-chip">uuid</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">taskStatus</td><td><a class="type-chip" href="#enum-taskstatus" onclick="navigateTo('enum-taskstatus');return false">TaskStatus</a></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">decisionStatus</td><td><a class="type-chip" href="#enum-decisionstatus" onclick="navigateTo('enum-decisionstatus');return false">DecisionStatus</a></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">decidedBy</td><td><span class="plain-chip">uuid</span></td><td><div class="attr-wrap"><span class="fa-opt">optional</span></div></td></tr>
+        <tr><td class="fn">decisionAt</td><td><span class="plain-chip">datetime</span></td><td><div class="attr-wrap"><span class="fa-opt">optional</span></div></td></tr>
+        <tr><td class="fn">decisionComment</td><td><span class="plain-chip">string</span></td><td><div class="attr-wrap"><span class="fa-opt">optional</span></div></td></tr>
+        <tr><td class="fn">createdAt</td><td><span class="plain-chip">datetime</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">completedAt</td><td><span class="plain-chip">datetime</span></td><td><div class="attr-wrap"><span class="fa-opt">optional</span></div></td></tr>
+      </tbody></table>
+    </div>
+    <div class="type-card" id="model-createworkflowinput" data-bc="Models › CreateWorkflowInput">
+      <div class="type-head">
+        <span class="type-name">CreateWorkflowInput</span>
+        <span class="used-by">Used by: <span class="ub-chip">Workflow.CreateWorkflow</span></span>
+      </div>
+      <table class="fields-table"><thead><tr><th>Field</th><th>Type</th><th>Attributes</th></tr></thead><tbody>
+        <tr><td class="fn">entityType</td><td><span class="plain-chip">string</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">entityId</td><td><span class="plain-chip">uuid</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">templateId</td><td><span class="plain-chip">uuid</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+      </tbody></table>
+    </div>
+    <div class="type-card" id="model-updateworkflowinput" data-bc="Models › UpdateWorkflowInput">
+      <div class="type-head">
+        <span class="type-name">UpdateWorkflowInput</span>
+        <span class="used-by">Used by: <span class="ub-chip">Workflow.UpdateWorkflow</span></span>
+      </div>
+      <table class="fields-table"><thead><tr><th>Field</th><th>Type</th><th>Attributes</th></tr></thead><tbody>
+        <tr><td class="fn">status</td><td><a class="type-chip" href="#enum-workflowstatus" onclick="navigateTo('enum-workflowstatus');return false">WorkflowStatus</a></td><td><div class="attr-wrap"><span class="fa-opt">optional</span></div></td></tr>
+        <tr><td class="fn">currentStep</td><td><span class="plain-chip">int</span></td><td><div class="attr-wrap"><span class="fa-opt">optional</span></div></td></tr>
+      </tbody></table>
+    </div>
+    <div class="type-card" id="model-taskactioninput" data-bc="Models › TaskActionInput">
+      <div class="type-head">
+        <span class="type-name">TaskActionInput</span>
+        <span class="used-by">Used by: <span class="ub-chip">Workflow.DecideTask</span></span>
+      </div>
+      <table class="fields-table"><thead><tr><th>Field</th><th>Type</th><th>Attributes</th></tr></thead><tbody>
+        <tr><td class="fn">employeeId</td><td><span class="plain-chip">uuid</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">decision</td><td><a class="type-chip" href="#enum-taskdecision" onclick="navigateTo('enum-taskdecision');return false">TaskDecision</a></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">comment</td><td><span class="plain-chip">string</span></td><td><div class="attr-wrap"><span class="fa-opt">optional</span></div></td></tr>
+      </tbody></table>
+    </div>
+    <div class="type-card" id="model-loanappliedevent" data-bc="Models › LoanAppliedEvent">
+      <div class="type-head">
+        <span class="type-name">LoanAppliedEvent</span>
+      </div>
+      <table class="fields-table"><thead><tr><th>Field</th><th>Type</th><th>Attributes</th></tr></thead><tbody>
+        <tr><td class="fn">eventId</td><td><span class="plain-chip">uuid</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">eventType</td><td><span class="plain-chip">string</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">version</td><td><span class="plain-chip">int</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">timestamp</td><td><span class="plain-chip">datetime</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">source</td><td><span class="plain-chip">string</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">correlationId</td><td><span class="plain-chip">uuid</span></td><td><div class="attr-wrap"><span class="fa-opt">optional</span></div></td></tr>
+        <tr><td class="fn">userId</td><td><span class="plain-chip">uuid</span></td><td><div class="attr-wrap"><span class="fa-opt">optional</span></div></td></tr>
+        <tr><td class="fn">loanId</td><td><span class="plain-chip">uuid</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">amount</td><td><span class="plain-chip">decimal</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">tenureMonths</td><td><span class="plain-chip">int</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">applicantName</td><td><span class="plain-chip">string</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">createdAt</td><td><span class="plain-chip">datetime</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+      </tbody></table>
+    </div>
+    <div class="type-card" id="model-loanapprovedevent" data-bc="Models › LoanApprovedEvent">
+      <div class="type-head">
+        <span class="type-name">LoanApprovedEvent</span>
+      </div>
+      <table class="fields-table"><thead><tr><th>Field</th><th>Type</th><th>Attributes</th></tr></thead><tbody>
+        <tr><td class="fn">eventId</td><td><span class="plain-chip">uuid</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">eventType</td><td><span class="plain-chip">string</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">version</td><td><span class="plain-chip">int</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">timestamp</td><td><span class="plain-chip">datetime</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">source</td><td><span class="plain-chip">string</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">correlationId</td><td><span class="plain-chip">uuid</span></td><td><div class="attr-wrap"><span class="fa-opt">optional</span></div></td></tr>
+        <tr><td class="fn">userId</td><td><span class="plain-chip">uuid</span></td><td><div class="attr-wrap"><span class="fa-opt">optional</span></div></td></tr>
+        <tr><td class="fn">loanId</td><td><span class="plain-chip">uuid</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">approvedBy</td><td><span class="plain-chip">uuid</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">approvedAmount</td><td><span class="plain-chip">decimal</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">approvedAt</td><td><span class="plain-chip">datetime</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+      </tbody></table>
+    </div>
+    <div class="type-card" id="model-transfersuccessevent" data-bc="Models › TransferSuccessEvent">
+      <div class="type-head">
+        <span class="type-name">TransferSuccessEvent</span>
+      </div>
+      <table class="fields-table"><thead><tr><th>Field</th><th>Type</th><th>Attributes</th></tr></thead><tbody>
+        <tr><td class="fn">referenceNumber</td><td><span class="plain-chip">string</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">sourceAccountId</td><td><span class="plain-chip">uuid</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">destinationAccountId</td><td><span class="plain-chip">uuid</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">amount</td><td><span class="plain-chip">decimal</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">currency</td><td><span class="plain-chip">string</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">eventTime</td><td><span class="plain-chip">datetime</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+      </tbody></table>
+    </div>
+    <div class="type-card" id="model-transferfailedevent" data-bc="Models › TransferFailedEvent">
+      <div class="type-head">
+        <span class="type-name">TransferFailedEvent</span>
+      </div>
+      <table class="fields-table"><thead><tr><th>Field</th><th>Type</th><th>Attributes</th></tr></thead><tbody>
+        <tr><td class="fn">referenceNumber</td><td><span class="plain-chip">string</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">sourceAccountId</td><td><span class="plain-chip">uuid</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">destinationAccountId</td><td><span class="plain-chip">uuid</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">amount</td><td><span class="plain-chip">decimal</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">currency</td><td><span class="plain-chip">string</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">eventTime</td><td><span class="plain-chip">datetime</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">failureReason</td><td><span class="plain-chip">string</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
       </tbody></table>
     </div>
     <div class="type-card" id="model-auditevent" data-bc="Models › AuditEvent">
@@ -1785,15 +1933,32 @@ a { color: inherit; text-decoration: none; }
         <tr><td class="fn">timestamp</td><td><span class="plain-chip">datetime</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
       </tbody></table>
     </div>
+    <div class="type-card" id="model-balanceresponse" data-bc="Models › BalanceResponse">
+      <div class="type-head">
+        <span class="type-name">BalanceResponse</span>
+        <span class="used-by">Used by: <span class="ub-chip">Ledger.getAccountBalance</span></span>
+      </div>
+      <table class="fields-table"><thead><tr><th>Field</th><th>Type</th><th>Attributes</th></tr></thead><tbody>
+        <tr><td class="fn">accountId</td><td><span class="plain-chip">uuid</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">currency</td><td><span class="plain-chip">string</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">availableBalance</td><td><span class="plain-chip">decimal</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">pendingHolds</td><td><span class="plain-chip">decimal</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+      </tbody></table>
+    </div>
     <div class="type-card" id="model-transferrequest" data-bc="Models › TransferRequest">
       <div class="type-head">
         <span class="type-name">TransferRequest</span>
         <span class="used-by">Used by: <span class="ub-chip">Transaction.transfer</span></span>
       </div>
       <table class="fields-table"><thead><tr><th>Field</th><th>Type</th><th>Attributes</th></tr></thead><tbody>
+        <tr><td class="fn">idempotencyKey</td><td><span class="plain-chip">string</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
         <tr><td class="fn">sourceAccountId</td><td><span class="plain-chip">uuid</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
         <tr><td class="fn">destinationAccountId</td><td><span class="plain-chip">uuid</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
         <tr><td class="fn">amount</td><td><span class="plain-chip">decimal</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">currency</td><td><span class="plain-chip">string</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">sourceCurrency</td><td><span class="plain-chip">string</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">destinationCurrency</td><td><span class="plain-chip">string</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">type</td><td><a class="type-chip" href="#enum-transactiontype" onclick="navigateTo('enum-transactiontype');return false">TransactionType</a></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
       </tbody></table>
     </div>
     <div class="type-card" id="model-transactionresponse" data-bc="Models › TransactionResponse">
@@ -1808,19 +1973,141 @@ a { color: inherit; text-decoration: none; }
         <tr><td class="fn">timestamp</td><td><span class="plain-chip">datetime</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
       </tbody></table>
     </div>
-    <div class="type-card" id="model-transactionevent" data-bc="Models › TransactionEvent">
+    <div class="type-card" id="model-getaccounttransactionsrequest" data-bc="Models › getAccountTransactionsRequest">
       <div class="type-head">
-        <span class="type-name">TransactionEvent</span>
+        <span class="type-name">getAccountTransactionsRequest</span>
+        <span class="used-by">Used by: <span class="ub-chip">Transaction.getAccountTransactions</span></span>
       </div>
       <table class="fields-table"><thead><tr><th>Field</th><th>Type</th><th>Attributes</th></tr></thead><tbody>
-        <tr><td class="fn">referenceNumber</td><td><span class="plain-chip">string</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
-        <tr><td class="fn">sourceAccountId</td><td><span class="plain-chip">uuid</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
-        <tr><td class="fn">destinationAccountId</td><td><span class="plain-chip">uuid</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
-        <tr><td class="fn">amount</td><td><span class="plain-chip">decimal</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
-        <tr><td class="fn">status</td><td><a class="type-chip" href="#enum-transactionstatus" onclick="navigateTo('enum-transactionstatus');return false">TransactionStatus</a></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">page</td><td><span class="plain-chip">int</span></td><td><div class="attr-wrap"><span class="fa-default">= 0</span></div></td></tr>
+        <tr><td class="fn">pageSize</td><td><span class="plain-chip">int</span></td><td><div class="attr-wrap"><span class="fa-default">= 20</span></div></td></tr>
+      </tbody></table>
+    </div>
+    <div class="type-card" id="model-paginatedtransactionresponse" data-bc="Models › PaginatedTransactionResponse">
+      <div class="type-head">
+        <span class="type-name">PaginatedTransactionResponse</span>
+        <span class="used-by">Used by: <span class="ub-chip">Transaction.getAccountTransactions</span></span>
+      </div>
+      <table class="fields-table"><thead><tr><th>Field</th><th>Type</th><th>Attributes</th></tr></thead><tbody>
+        <tr><td class="fn">content</td><td><a class="type-chip" href="#model-transactionresponse" onclick="navigateTo('model-transactionresponse');return false">TransactionResponse[]</a></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">pageNumber</td><td><span class="plain-chip">int</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">pageSize</td><td><span class="plain-chip">int</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">totalElements</td><td><span class="plain-chip">long</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">totalPages</td><td><span class="plain-chip">int</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">isLast</td><td><span class="plain-chip">bool</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
       </tbody></table>
     </div>
     <h2 class="types-title" id="section-enums" data-bc="Enums">Enums</h2>
+    <div class="type-card" id="enum-notificationstatus" data-bc="Enums › NotificationStatus">
+      <div class="type-head">
+        <span class="type-name">NotificationStatus</span>
+        <span class="used-by">Used by: <span class="ub-chip">NotificationItem</span></span>
+      </div>
+      <div class="enum-chips">
+        <span class="ev-chip">PENDING</span>
+        <span class="ev-chip">SENT</span>
+        <span class="ev-chip">FAILED</span>
+      </div>
+    </div>
+    <div class="type-card" id="enum-notificationchannel" data-bc="Enums › NotificationChannel">
+      <div class="type-head">
+        <span class="type-name">NotificationChannel</span>
+        <span class="used-by">Used by: <span class="ub-chip">NotificationTemplate</span>, <span class="ub-chip">NotificationItem</span>, <span class="ub-chip">SendNotificationInput</span>, <span class="ub-chip">CreateTemplateInput</span></span>
+      </div>
+      <div class="enum-chips">
+        <span class="ev-chip">EMAIL</span>
+        <span class="ev-chip">SMS</span>
+        <span class="ev-chip">PUSH</span>
+      </div>
+    </div>
+    <div class="type-card" id="enum-notificationtype" data-bc="Enums › NotificationType">
+      <div class="type-head">
+        <span class="type-name">NotificationType</span>
+        <span class="used-by">Used by: <span class="ub-chip">NotificationItem</span>, <span class="ub-chip">SendNotificationInput</span></span>
+      </div>
+      <div class="enum-chips">
+        <span class="ev-chip">LOAN</span>
+        <span class="ev-chip">TRANSACTION</span>
+        <span class="ev-chip">SECURITY</span>
+      </div>
+    </div>
+    <div class="type-card" id="enum-notificationeventtype" data-bc="Enums › NotificationEventType">
+      <div class="type-head">
+        <span class="type-name">NotificationEventType</span>
+        <span class="used-by">Used by: <span class="ub-chip">NotificationTemplate</span>, <span class="ub-chip">NotificationItem</span>, <span class="ub-chip">SendNotificationInput</span>, <span class="ub-chip">CreateTemplateInput</span></span>
+      </div>
+      <div class="enum-chips">
+        <span class="ev-chip">LOAN_APPLIED</span>
+        <span class="ev-chip">LOAN_APPROVED</span>
+        <span class="ev-chip">LOAN_REJECTED</span>
+        <span class="ev-chip">TRANSFER_COMPLETED</span>
+        <span class="ev-chip">LOGIN_DETECTED</span>
+      </div>
+    </div>
+    <div class="type-card" id="enum-workflowstatus" data-bc="Enums › WorkflowStatus">
+      <div class="type-head">
+        <span class="type-name">WorkflowStatus</span>
+        <span class="used-by">Used by: <span class="ub-chip">WorkflowInstance</span>, <span class="ub-chip">UpdateWorkflowInput</span></span>
+      </div>
+      <div class="enum-chips">
+        <span class="ev-chip">PENDING</span>
+        <span class="ev-chip">IN_PROGRESS</span>
+        <span class="ev-chip">APPROVED</span>
+        <span class="ev-chip">REJECTED</span>
+      </div>
+    </div>
+    <div class="type-card" id="enum-taskstatus" data-bc="Enums › TaskStatus">
+      <div class="type-head">
+        <span class="type-name">TaskStatus</span>
+        <span class="used-by">Used by: <span class="ub-chip">ApprovalTask</span></span>
+      </div>
+      <div class="enum-chips">
+        <span class="ev-chip">PENDING</span>
+        <span class="ev-chip">IN_PROGRESS</span>
+        <span class="ev-chip">COMPLETED</span>
+      </div>
+    </div>
+    <div class="type-card" id="enum-decisionstatus" data-bc="Enums › DecisionStatus">
+      <div class="type-head">
+        <span class="type-name">DecisionStatus</span>
+        <span class="used-by">Used by: <span class="ub-chip">ApprovalTask</span></span>
+      </div>
+      <div class="enum-chips">
+        <span class="ev-chip">PENDING</span>
+        <span class="ev-chip">APPROVED</span>
+        <span class="ev-chip">REJECTED</span>
+      </div>
+    </div>
+    <div class="type-card" id="enum-taskdecision" data-bc="Enums › TaskDecision">
+      <div class="type-head">
+        <span class="type-name">TaskDecision</span>
+        <span class="used-by">Used by: <span class="ub-chip">TaskActionInput</span></span>
+      </div>
+      <div class="enum-chips">
+        <span class="ev-chip">APPROVED</span>
+        <span class="ev-chip">REJECTED</span>
+      </div>
+    </div>
+    <div class="type-card" id="enum-steprole" data-bc="Enums › StepRole">
+      <div class="type-head">
+        <span class="type-name">StepRole</span>
+        <span class="used-by">Used by: <span class="ub-chip">WorkflowStep</span>, <span class="ub-chip">ApprovalTask</span></span>
+      </div>
+      <div class="enum-chips">
+        <span class="ev-chip">RISK</span>
+        <span class="ev-chip">MANAGER</span>
+        <span class="ev-chip">DIRECTOR</span>
+      </div>
+    </div>
+    <div class="type-card" id="enum-stepaction" data-bc="Enums › StepAction">
+      <div class="type-head">
+        <span class="type-name">StepAction</span>
+        <span class="used-by">Used by: <span class="ub-chip">WorkflowStep</span></span>
+      </div>
+      <div class="enum-chips">
+        <span class="ev-chip">APPROVE_LOAN</span>
+      </div>
+    </div>
     <div class="type-card" id="enum-auditstatus" data-bc="Enums › AuditStatus">
       <div class="type-head">
         <span class="type-name">AuditStatus</span>
@@ -1849,22 +2136,27 @@ a { color: inherit; text-decoration: none; }
     <div class="type-card" id="enum-transactiontype" data-bc="Enums › TransactionType">
       <div class="type-head">
         <span class="type-name">TransactionType</span>
+        <span class="used-by">Used by: <span class="ub-chip">TransferRequest</span></span>
       </div>
       <div class="enum-chips">
+        <span class="ev-chip">TRANSFER</span>
+        <span class="ev-chip">INTERNAL_TRANSFER</span>
         <span class="ev-chip">DEPOSIT</span>
         <span class="ev-chip">WITHDRAWAL</span>
-        <span class="ev-chip">TRANSFER</span>
+        <span class="ev-chip">CARD_PAYMENT</span>
+        <span class="ev-chip">BILL_PAYMENT</span>
       </div>
     </div>
     <div class="type-card" id="enum-transactionstatus" data-bc="Enums › TransactionStatus">
       <div class="type-head">
         <span class="type-name">TransactionStatus</span>
-        <span class="used-by">Used by: <span class="ub-chip">TransactionResponse</span>, <span class="ub-chip">TransactionEvent</span></span>
+        <span class="used-by">Used by: <span class="ub-chip">TransactionResponse</span></span>
       </div>
       <div class="enum-chips">
         <span class="ev-chip">PENDING</span>
         <span class="ev-chip">COMPLETED</span>
         <span class="ev-chip">FAILED</span>
+        <span class="ev-chip">SUCCESS</span>
       </div>
     </div>
     <div class="footer">Generated by <strong>Veld</strong></div>

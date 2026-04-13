@@ -1,0 +1,15 @@
+
+import "../models/fx.model.veld"
+
+module FX {
+  description: "Lending service"
+  prefix: /fx
+  
+  action getExchangeRate {
+    method: GET
+    path: /exchange-rate
+    input: GetRatesRequest
+    output: GetRatesResponse
+    errors: [InvalidCurrencyPair:400]
+  }
+}

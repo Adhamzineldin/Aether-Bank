@@ -1,21 +1,16 @@
 server:
-  port: 9000 # The single port your frontend will talk to
+  port: 9000
 
 spring:
   application:
     name: api-gateway
-  cloud:
-    gateway:
-      discovery:
-        locator:
-          enabled: true # Let gateway use Eureka to find services
-      routes:
-        - id: transaction-service-route
-          uri: lb://transaction-service # lb = Load Balancer. It asks Eureka for the IP!
-          predicates:
-            - Path=/api/transaction_service/** # If a request starts with this, send it to the transaction service
 
 eureka:
   client:
     service-url:
-      defaultZone: http://localhost:8761/eureka/
+      defaultZone: ${EUREKA_URL:http://localhost:8761/eureka/}
+
+logging:
+  level:
+    org.springframework.cloud.gateway: DEBUG
+    org.springframework.cloud.loadbalancer: DEBUG

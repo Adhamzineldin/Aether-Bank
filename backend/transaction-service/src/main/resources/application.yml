@@ -27,6 +27,13 @@ spring:
     hibernate:
       ddl-auto: update # Automatically creates your database tables from your Java code
     show-sql: true     # Prints SQL to your console for debugging
+    defer-datasource-initialization: true  # Run SQL init scripts AFTER JPA schema management
+
+  # Run idempotent repair scripts after Hibernate finishes schema updates
+  sql:
+    init:
+      mode: always
+      schema-locations: classpath:db/fix-constraints.sql
 
   # RabbitMQ Connection (Matches your Docker Compose)
   rabbitmq:

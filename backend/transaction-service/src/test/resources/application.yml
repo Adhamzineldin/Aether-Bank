@@ -1,0 +1,54 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# Test-specific overrides — applied on top of src/main/resources/application.yml
+# when running with Maven Surefire / any @SpringBootTest context.
+# ─────────────────────────────────────────────────────────────────────────────
+
+server:
+  port: 2501
+
+spring:
+  application:
+    name: transaction-service
+
+  # PostgreSQL Connection — same as main (tests that need a real DB use this)
+  datasource:
+    url: jdbc:postgresql://localhost:5433/transaction_service
+    username: root
+    password: password
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false   # quieter test output
+    defer-datasource-initialization: true  # Run SQL init scripts AFTER JPA schema management
+
+  # Run idempotent repair scripts after Hibernate finishes schema updates
+  sql:
+    init:
+      mode: always
+      schema-locations: classpath:db/fix-constraints.sql
+
+  # RabbitMQ Connection — same as main
+  rabbitmq:
+    host: localhost
+    port: 5673
+    publisher-confirm-type: correlated
+    publisher-returns: true
+
+# Disable Eureka client entirely during tests so there are no
+# "Connection refused" log storms and no shutdown exit-code -1
+# caused by the de-registration attempt failing.
+eureka:
+  client:
+    enabled: false
+    register-with-eureka: false
+    fetch-registry: false
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+
+# Silence Eureka / Netflix / cloud loggers in test output
+logging:
+  level:
+    com.netflix.discovery: ERROR
+    com.netflix.eureka: ERROR
+    org.springframework.cloud.netflix: ERROR
+

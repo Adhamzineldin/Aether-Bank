@@ -1,6 +1,2 @@
-// Iam service entry point
-// This file is the "input" for the iam workspace entry.
-// It imports all models and modules for this service.
-
-import "./models/iam.model.veld"
-import "./modules/iam.veld"
+import "@models/*"
+import "@modules/*"

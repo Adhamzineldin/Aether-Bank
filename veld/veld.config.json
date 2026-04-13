@@ -58,7 +58,16 @@
       "backendConfig": { "target": "java", "framework": "spring", "dir": "../backend/transaction-service" },
       "out": "../backend/transaction-service/generated",
       "baseUrl": "http://localhost:2501",
-      "consumes": ["iam", "audit", "account"]
+      "consumes": ["iam", "audit", "account", "notification", "lending"]
+    },
+    {
+      "name": "gateway",
+      "description": "",
+      "input": "services/gateway/main.veld",
+      "backendConfig": { "target": "java", "framework": "spring", "dir": "../backend/api-gateway" },
+      "out": "../backend/api-gateway/generated",
+      "baseUrl": "http://localhost:9000",
+      "consumes": ["*"]
     },
     {
       "name": "frontend",

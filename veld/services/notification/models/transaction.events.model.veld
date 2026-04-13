@@ -1,0 +1,20 @@
+model TransferSuccessEvent {
+   referenceNumber: string 
+   sourceAccountId: uuid
+   destinationAccountId: uuid
+   amount: decimal 
+   currency: string
+   eventTime: datetime
+}
+
+model TransferFailedEvent {
+   referenceNumber: string 
+   sourceAccountId: uuid
+   destinationAccountId: uuid
+   amount: decimal 
+   currency: string
+   eventTime: datetime
+   failureReason: string
+}
+
+

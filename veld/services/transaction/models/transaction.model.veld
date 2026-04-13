@@ -1,20 +1,29 @@
 enum TransactionType {
+  TRANSFER,
+  INTERNAL_TRANSFER,
   DEPOSIT,
   WITHDRAWAL,
-  TRANSFER,
+  CARD_PAYMENT,
+  BILL_PAYMENT
 }
 
 enum TransactionStatus {
   PENDING,
   COMPLETED,
   FAILED,
+  SUCCESS
 }
 
 model TransferRequest {
+  idempotencyKey: string
   sourceAccountId: uuid
   destinationAccountId: uuid
   amount: decimal
   currency: string
+  sourceCurrency: string
+  destinationCurrency: string
+  type: TransactionType
+  initiatedByUserId ?: uuid
 }
 
 model TransactionResponse {
@@ -24,3 +33,17 @@ model TransactionResponse {
   timestamp: datetime
 }
 
+model getAccountTransactionsRequest {
+  currency: string
+  page: int = 0
+  pageSize: int = 20
+}
+
+model PaginatedTransactionResponse {
+    content: TransactionResponse[]
+    pageNumber: int
+    pageSize: int
+    totalElements: long
+    totalPages: int
+    isLast: bool
+}

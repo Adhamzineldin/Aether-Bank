@@ -4,7 +4,7 @@ import "../models/transaction.model.veld"
 
 module Transaction {
   description: "Transaction service"
-  prefix: /transaction
+  prefix: /transactions
 
   action transfer {
     method: POST
@@ -18,6 +18,13 @@ module Transaction {
       InvalidAmount:400,
       invalidTarget:400
     ]
+  }
+  
+  action getAccountTransactions {
+    method: GET
+    path: /account/:acountId
+    input: getAccountTransactionsRequest
+    output: PaginatedTransactionResponse
   }
   
 

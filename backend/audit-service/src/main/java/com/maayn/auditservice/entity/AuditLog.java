@@ -1,8 +1,9 @@
 package com.maayn.auditservice.entity;
 
 import lombok.Data;
-import maayn.veld.generated.models.AuditAction;
-import maayn.veld.generated.models.AuditStatus;
+
+import maayn.veld.generated.models.shared.AuditAction;
+import maayn.veld.generated.models.shared.AuditStatus;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 

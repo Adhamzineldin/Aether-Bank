@@ -1,28 +1,87 @@
-// Notification service module
-
 import "../models/notification.model.veld"
 
 module Notification {
-  description: "Notification service"
+  description: "Notification Service"
   prefix: /api/notification
 
-  action ListNotification {
+  // Notification actions
+
+  action ListNotifications {
     method: GET
     path: /
+//    auth: [USER, ADMIN]
+// Will check the query syntax
+//    query: userId?: uuid, type?: NotificationType, status?: NotificationStatus
     output: NotificationItem[]
   }
 
   action GetNotification {
     method: GET
     path: /:id
+//    auth: [USER, ADMIN]
     output: NotificationItem
+    errors: [NotFound, Forbidden]
+  }
+
+  action SendNotification {
+    method: POST
+    path: /send
+//    auth: [ADMIN, SYSTEM]
+    input: SendNotificationInput
+    output: NotificationItem
+    errors: [NotFound, BadRequest]
+  }
+
+  action RetryNotification {
+    method: POST
+    path: /:id/retry
+//    auth: [ADMIN]
+    output: NotificationItem
+    errors: [NotFound, BadRequest]
+  }
+
+  // Template actions
+
+  action ListTemplates {
+    method: GET
+    path: /templates
+//    auth: [ADMIN]
+// will check the query syntax
+//    query: eventType?: NotificationEventType, channel?: NotificationChannel
+    output: NotificationTemplate[]
+  }
+
+  action GetTemplate {
+    method: GET
+    path: /templates/:id
+//    auth: [ADMIN]
+    output: NotificationTemplate
     errors: [NotFound]
   }
 
-  action CreateNotification {
+  action CreateTemplate {
     method: POST
-    path: /
-    input: CreateNotificationInput
-    output: NotificationItem
+    path: /templates
+//    auth: [ADMIN]
+    input: CreateTemplateInput
+    output: NotificationTemplate
+    errors: [BadRequest]
+  }
+
+  action UpdateTemplate {
+    method: PUT
+    path: /templates/:id
+//    auth: [ADMIN]
+    input: UpdateTemplateInput
+    output: NotificationTemplate
+    errors: [NotFound, BadRequest]
+  }
+
+  action DeactivateTemplate {
+    method: POST
+    path: /templates/:id/deactivate
+//    auth: [ADMIN]
+    output: NotificationTemplate
+    errors: [NotFound]
   }
 }
