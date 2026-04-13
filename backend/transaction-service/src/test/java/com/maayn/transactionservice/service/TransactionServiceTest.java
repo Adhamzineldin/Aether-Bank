@@ -285,10 +285,11 @@ class TransactionServiceTest {
             Page<Transaction> page = new PageImpl<>(List.of(txn), PageRequest.of(0, 10), 1);
 
             when(transactionRepository
-                    .findBySourceAccountIdOrDestinationAccountIdOrderByCreatedAtDesc(any(UUID.class), any(UUID.class), any(Pageable.class)))
+                    .findByAccountWallet(any(UUID.class), anyString(), any(Pageable.class)))
                     .thenReturn(page);
 
             getAccountTransactionsRequest input = new getAccountTransactionsRequest();
+            input.setCurrency("USD");
             input.setPage(0);
             input.setPageSize(10);
 
@@ -306,10 +307,11 @@ class TransactionServiceTest {
             Page<Transaction> emptyPage = new PageImpl<>(Collections.emptyList(), PageRequest.of(0, 10), 0);
 
             when(transactionRepository
-                    .findBySourceAccountIdOrDestinationAccountIdOrderByCreatedAtDesc(any(UUID.class), any(UUID.class), any(Pageable.class)))
+                    .findByAccountWallet(any(UUID.class), anyString(), any(Pageable.class)))
                     .thenReturn(emptyPage);
 
             getAccountTransactionsRequest input = new getAccountTransactionsRequest();
+            input.setCurrency("USD");
             input.setPage(0);
             input.setPageSize(10);
 
@@ -329,10 +331,11 @@ class TransactionServiceTest {
             Page<Transaction> page = new PageImpl<>(List.of(txn1, txn2), PageRequest.of(0, 2), 5);
 
             when(transactionRepository
-                    .findBySourceAccountIdOrDestinationAccountIdOrderByCreatedAtDesc(any(UUID.class), any(UUID.class), any(Pageable.class)))
+                    .findByAccountWallet(any(UUID.class), anyString(), any(Pageable.class)))
                     .thenReturn(page);
 
             getAccountTransactionsRequest input = new getAccountTransactionsRequest();
+            input.setCurrency("USD");
             input.setPage(0);
             input.setPageSize(2);
 
@@ -351,10 +354,11 @@ class TransactionServiceTest {
             Page<Transaction> page = new PageImpl<>(List.of(txn), PageRequest.of(2, 2), 5);
 
             when(transactionRepository
-                    .findBySourceAccountIdOrDestinationAccountIdOrderByCreatedAtDesc(any(UUID.class), any(UUID.class), any(Pageable.class)))
+                    .findByAccountWallet(any(UUID.class), anyString(), any(Pageable.class)))
                     .thenReturn(page);
 
             getAccountTransactionsRequest input = new getAccountTransactionsRequest();
+            input.setCurrency("USD");
             input.setPage(2);
             input.setPageSize(2);
 

@@ -1,6 +1,7 @@
 package com.maayn.transactionservice.aspects;
 
 import com.maayn.transactionservice.handlers.TransferIdempotencyHandler;
+import com.maayn.transactionservice.utils.UserContextResolver;
 import maayn.veld.generated.errors.TransferException;
 import maayn.veld.generated.models.transaction.TransactionResponse;
 import maayn.veld.generated.models.transaction.TransactionStatus;
@@ -37,15 +38,21 @@ class SecurityAuditAspectTest {
 
     @Mock private RabbitTemplate rabbitTemplate;
     @Mock private TransferIdempotencyHandler idempotencyHandler;
+    @Mock private UserContextResolver userContextResolver;
     @Mock private ProceedingJoinPoint joinPoint;
 
     @InjectMocks private SecurityAuditAspect aspect;
 
+    private static final UUID SYSTEM_USER_ID = UUID.fromString("00000000-0000-0000-0000-000000000000");
     private TransferRequest validRequest;
 
     @BeforeEach
     void setUp() {
         ReflectionTestUtils.setField(aspect, "serviceName", "transaction-service");
+
+        // Default: no HTTP context → falls back to SYSTEM_USER_ID
+        lenient().when(userContextResolver.resolveUserId(any(TransferRequest.class)))
+                .thenReturn(SYSTEM_USER_ID);
 
         validRequest = new TransferRequest();
         validRequest.setIdempotencyKey("idem-aspect-001");
