@@ -5,5 +5,5 @@
 
 prefix: /api/transaction_service
 import "@models/*"
-import "@modules/*
+import "@modules/*"
 

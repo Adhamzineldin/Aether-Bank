@@ -1,0 +1,237 @@
+// Loan domain models
+
+enum EmploymentStatus {
+  EMPLOYED,
+  SELF_EMPLOYED,
+  UNEMPLOYED,
+  STUDENT,
+  RETIRED
+}
+
+enum ApplicationStatus {
+  SUBMITTED,
+  UNDER_REVIEW,
+  APPROVED,
+  REJECTED,
+  CANCELLED
+}
+
+enum LoanStatus {
+  PENDING,
+  UNDER_REVIEW,
+  APPROVED,
+  REJECTED,
+  DISBURSED,
+  ACTIVE,
+  OVERDUE,
+  DEFAULTED,
+  CLOSED,
+  WRITTEN_OFF
+}
+
+enum InterestType {
+  FIXED,
+  FLOATING
+}
+
+enum RepaymentFrequency {
+  WEEKLY,
+  MONTHLY,
+  QUARTERLY,
+  SEMI_ANNUALLY,
+  ANNUALLY
+}
+
+enum InstallmentStatus {
+  PENDING,
+  PAID,
+  OVERDUE,
+  MISSED
+}
+
+enum PaymentStatus {
+  INITIATED,
+  SUCCESS,
+  FAILED,
+  REFUNDED
+}
+
+enum PaymentMethod {
+  BANK_TRANSFER,
+  CARD,
+  DIRECT_DEBIT,
+  MOBILE_WALLET
+}
+
+enum DisbursementStatus {
+  PENDING,
+  COMPLETED,
+  FAILED
+}
+
+enum ApprovalDecision {
+  PENDING,
+  APPROVED,
+  REJECTED
+}
+
+enum CollateralType {
+  PROPERTY,
+  VEHICLE,
+  CASH,
+  CERTIFICATE_OF_DEPOSIT,
+  INVESTMENT,
+  GUARANTOR
+}
+
+enum CollateralStatus {
+  PLEDGED,
+  VERIFIED,
+  RELEASED,
+  LIQUIDATED
+}
+
+enum DocumentType {
+  ID_PROOF,
+  INCOME_PROOF,
+  BANK_STATEMENT,
+  EMPLOYMENT_LETTER,
+  CREDIT_REPORT,
+  PROPERTY_DOCUMENT,
+  OTHER
+}
+
+model FinanceItem {
+  description: "A finance entity"
+  id:        uuid
+  name:      string
+  createdAt: datetime
+}
+
+model CreateFinanceInput {
+  name: string
+}
+
+model LoanApplication {
+  id: uuid
+  customerId: uuid
+  productId: uuid
+  requestedAmount: decimal
+  requestedTenure: int
+  purpose: string
+  employmentStatus: EmploymentStatus
+  annualIncome: decimal
+  applicationStatus: ApplicationStatus
+  submittedAt: datetime
+  reviewedAt: datetime
+  remarks: string
+
+}
+
+model LoanProduct {
+  id: uuid
+  name: string
+  productDescription: string
+  minAmount: decimal
+  maxAmount: decimal
+  minTenureMonths: int
+  maxTenureMonths: int
+  interestRate: decimal
+  interestType: InterestType
+  processingFee: decimal
+  repaymentFrequency: RepaymentFrequency
+  active: bool
+  createdAt: datetime
+}
+
+model Loan {
+  id: uuid
+  loanNumber: string
+  applicationId: uuid
+  customerId: uuid
+  accountId: uuid
+  productId: uuid
+  principalAmount: decimal
+  interestRate: decimal
+  interestType: InterestType
+  tenureMonths: int
+  emiAmount: decimal
+  outstandingBalance: decimal
+  disbursedAmount: decimal
+  repaymentFrequency: RepaymentFrequency
+  loanStatus: LoanStatus
+  startDate: date
+  endDate: date
+  disbursementDate: datetime
+  createdAt: datetime
+  updatedAt: datetime
+}
+
+model RepaymentSchedule {
+  id: uuid
+  loanId: uuid
+  installmentNumber: int
+  dueDate: date
+  principalComponent: decimal
+  interestComponent: decimal
+  totalAmount: decimal
+  remainingBalance: decimal
+  installmentStatus: InstallmentStatus
+}
+
+model LoanPayment {
+  id: uuid
+  loanId: uuid
+  transactionId: uuid
+  installmentId: uuid
+  amountPaid: decimal
+  paymentDate: datetime
+  paymentMethod: PaymentMethod
+  paymentStatus: PaymentStatus
+}
+
+model LoanDisbursement {
+  id: uuid
+  loanId: uuid
+  transactionId: uuid
+  amount: decimal
+  disbursementDate: datetime
+  disbursementStatus: DisbursementStatus
+}
+
+model LoanApproval {
+  id: uuid
+  loanApplicationId: uuid
+  approverId: uuid
+  decision: ApprovalDecision
+  comments: string
+  decisionDate: datetime
+}
+
+model LoanApplicationResponse{
+
+    applicationId: uuid,
+    status: string,
+    submittedAt: datetime
+
+}
+
+model Collateral {
+  id: uuid
+  loanId: uuid
+  type: CollateralType
+  collateralDescription: string
+  value: decimal
+  valuationDate: date
+  status: CollateralStatus
+}
+
+model LoanDocument {
+  id: uuid
+  loanApplicationId: uuid
+  documentType: DocumentType
+  documentUrl: string
+  uploadedAt: datetime
+  verified: bool
+}
+
