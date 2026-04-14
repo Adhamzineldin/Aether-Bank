@@ -1,0 +1,132 @@
+{
+  "version": 1,
+  "modules": [
+    {
+      "name": "Transaction",
+      "description": "Transaction service",
+      "prefix": "/api/transaction_service/transaction",
+      "actions": [
+        {
+          "name": "transfer",
+          "method": "POST",
+          "path": "/transfer",
+          "input": "TransferRequest",
+          "output": "TransactionResponse",
+          "errors": [
+            "InsufficientFunds",
+            "InvalidAccount",
+            "Unauthorized",
+            "InvalidAmount",
+            "invalidTarget"
+          ],
+          "errorStatuses": {
+            "InsufficientFunds": 403,
+            "InvalidAccount": 404,
+            "InvalidAmount": 400,
+            "Unauthorized": 401,
+            "invalidTarget": 400
+          },
+          "middleware": []
+        }
+      ]
+    }
+  ],
+  "models": [
+    {
+      "name": "TransferRequest",
+      "fields": [
+        {
+          "name": "idempotencyKey",
+          "type": "string"
+        },
+        {
+          "name": "sourceAccountId",
+          "type": "uuid"
+        },
+        {
+          "name": "destinationAccountId",
+          "type": "uuid"
+        },
+        {
+          "name": "amount",
+          "type": "decimal"
+        },
+        {
+          "name": "currency",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "TransactionResponse",
+      "fields": [
+        {
+          "name": "referenceNumber",
+          "type": "string"
+        },
+        {
+          "name": "amount",
+          "type": "decimal"
+        },
+        {
+          "name": "status",
+          "type": "TransactionStatus"
+        },
+        {
+          "name": "timestamp",
+          "type": "datetime"
+        }
+      ]
+    },
+    {
+      "name": "TransactionEvent",
+      "fields": [
+        {
+          "name": "referenceNumber",
+          "type": "string"
+        },
+        {
+          "name": "sourceAccountId",
+          "type": "uuid"
+        },
+        {
+          "name": "destinationAccountId",
+          "type": "uuid"
+        },
+        {
+          "name": "amount",
+          "type": "decimal"
+        },
+        {
+          "name": "status",
+          "type": "TransactionStatus"
+        }
+      ]
+    },
+    {
+      "name": "TransferInitiatedEvent",
+      "fields": [
+        {
+          "name": "transactionId",
+          "type": "string"
+        },
+        {
+          "name": "sourceAccountId",
+          "type": "uuid"
+        },
+        {
+          "name": "destinationAccountId",
+          "type": "uuid"
+        },
+        {
+          "name": "amount",
+          "type": "decimal"
+        },
+        {
+          "name": "currency",
+          "type": "string"
+        }
+      ]
+    }
+  ]
+}

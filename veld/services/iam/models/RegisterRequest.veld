@@ -1,0 +1,9 @@
+// RegisterRequest model
+
+model RegisterRequest {
+  userName: string
+  email: string
+  password: string
+  role: string
+}
+

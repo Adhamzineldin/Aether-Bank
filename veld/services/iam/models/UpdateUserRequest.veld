@@ -1,0 +1,6 @@
+// UpdateUserRequest model
+
+model UpdateUserRequest {
+  userName: string
+  email: string
+}

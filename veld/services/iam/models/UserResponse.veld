@@ -1,0 +1,8 @@
+// UserResponse model
+
+model UserResponse {
+  id: uuid
+  userName: string
+  email: string
+  role: string
+}

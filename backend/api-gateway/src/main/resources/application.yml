@@ -10,6 +10,10 @@ eureka:
     service-url:
       defaultZone: ${EUREKA_URL:http://localhost:8761/eureka/}
 
+security:
+  jwt:
+    secret: ${JWT_SECRET:change-this-to-a-long-shared-secret-at-least-32-characters}
+
 logging:
   level:
     org.springframework.cloud.gateway: DEBUG

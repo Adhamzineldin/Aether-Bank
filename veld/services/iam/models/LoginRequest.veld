@@ -1,0 +1,7 @@
+// LoginRequest model
+
+model LoginRequest {
+  userName: string
+  password: string
+}
+

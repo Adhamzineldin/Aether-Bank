@@ -1,0 +1,7 @@
+// JwtResponse model
+
+model JwtResponse {
+  accessToken: string
+  tokenType: string
+}
+

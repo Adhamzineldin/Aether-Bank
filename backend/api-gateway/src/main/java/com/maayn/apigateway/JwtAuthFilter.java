@@ -8,7 +8,7 @@ import org.springframework.web.servlet.function.HandlerFilterFunction;
 import org.springframework.web.servlet.function.ServerRequest;
 import org.springframework.web.servlet.function.ServerResponse;
 
-import java.security.interfaces.RSAPublicKey;
+import javax.crypto.SecretKey;
 import java.util.Optional;
 
 
@@ -24,7 +24,7 @@ public class JwtAuthFilter {
             }
 
             try {
-                Claims claims = verifyToken(token.get(), keyProvider.getPublicKey());
+                Claims claims = verifyToken(token.get(), keyProvider.getJwtSigningKey());
                 String userId = claims.getSubject();
                 if (userId == null || userId.isBlank()) {
                     return ServerResponse.status(HttpStatus.UNAUTHORIZED).build();
@@ -48,9 +48,9 @@ public class JwtAuthFilter {
         return Optional.of(header.substring(7));
     }
 
-    private static Claims verifyToken(String token, RSAPublicKey publicKey) {
+    private static Claims verifyToken(String token, SecretKey signingKey) {
         return Jwts.parser()
-                .verifyWith(publicKey)
+                .verifyWith(signingKey)
                 .build()
                 .parseSignedClaims(token)
                 .getPayload();

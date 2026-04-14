@@ -1,50 +1,38 @@
 package com.maayn.apigateway;
 
 import lombok.extern.slf4j.Slf4j;
-import maayn.veld.generated.sdk.iam.IamClient;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
 
-import java.security.KeyFactory;
-import java.security.interfaces.RSAPublicKey;
-import java.security.spec.X509EncodedKeySpec;
-import java.util.Base64;
+import io.jsonwebtoken.security.Keys;
+
+import javax.crypto.SecretKey;
+import java.nio.charset.StandardCharsets;
 
 
 @Component
 @Slf4j
 public class PublicKeyProvider implements ApplicationRunner {
 
-    private final IamClient iamClient;
-    private RSAPublicKey publicKey;
+    private final String jwtSecret;
+    private SecretKey jwtSigningKey;
 
-    public PublicKeyProvider(IamClient iamClient) {
-        this.iamClient = iamClient;
+    public PublicKeyProvider(@Value("${security.jwt.secret}") String jwtSecret) {
+        this.jwtSecret = jwtSecret;
     }
 
     @Override
-    public void run(ApplicationArguments args) throws Exception {
-        log.info("Fetching RSA public key from IAM service...");
-        String pem = iamClient.shared.getPublicKey().getPublicKey();
-        this.publicKey = parsePem(pem);
-        log.info("RSA public key loaded successfully.");
+    public void run(ApplicationArguments args) {
+        this.jwtSigningKey = Keys.hmacShaKeyFor(jwtSecret.getBytes(StandardCharsets.UTF_8));
+        log.info("JWT signing key loaded for gateway verification.");
     }
 
-    public RSAPublicKey getPublicKey() {
-        if (publicKey == null) {
-            throw new IllegalStateException("RSA public key not loaded — IAM service may have been unreachable at startup.");
+    public SecretKey getJwtSigningKey() {
+        if (jwtSigningKey == null) {
+            throw new IllegalStateException("JWT signing key is not loaded.");
         }
-        return publicKey;
-    }
-
-    private static RSAPublicKey parsePem(String pem) throws Exception {
-        String base64 = pem
-                .replace("-----BEGIN PUBLIC KEY-----", "")
-                .replace("-----END PUBLIC KEY-----", "")
-                .replaceAll("\\s+", "");
-        byte[] der = Base64.getDecoder().decode(base64);
-        return (RSAPublicKey) KeyFactory.getInstance("RSA")
-                .generatePublic(new X509EncodedKeySpec(der));
+        return jwtSigningKey;
     }
 }

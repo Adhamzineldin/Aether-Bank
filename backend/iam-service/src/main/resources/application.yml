@@ -19,3 +19,10 @@ eureka:
   client:
     service-url:
       defaultZone: http://localhost:8761/eureka/
+
+security:
+  jwt:
+    # Must match the gateway verifier key for token validation/routing.
+    secret: ${JWT_SECRET:change-this-to-a-long-shared-secret-at-least-32-characters}
+    expiration-ms: 3600000
+    issuer: "iam-service"

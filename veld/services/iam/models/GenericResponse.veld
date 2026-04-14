@@ -1,0 +1,6 @@
+// GenericResponse model
+
+model GenericResponse {
+  message: string
+  success: bool
+}
