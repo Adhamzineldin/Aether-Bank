@@ -2,7 +2,9 @@ package com.maayn.transactionservice.service;
 
 import com.maayn.transactionservice.entity.Transaction;
 import com.maayn.transactionservice.events.TransactionEventPublisher;
+import com.maayn.transactionservice.exceptions.InvalidBalanceException;
 import com.maayn.transactionservice.exceptions.LedgerNotInitializedException;
+import com.maayn.transactionservice.execution.TransferExecutionService;
 import com.maayn.transactionservice.handlers.TransferIdempotencyHandler;
 import com.maayn.transactionservice.mappers.TransactionMapper;
 import com.maayn.transactionservice.repository.TransactionRepository;
@@ -32,17 +34,20 @@ public class TransactionService implements ITransactionService {
     private final TransactionEventPublisher eventPublisher;
     private final TransactionValidator validator;
     private final TransferIdempotencyHandler idempotencyHandler;
+    private final TransferExecutionService transferExecutionService;
 
     @Transactional
     @Override
     public TransactionResponse transfer(TransferRequest request) throws Exception {
-        Optional<TransactionResponse> cached = idempotencyHandler.getIfAlreadyProcessed(request.getIdempotencyKey());
+        Optional<TransactionResponse> cached =
+                idempotencyHandler.getIfAlreadyProcessed(request.getIdempotencyKey());
+
         if (cached.isPresent()) return cached.get();
 
         Transaction transaction = prepareTransaction(request);
 
         validator.validateTransfer(transaction);
-        executeMathSafely(transaction);
+        transferExecutionService.execute(transaction);
 
         return persistAndDispatch(transaction);
     }
@@ -71,35 +76,6 @@ public class TransactionService implements ITransactionService {
         transaction.setDestinationAmount(destAmount);
 
         return transaction;
-    }
-
-    private void executeMathSafely(Transaction transaction) {
-        try {
-            boolean isFxTransfer = !transaction.getSourceCurrency().equals(transaction.getDestinationCurrency());
-
-            if (isFxTransfer) {
-                log.info("Executing FX Transfer: {} {} -> {} {}",
-                        transaction.getAmount(), transaction.getSourceCurrency(),
-                        transaction.getDestinationAmount(), transaction.getDestinationCurrency());
-
-                ledgerService.executeFxTransferMath(
-                        transaction.getSourceAccountId(), transaction.getSourceCurrency(), transaction.getAmount(),
-                        transaction.getDestinationAccountId(), transaction.getDestinationCurrency(), transaction.getDestinationAmount()
-                );
-            } else {
-                log.info("Executing Same-Currency Transfer: {} {}", transaction.getAmount(), transaction.getSourceCurrency());
-
-                ledgerService.executeTransferMath(
-                        transaction.getSourceAccountId(), transaction.getDestinationAccountId(),
-                        transaction.getAmount(), transaction.getSourceCurrency()
-                );
-            }
-        } catch (LedgerNotInitializedException e) {
-            log.warn("Transfer failed: {}", e.getMessage());
-            throw TransactionErrors.TransferErrors.invalidTarget(
-                    "Transfer failed: One or both wallets do not exist in the ledger."
-            );
-        }
     }
 
     private TransactionResponse persistAndDispatch(Transaction transaction) {

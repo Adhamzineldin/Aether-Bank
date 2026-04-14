@@ -1,5 +1,6 @@
 package com.maayn.transactionservice.entity;
 
+import com.maayn.transactionservice.exceptions.InvalidBalanceException;
 import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Version;
@@ -33,7 +34,7 @@ public class LedgerBalance {
 
     public void debit(BigDecimal amount) {
         if (this.availableBalance.compareTo(amount) < 0) {
-            throw new IllegalArgumentException("Insufficient funds in " + id.getCurrency() + " wallet for account: " + id.getAccountId());
+            throw new InvalidBalanceException("Insufficient funds in " + id.getCurrency() + " wallet for account: " + id.getAccountId());
         }
         this.availableBalance = this.availableBalance.subtract(amount);
     }
