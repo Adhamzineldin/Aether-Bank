@@ -43,21 +43,21 @@ module loan {
   // LOAN APPROVAL & REVIEW
   // ================================
 
-  action ApproveLoanApplication {
-    description: "Approve a loan application"
-    method: POST
-    path: /application/:id/approve
-    input: LoanApprovalRequest
-    output: LoanResponse
-  }
-
-  action RejectLoanApplication {
-    description: "Reject a loan application"
-    method: POST
-    path: /application/:id/reject
-    input: LoanRejectionRequest
-    output: LoanApplicationResponse
-  }
+//  action ApproveLoanApplication {
+//    description: "Approve a loan application"
+//    method: POST
+//    path: /application/:id/approve
+//    input: LoanApprovalRequest
+//    output: LoanResponse
+//  }
+//
+//  action RejectLoanApplication {
+//    description: "Reject a loan application"
+//    method: POST
+//    path: /application/:id/reject
+//    input: LoanRejectionRequest
+//    output: LoanApplicationResponse
+//  }
 
   // ================================
   // LOAN MANAGEMENT
@@ -88,13 +88,13 @@ module loan {
   // LOAN DISBURSEMENT
   // ================================
 
-  action DisburseLoan {
-    description: "Disburse funds for an approved loan"
-    method: POST
-    path: /:loanId/disburse
-    input: LoanDisbursementRequest
-    output: LoanDisbursementResponse
-  }
+//  action DisburseLoan {
+//    description: "Disburse funds for an approved loan"
+//    method: POST
+//    path: /:loanId/disburse
+//    input: LoanDisbursementRequest
+//    output: LoanDisbursementResponse
+//  }
 
   // ================================
   // REPAYMENT MANAGEMENT
@@ -107,13 +107,13 @@ module loan {
     output: RepaymentSchedule[]
   }
 
-  action MakeLoanPayment {
-    description: "Make a repayment toward a loan"
-    method: POST
-    path: /:loanId/payment
-    input: LoanPaymentRequest
-    output: LoanPaymentResponse
-  }
+//  action MakeLoanPayment {
+//    description: "Make a repayment toward a loan"
+//    method: POST
+//    path: /:loanId/payment
+//    input: LoanPaymentRequest
+//    output: LoanPaymentResponse
+//  }
 
   action GetLoanPayments {
     description: "Retrieve all payments made for a loan"

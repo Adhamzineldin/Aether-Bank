@@ -209,11 +209,9 @@ model LoanApproval {
 }
 
 model LoanApplicationResponse{
-
-    applicationId: uuid,
-    status: string,
+    applicationId: uuid
+    status: string
     submittedAt: datetime
-
 }
 
 model Collateral {

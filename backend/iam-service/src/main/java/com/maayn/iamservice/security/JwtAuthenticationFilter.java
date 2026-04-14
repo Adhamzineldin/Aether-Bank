@@ -1,7 +1,7 @@
 package com.maayn.iamservice.security;
 
 import com.maayn.iamservice.repository.UserRepository;
-import com.maayn.iamservice.service.impl.JwtServiceImpl;
+import com.maayn.iamservice.service.JwtService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -16,10 +16,10 @@ import java.io.IOException;
 
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
-    private final JwtServiceImpl jwtService;
+    private final JwtService jwtService;
     private final UserRepository userRepository;
 
-    public JwtAuthenticationFilter(JwtServiceImpl jwtService, UserRepository userRepository) {
+    public JwtAuthenticationFilter(JwtService jwtService, UserRepository userRepository) {
         this.jwtService = jwtService;
         this.userRepository = userRepository;
     }
