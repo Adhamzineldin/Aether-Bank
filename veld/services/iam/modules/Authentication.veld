@@ -7,7 +7,7 @@ import "../models/GenericResponse.veld"
 
 module Authentication {
   description: "Handles authentication operations"
-  prefix: /api/auth
+  prefix: /
 
   action login {
     method: POST
@@ -21,7 +21,7 @@ module Authentication {
     method: POST
     path: /register
     input: RegisterRequest
-    output:UserResponse
+    output: UserResponse
   }
 
   action logout {

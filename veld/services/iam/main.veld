@@ -1,2 +1,4 @@
+// IAM service entry point
+prefix: /api/auth
 import "@models/*"
 import "@modules/*"
