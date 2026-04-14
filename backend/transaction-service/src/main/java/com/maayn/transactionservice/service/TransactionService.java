@@ -47,6 +47,7 @@ public class TransactionService implements ITransactionService {
         Transaction transaction = prepareTransaction(request);
 
         validator.validateTransfer(transaction);
+        
         transferExecutionService.execute(transaction);
 
         return persistAndDispatch(transaction);
@@ -64,8 +65,7 @@ public class TransactionService implements ITransactionService {
 
         return TransactionMapper.toPaginatedResponse(page);
     }
-
-
+    
     private Transaction prepareTransaction(TransferRequest request) {
         Transaction transaction = TransactionMapper.toEntity(request);
 

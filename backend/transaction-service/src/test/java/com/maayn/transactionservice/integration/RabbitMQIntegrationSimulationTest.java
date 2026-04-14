@@ -4,6 +4,7 @@ import com.maayn.transactionservice.entity.LedgerAccountId;
 import com.maayn.transactionservice.entity.LedgerBalance;
 import com.maayn.transactionservice.entity.Transaction;
 import com.maayn.transactionservice.events.TransactionEventPublisher;
+import com.maayn.transactionservice.execution.TransferExecutionService;
 import com.maayn.transactionservice.handlers.TransferIdempotencyHandler;
 import com.maayn.transactionservice.listeners.AccountEventListener;
 import com.maayn.transactionservice.listeners.LedgerCommandListener;
@@ -68,6 +69,7 @@ class RabbitMQIntegrationSimulationTest {
     private TransactionService transactionService;
     private AccountEventListener accountEventListener;
     private LedgerCommandListener ledgerCommandListener;
+    TransferExecutionService transferExecutionService;
 
     private UUID aliceAccountId;
     private UUID bobAccountId;
@@ -83,8 +85,9 @@ class RabbitMQIntegrationSimulationTest {
         eventPublisher = new TransactionEventPublisher(outboxRepository, objectMapper);
         ledgerService = new LedgerService(ledgerBalanceRepository);
         fxRateService = new FxRateService();
+        transferExecutionService = new TransferExecutionService(ledgerService);
         transactionService = new TransactionService(
-                transactionRepository, ledgerService, fxRateService, eventPublisher, validator, idempotencyHandler
+                transactionRepository, ledgerService, fxRateService, eventPublisher, validator, idempotencyHandler, transferExecutionService
         );
         accountEventListener = new AccountEventListener(ledgerBalanceRepository);
         ledgerCommandListener = new LedgerCommandListener(transactionService, eventPublisher);
