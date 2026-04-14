@@ -44,10 +44,10 @@ public class AuthService implements IAuthenticationService {
     @Override
     public JwtResponse login(LoginRequest request) throws LoginException {
         User user = userRepository.findByUserName(request.getUserName())
-                .orElseThrow(() -> AuthenticationErrors.login.userNotFound("User not found"));
+                .orElseThrow(() -> AuthenticationErrors.LoginErrors.userNotFound("User not found"));
 
         if (!passwordHashService.matches(request.getPassword(), user.getPassword())) {
-            throw AuthenticationErrors.login.invalidCredentials("Invalid username or password");
+            throw AuthenticationErrors.LoginErrors.invalidCredentials("Invalid username or password");
         }
 
         String token = jwtService.generateToken(user);
