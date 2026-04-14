@@ -28,12 +28,12 @@
       "baseUrl": "http://account-service:3003"
     },
     {
-      "name": "lending",
+      "name": "financial",
       "description": "",
-      "input": "services/lending/main.veld",
-      "backendConfig": { "target": "java", "framework": "spring", "dir": "../backend/lending-service" },
-      "out": "../backend/lending-service/generated",
-      "baseUrl": "http://lending-service:3004"
+      "input": "services/financial/main.veld",
+      "backendConfig": { "target": "java", "framework": "spring", "dir": "../backend/financial-service" },
+      "out": "../backend/financial-service/generated",
+      "baseUrl": "http://financial-service:3004"
     },
     {
       "name": "notification",
@@ -58,7 +58,7 @@
       "backendConfig": { "target": "java", "framework": "spring", "dir": "../backend/transaction-service" },
       "out": "../backend/transaction-service/generated",
       "baseUrl": "http://localhost:2501",
-      "consumes": ["iam", "audit", "account", "notification", "lending"]
+      "consumes": ["iam", "audit", "account", "notification", "financial"]
     },
     {
       "name": "gateway",
@@ -76,7 +76,7 @@
       "frontendConfig": { "target": "react" },
       "out": "../frontend/src/generated",
       "baseUrl": "http://localhost:3000",
-      "consumes": ["iam", "card", "account", "lending", "notification", "transaction"]
+      "consumes": ["iam", "card", "account", "financial", "notification", "transaction"]
     }
   ]
 }

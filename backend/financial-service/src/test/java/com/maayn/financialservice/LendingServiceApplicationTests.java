@@ -1,4 +1,4 @@
-package com.maayn.lendingservice;
+package com.maayn.financialservice;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

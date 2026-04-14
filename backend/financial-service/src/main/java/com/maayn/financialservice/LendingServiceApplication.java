@@ -1,4 +1,4 @@
-package com.maayn.lendingservice;
+package com.maayn.financialservice;
 
 import maayn.veld.generated.VeldAutoConfiguration;
 import org.springframework.boot.SpringApplication;
