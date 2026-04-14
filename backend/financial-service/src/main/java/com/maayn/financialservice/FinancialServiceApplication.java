@@ -9,10 +9,10 @@ import org.springframework.context.annotation.Import;
 @SpringBootApplication
 @EnableDiscoveryClient
 @Import(VeldAutoConfiguration.class)
-public class LendingServiceApplication {
+public class FinancialServiceApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(LendingServiceApplication.class, args);
+        SpringApplication.run(FinancialServiceApplication.class, args);
     }
 
 }
