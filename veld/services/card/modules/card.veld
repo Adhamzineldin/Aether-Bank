@@ -6,23 +6,65 @@ module Card {
   description: "Card service"
   prefix: /api/card
 
-  action ListCard {
+  action getCardDetails {
     method: GET
-    path: /
-    output: CardItem[]
+    path: /:cardId
+    output: CardDetailsResponse
+    errors: [
+      NotFound:404,
+      Unauthorized:401
+    ]
   }
 
-  action GetCard {
-    method: GET
-    path: /:id
-    output: CardItem
-    errors: [NotFound]
-  }
-
-  action CreateCard {
+  action processMerchantPayment {
     method: POST
-    path: /
-    input: CreateCardInput
-    output: CardItem
+    path: /payments
+    input: MerchantPaymentRequest
+    output: CardTransactionResponse
+    errors: [
+      InvalidCardToken:404,
+      CardNotActive:403,
+      CardExpired:403,
+      InsufficientCredit:422,
+      InvalidCurrency:400,
+      InvalidAmount:400,
+      Unauthorized:401
+    ]
+  }
+
+  action refundTransaction {
+    method: POST
+    path: /refunds
+    input: RefundCardTransactionRequest
+    output: CardTransactionResponse
+    errors: [
+      TransactionNotFound:404,
+      RefundNotAllowed:409,
+      InvalidAmount:400,
+      Unauthorized:401
+    ]
+  }
+
+  action voidTransaction {
+    method: POST
+    path: /voids
+    input: VoidCardTransactionRequest
+    output: CardTransactionResponse
+    errors: [
+      TransactionNotFound:404,
+      VoidNotAllowed:409,
+      Unauthorized:401
+    ]
+  }
+
+  action getCardTransactions {
+    method: GET
+    path: /:cardId/transactions
+    input: GetCardTransactionsRequest
+    output: PaginatedCardTransactionResponse
+    errors: [
+      NotFound:404,
+      Unauthorized:401
+    ]
   }
 }

@@ -1,12 +1,119 @@
 // Card domain models
 
-model CardItem {
-  description: "A card entity"
-  id:        uuid
-  name:      string
-  createdAt: datetime
+enum CardType {
+  CREDIT,
+  DEBIT
 }
 
-model CreateCardInput {
-  name: string
+enum CardNetwork {
+  VISA,
+  MASTERCARD,
+  AMEX
+}
+
+enum CardStatus {
+  PENDING,
+  ACTIVE,
+  BLOCKED,
+  EXPIRED
+}
+
+enum CardTransactionStatus {
+  PENDING,
+  APPROVED,
+  DECLINED,
+  REFUNDED,
+  VOIDED
+}
+
+enum CardTransactionType {
+  PURCHASE,
+  REFUND,
+  VOID,
+  CASH_ADVANCE
+}
+
+model CardSummary {
+  id: uuid
+  accountId: uuid
+  customerId: uuid
+  cardToken: string
+  lastFourDigits: string
+  cardType: CardType
+  cardNetwork: CardNetwork
+  status: CardStatus
+  expiryMonth: int
+  expiryYear: int
+  issuedAt: datetime
+  activatedAt?: datetime
+  blockedAt?: datetime
+  blockReason?: string
+}
+
+model CreditCardDetails {
+  creditLimit: decimal
+  availableCredit: decimal
+  currentBalance: decimal
+  minimumPayment: decimal
+  paymentDueDate?: date
+  annualInterestRate: decimal
+  billingCycleDay: int
+  lastStatementDate?: date
+}
+
+model CardDetailsResponse {
+  card: CardSummary
+  creditDetails?: CreditCardDetails
+}
+
+model MerchantPaymentRequest {
+  cardToken: string
+  merchantId: uuid
+  amount: decimal
+  currency: string
+  idempotencyKey?: string
+  merchantReference?: string
+  description?: string
+}
+
+model RefundCardTransactionRequest {
+  transactionId: uuid
+  reason: string
+  amount?: decimal
+}
+
+model VoidCardTransactionRequest {
+  transactionId: uuid
+  reason: string
+}
+
+model CardTransactionResponse {
+  transactionId: uuid
+  cardId: uuid
+  merchantId?: uuid
+  authCode?: string
+  ledgerTransactionId?: uuid
+  amount: decimal
+  currency: string
+  amountInBaseCurrency: decimal
+  exchangeRate?: decimal
+  status: CardTransactionStatus
+  type: CardTransactionType
+  processedAt: datetime
+}
+
+model GetCardTransactionsRequest {
+  status?: CardTransactionStatus
+  type?: CardTransactionType
+  page: int = 0
+  pageSize: int = 20
+}
+
+model PaginatedCardTransactionResponse {
+  content: CardTransactionResponse[]
+  pageNumber: int
+  pageSize: int
+  totalElements: long
+  totalPages: int
+  isLast: bool
 }
