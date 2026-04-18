@@ -8,6 +8,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
+/**
+ * Handles card detail reads.
+ * Kept separate from mutation flows so lookup logic stays simple and read-only.
+ */
 public class CardDetailsQueryService {
 
     private final CardAccessService cardAccessService;
@@ -18,6 +22,7 @@ public class CardDetailsQueryService {
 
     @Transactional(readOnly = true)
     public CardDetailsResponse getCardDetails(String cardId) throws GetCardDetailsException {
+        // Validate the identifier and load the card before mapping it to the API response contract.
         return CardMapper.toCardDetailsResponse(cardAccessService.getCardDetailsCard(cardId));
     }
 }

@@ -1,14 +1,8 @@
-// loan service module
-
 import "../models/loan.model.veld"
 
 module loan {
-  description: "Loan Service - Handles loan applications, approvals, disbursement, and repayments"
-  prefix: /api/loan
-
-  // ================================
-  // LOAN APPLICATION ACTIONS
-  // ================================
+  description: "Loan service"
+  prefix: /auth/loans
 
   action LoanSubmit {
     description: "Submit a loan application"
@@ -18,21 +12,7 @@ module loan {
     output: LoanApplicationResponse
     errors: [
       MissingField:400,
-      InvalidAmount:400,
+      InvalidAmount:400
     ]
   }
-
-//  action GetLoan {
-//    description: "Retrieve a loan application by its ID"
-//    method: GET
-//    path: /application/:id
-//    output: LoanApplication
-//  }
-//
-//  action GetCustomerLoans {
-//    description: "Retrieve all loan applications for a specific customer"
-//    method: GET
-//    path: /application/customer/:customerId
-//    output: LoanApplication[]
-//  }
 }

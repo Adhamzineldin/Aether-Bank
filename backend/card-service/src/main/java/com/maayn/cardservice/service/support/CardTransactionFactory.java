@@ -11,6 +11,10 @@ import java.util.Locale;
 import java.util.UUID;
 
 @Component
+/**
+ * Builds the local card transaction entities that mirror successful ledger operations.
+ * All transaction variants share the same base metadata and only differ in type/status/original link.
+ */
 public class CardTransactionFactory {
 
     private static final BigDecimal ONE = BigDecimal.ONE;
@@ -70,11 +74,13 @@ public class CardTransactionFactory {
         CardTransaction transaction = new CardTransaction();
         transaction.setCard(card);
         transaction.setMerchantId(merchantId);
+        // Auth codes are generated locally for card-domain tracking and customer support workflows.
         transaction.setAuthCode(generateAuthCode());
         transaction.setLedgerReference(ledgerReference);
         transaction.setIdempotencyKey(idempotencyKey);
         transaction.setAmount(amount);
         transaction.setCurrency(currency.trim().toUpperCase(Locale.ROOT));
+        // No FX conversion is implemented yet, so base currency values mirror the transaction currency.
         transaction.setAmountInBaseCurrency(amount);
         transaction.setExchangeRate(ONE);
         return transaction;

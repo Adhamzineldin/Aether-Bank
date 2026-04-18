@@ -1,7 +1,7 @@
 package com.maayn.financialservice.repo;
 
-import com.maayn.financialservice.entity.Loan;
-import maayn.veld.generated.models.loan.ApplicationStatus;
+import com.maayn.financialservice.entity.LoanApplicationDocument;
+import maayn.veld.generated.models.certificate.ApplicationStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -13,36 +13,37 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Repository
-public interface LoanRepo extends MongoRepository<Loan, String> {
+public interface LoanRepo extends MongoRepository<LoanApplicationDocument, UUID> {
 
-    Optional<Loan> findByIdAndCustomerId(String id, UUID customerId);
+    Optional<LoanApplicationDocument> findByIdAndCustomerId(UUID id, UUID customerId);
 
-    List<Loan> findByCustomerId(UUID customerId);
+    List<LoanApplicationDocument> findByCustomerId(UUID customerId);
 
-    Page<Loan> findByCustomerId(UUID customerId, Pageable pageable);
+    Page<LoanApplicationDocument> findByCustomerId(UUID customerId, Pageable pageable);
 
-    List<Loan> findByProductId(UUID productId);
+    List<LoanApplicationDocument> findByProductId(UUID productId);
 
-    List<Loan> findByApplicationStatus(ApplicationStatus applicationStatus);
+    List<LoanApplicationDocument> findByApplicationStatus(ApplicationStatus applicationStatus);
 
-    List<Loan> findByCustomerIdAndApplicationStatus(
+    List<LoanApplicationDocument> findByCustomerIdAndApplicationStatus(
             UUID customerId,
             ApplicationStatus applicationStatus
     );
 
-    List<Loan> findByCustomerIdAndApplicationStatusIn(
+    List<LoanApplicationDocument> findByCustomerIdAndApplicationStatusIn(
             UUID customerId,
             List<ApplicationStatus> statuses
     );
 
-    boolean existsByCustomerIdAndProductId(
+    boolean existsByCustomerIdAndProductIdAndApplicationStatusIn(
             UUID customerId,
-            UUID productId
+            UUID productId,
+            List<ApplicationStatus> applicationStatuses
     );
 
-    List<Loan> findAllByOrderBySubmittedAtDesc();
+    List<LoanApplicationDocument> findAllByOrderBySubmittedAtDesc();
 
-    List<Loan> findAll(Sort sort);
+    List<LoanApplicationDocument> findAll(Sort sort);
 
     void deleteByCustomerId(UUID customerId);
 }

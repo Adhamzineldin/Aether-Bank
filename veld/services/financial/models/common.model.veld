@@ -1,0 +1,67 @@
+enum ApplicationStatus {
+  SUBMITTED,
+  UNDER_REVIEW,
+  APPROVED,
+  REJECTED,
+  CANCELLED
+}
+
+enum EmploymentStatus {
+  EMPLOYED,
+  SELF_EMPLOYED,
+  UNEMPLOYED,
+  STUDENT,
+  RETIRED
+}
+
+enum LoanStatus {
+  PENDING,
+  UNDER_REVIEW,
+  APPROVED,
+  REJECTED,
+  DISBURSED,
+  ACTIVE,
+  OVERDUE,
+  DEFAULTED,
+  CLOSED,
+  WRITTEN_OFF
+}
+
+enum MortgageStatus {
+  PENDING,
+  UNDER_REVIEW,
+  APPROVED,
+  REJECTED,
+  ACTIVE,
+  DELINQUENT,
+  CLOSED
+}
+
+enum CertificateStatus {
+  PENDING,
+  ACTIVE,
+  MATURED,
+  REDEEMED,
+  CANCELLED,
+  CLOSED
+}
+
+enum InterestType {
+  FIXED,
+  FLOATING
+}
+
+enum RepaymentFrequency {
+  WEEKLY,
+  MONTHLY,
+  QUARTERLY,
+  SEMI_ANNUALLY,
+  ANNUALLY
+}
+
+enum InstallmentStatus {
+  PENDING,
+  PAID,
+  OVERDUE,
+  MISSED
+}

@@ -21,6 +21,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
+/**
+ * Executes merchant purchase requests against a card.
+ * The flow validates input, enforces card rules, calls the transaction service, then stores the local card transaction.
+ */
 public class CardPaymentService {
 
     private final CardAccessService cardAccessService;
@@ -50,6 +54,7 @@ public class CardPaymentService {
     public CardTransactionResponse process(MerchantPaymentRequest input) throws ProcessMerchantPaymentException, Exception {
         cardRulesValidator.validateMerchantPaymentRequest(input);
 
+        // Reuse an existing transaction if the same idempotency key was already processed successfully.
         String idempotencyKey = resolvePaymentIdempotencyKey(input);
         CardTransaction cached = cardAccessService.findTransactionByIdempotencyKey(idempotencyKey).orElse(null);
         if (cached != null) {
@@ -61,6 +66,7 @@ public class CardPaymentService {
 
         TransactionResponse transferResult;
         try {
+            // Move funds from the card-linked account into the bank cash vault through the transaction service.
             transferResult = transactionGateway.transfer(
                     card.getAccountId(),
                     SystemAccounts.CASH_VAULT_ID,
@@ -82,6 +88,7 @@ public class CardPaymentService {
                 input.getCurrency()
         );
 
+        // Credit cards also maintain an internal credit ledger that mirrors the approved charge.
         creditBalanceService.applyCharge(card, input.getAmount());
         cardTransactionRepository.save(transaction);
         return CardMapper.toTransactionResponse(transaction);
@@ -99,6 +106,7 @@ public class CardPaymentService {
         if (input.getIdempotencyKey() != null && !input.getIdempotencyKey().trim().isEmpty()) {
             return input.getIdempotencyKey();
         }
+        // Fall back to a deterministic key so retries without an explicit key still deduplicate.
         return "card-payment-" + input.getCardToken() + "-" + cardRulesValidator.normalizeCurrency(input.getCurrency()) + "-" + input.getAmount();
     }
 }

@@ -20,6 +20,10 @@ import java.time.YearMonth;
 import java.util.Locale;
 
 @Component
+/**
+ * Encapsulates the card domain rules used by payment, refund, and void flows.
+ * Keeping them here avoids scattering validation logic across multiple services.
+ */
 public class CardRulesValidator {
 
     public void validateMerchantPaymentRequest(MerchantPaymentRequest input) throws ProcessMerchantPaymentException {
@@ -45,6 +49,7 @@ public class CardRulesValidator {
             throw CardErrors.processMerchantPayment.invalidCurrency("Currency must be a 3-letter ISO code");
         }
         if (card.getCardType() == CardType.CREDIT) {
+            // Debit/prepaid cards rely on the transaction service balance check; credit cards also enforce card credit limits here.
             CreditCardDetailsEntity creditDetails = card.getCreditDetails();
             if (creditDetails == null) {
                 throw CardErrors.processMerchantPayment.insufficientCredit("Credit card details are missing");
@@ -60,6 +65,7 @@ public class CardRulesValidator {
             throw CardErrors.refundTransaction.refundNotAllowed("Only approved purchase transactions can be refunded");
         }
 
+        // If the caller omits an amount, the refund defaults to the entire original purchase value.
         BigDecimal refundAmount = requestedAmount != null ? requestedAmount : original.getAmount();
         if (refundAmount.compareTo(BigDecimal.ZERO) <= 0) {
             throw CardErrors.refundTransaction.invalidAmount("Refund amount must be greater than zero");
@@ -74,6 +80,7 @@ public class CardRulesValidator {
         if (original.getType() != CardTransactionType.PURCHASE || original.getStatus() != CardTransactionStatus.APPROVED) {
             throw CardErrors.voidTransaction.voidNotAllowed("Only approved purchase transactions can be voided");
         }
+        // Voids are only allowed in a short post-authorization window; after that the transaction must be refunded.
         if (original.getProcessedAt() == null || original.getProcessedAt().isBefore(LocalDateTime.now().minusMinutes(15))) {
             throw CardErrors.voidTransaction.voidNotAllowed("Void window has expired");
         }

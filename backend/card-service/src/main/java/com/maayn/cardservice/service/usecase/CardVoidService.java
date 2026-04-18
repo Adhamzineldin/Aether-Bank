@@ -20,6 +20,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
+/**
+ * Cancels a recent approved purchase before it is treated as fully settled.
+ * Operationally it looks similar to a refund, but the original transaction ends up marked as voided.
+ */
 public class CardVoidService {
 
     private final CardAccessService cardAccessService;
@@ -51,6 +55,7 @@ public class CardVoidService {
         cardRulesValidator.validateVoid(original);
         String idempotencyKey = "void-" + original.getId();
 
+        // Repeated void requests for the same purchase return the previously recorded void transaction.
         CardTransaction cached = cardAccessService.findTransactionByIdempotencyKey(idempotencyKey).orElse(null);
         if (cached != null) {
             return CardMapper.toTransactionResponse(cached);
@@ -76,6 +81,7 @@ public class CardVoidService {
                 transferResult.getReferenceNumber()
         );
 
+        // Restore balance impact locally after the ledger transfer succeeds.
         creditBalanceService.reverseCharge(original.getCard(), original.getAmount());
         original.setStatus(maayn.veld.generated.models.card.CardTransactionStatus.VOIDED);
         cardTransactionRepository.save(voidTransaction);

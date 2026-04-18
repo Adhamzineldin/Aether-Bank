@@ -22,6 +22,10 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 
 @Service
+/**
+ * Reverses a settled purchase by transferring money back from the bank vault to the card account.
+ * The service currently supports full refunds only.
+ */
 public class CardRefundService {
 
     private final CardAccessService cardAccessService;
@@ -53,6 +57,7 @@ public class CardRefundService {
         BigDecimal refundAmount = cardRulesValidator.validateRefund(original, input.getAmount());
         String idempotencyKey = "refund-" + original.getId();
 
+        // Refunds are idempotent per original transaction so repeated requests return the same result.
         CardTransaction cached = cardAccessService.findTransactionByIdempotencyKey(idempotencyKey).orElse(null);
         if (cached != null) {
             return CardMapper.toTransactionResponse(cached);
@@ -79,6 +84,7 @@ public class CardRefundService {
                 refundAmount
         );
 
+        // Restore the customer credit headroom and mark the original purchase as refunded.
         creditBalanceService.reverseCharge(original.getCard(), refundAmount);
         original.setStatus(maayn.veld.generated.models.card.CardTransactionStatus.REFUNDED);
         cardTransactionRepository.save(refundTransaction);

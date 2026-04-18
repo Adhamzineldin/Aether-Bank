@@ -1,5 +1,5 @@
 server:
-  port: 8080   # different from transaction-service
+  port: 8080
 
 spring:
   application:
@@ -17,17 +17,17 @@ spring:
     livereload:
       enabled: true
 
-  # MongoDB Connection
-  # RabbitMQ (same pattern as transaction service)
+  data:
+    mongodb:
+      uri: mongodb://localhost:27017/financial_service
+      uuid-representation: standard
+      auto-index-creation: true
+
   rabbitmq:
     host: localhost
     port: 5673
     publisher-confirm-type: correlated
     publisher-returns: true
-  mongodb:
-    representation:
-      uuid: standard
-    uri: mongodb://localhost:27017/financial_service
 
 eureka:
   client:

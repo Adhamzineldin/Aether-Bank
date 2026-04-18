@@ -3,7 +3,6 @@ package com.maayn.financialservice.validation;
 import maayn.veld.generated.errors.loanErrors;
 import maayn.veld.generated.models.loan.LoanApplication;
 import org.springframework.stereotype.Component;
-import lombok.*;
 
 import java.math.BigDecimal;
 
