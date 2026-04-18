@@ -20,7 +20,7 @@ public class CardTransactionHistoryService {
 
     private final CardAccessService cardAccessService;
     private final CardTransactionRepository cardTransactionRepository;
-
+    //TODO: USE Dependency Injections like professionals
     public CardTransactionHistoryService(CardAccessService cardAccessService, CardTransactionRepository cardTransactionRepository) {
         this.cardAccessService = cardAccessService;
         this.cardTransactionRepository = cardTransactionRepository;

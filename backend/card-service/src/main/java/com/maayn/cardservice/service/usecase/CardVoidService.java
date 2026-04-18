@@ -28,7 +28,9 @@ public class CardVoidService {
     private final CardTransactionFactory cardTransactionFactory;
     private final CreditBalanceService creditBalanceService;
     private final CardTransactionRepository cardTransactionRepository;
-
+    
+    
+    //TODO: USE Dependency Injections like professionals
     public CardVoidService(
             CardAccessService cardAccessService,
             CardRulesValidator cardRulesValidator,

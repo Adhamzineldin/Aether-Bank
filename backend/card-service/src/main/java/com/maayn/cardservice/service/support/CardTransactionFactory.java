@@ -14,7 +14,7 @@ import java.util.UUID;
 public class CardTransactionFactory {
 
     private static final BigDecimal ONE = BigDecimal.ONE;
-
+    //TODO: USE Dependency Injections like professionals
     public CardTransaction createPurchase(
             Card card,
             UUID merchantId,

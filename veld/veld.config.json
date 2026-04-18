@@ -17,7 +17,8 @@
       "input": "services/card/main.veld",
       "backendConfig": { "target": "java", "framework": "spring", "dir": "../backend/card-service" },
       "out": "../backend/card-service/generated",
-      "baseUrl": "http://card-service:3002"
+      "baseUrl": "http://card-service:3002",
+      "consumes": ["transaction", "account"]
     },
     {
       "name": "account",

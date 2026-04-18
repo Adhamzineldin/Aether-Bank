@@ -11,7 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class CardDetailsQueryService {
 
     private final CardAccessService cardAccessService;
-
+    //TODO: USE Dependency Injections like professionals
     public CardDetailsQueryService(CardAccessService cardAccessService) {
         this.cardAccessService = cardAccessService;
     }

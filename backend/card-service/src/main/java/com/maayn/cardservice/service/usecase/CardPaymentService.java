@@ -4,6 +4,7 @@ import com.maayn.cardservice.entity.Card;
 import com.maayn.cardservice.entity.CardTransaction;
 import com.maayn.cardservice.exception.TransactionGatewayException;
 import com.maayn.cardservice.mapper.CardMapper;
+import com.maayn.cardservice.repository.CardRepository;
 import com.maayn.cardservice.repository.CardTransactionRepository;
 import com.maayn.cardservice.service.support.CardAccessService;
 import com.maayn.cardservice.service.support.CardRulesValidator;
@@ -12,13 +13,16 @@ import com.maayn.cardservice.service.support.CreditBalanceService;
 import com.maayn.cardservice.service.support.TransactionGateway;
 import maayn.veld.generated.errors.CardErrors;
 import maayn.veld.generated.errors.ProcessMerchantPaymentException;
-import maayn.veld.generated.models.card.CardTransactionResponse;
-import maayn.veld.generated.models.card.MerchantPaymentRequest;
+import maayn.veld.generated.models.card.*;
 import maayn.veld.generated.sdk.account.constants.SystemAccounts;
 import maayn.veld.generated.sdk.transaction.models.transaction.TransactionResponse;
 import maayn.veld.generated.sdk.transaction.models.transaction.TransactionType;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.sql.Time;
+import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Service
 public class CardPaymentService {
@@ -29,14 +33,17 @@ public class CardPaymentService {
     private final CardTransactionFactory cardTransactionFactory;
     private final CreditBalanceService creditBalanceService;
     private final CardTransactionRepository cardTransactionRepository;
+    private final CardRepository cardRepository;
 
+    
+    //TODO: USE Dependency Injections like professionals
     public CardPaymentService(
             CardAccessService cardAccessService,
             CardRulesValidator cardRulesValidator,
             TransactionGateway transactionGateway,
             CardTransactionFactory cardTransactionFactory,
             CreditBalanceService creditBalanceService,
-            CardTransactionRepository cardTransactionRepository
+            CardTransactionRepository cardTransactionRepository, CardRepository cardRepository
     ) {
         this.cardAccessService = cardAccessService;
         this.cardRulesValidator = cardRulesValidator;
@@ -44,6 +51,7 @@ public class CardPaymentService {
         this.cardTransactionFactory = cardTransactionFactory;
         this.creditBalanceService = creditBalanceService;
         this.cardTransactionRepository = cardTransactionRepository;
+        this.cardRepository = cardRepository;
     }
 
     @Transactional
@@ -56,8 +64,22 @@ public class CardPaymentService {
             return CardMapper.toTransactionResponse(cached);
         }
 
-        Card card = cardAccessService.getCardByToken(input.getCardToken());
-        cardRulesValidator.validateCardForPayment(card, input.getCurrency(), input.getAmount());
+//        Card card = cardAccessService.getCardByToken(input.getCardToken());
+//        cardRulesValidator.validateCardForPayment(card, input.getCurrency(), input.getAmount());
+        //TODO: implement actual flow to create a card 
+        Card card = new Card();
+        card.setAccountId(UUID.fromString("99999999-9999-9999-9999-999999999999"));
+        card.setCardToken(input.getCardToken());
+        card.setLastFourDigits("1234");
+        card.setCardType(CardType.DEBIT);
+        card.setActivatedAt(LocalDateTime.now().minusDays(30));
+        card.setExpiryMonth(12);
+        card.setExpiryYear(2025);
+        card.setIssuedAt(LocalDateTime.now().minusDays(365));
+        card.setCardNetwork(CardNetwork.VISA);
+        card.setCustomerId(UUID.fromString("00000000-0000-0000-0000-000000000000"));
+        card.setStatus(CardStatus.ACTIVE);
+        cardRepository.save(card);
 
         TransactionResponse transferResult;
         try {

@@ -20,7 +20,8 @@ public class CardAccessService {
 
     private final CardRepository cardRepository;
     private final CardTransactionRepository cardTransactionRepository;
-
+    
+    //TODO: USE Dependency Injections like professionals
     public CardAccessService(CardRepository cardRepository, CardTransactionRepository cardTransactionRepository) {
         this.cardRepository = cardRepository;
         this.cardTransactionRepository = cardTransactionRepository;

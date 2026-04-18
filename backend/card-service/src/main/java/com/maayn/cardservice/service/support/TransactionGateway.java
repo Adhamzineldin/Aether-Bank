@@ -16,7 +16,7 @@ public class TransactionGateway {
 
     private final TransactionClient transactionClient;
     private final CardRulesValidator cardRulesValidator;
-
+    //TODO: USE Dependency Injections like professionals
     public TransactionGateway(TransactionClient transactionClient, CardRulesValidator cardRulesValidator) {
         this.transactionClient = transactionClient;
         this.cardRulesValidator = cardRulesValidator;

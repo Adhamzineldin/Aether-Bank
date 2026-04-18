@@ -28,7 +28,9 @@ public class CardService implements ICardService {
     private final CardRefundService cardRefundService;
     private final CardVoidService cardVoidService;
     private final CardTransactionHistoryService cardTransactionHistoryService;
-
+    
+    
+    //TODO: USE Dependency Injections like professionals
     public CardService(
             CardDetailsQueryService cardDetailsQueryService,
             CardPaymentService cardPaymentService,

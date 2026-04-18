@@ -780,15 +780,19 @@ a { color: inherit; text-decoration: none; }
       <div class="nav-svc-label" onclick="toggleSvc(this)"><span>iam</span><span class="nav-toggle">▾</span></div>
       <div class="nav-svc-body">
         <div class="nav-mod">
-          <div class="nav-mod-label" onclick="toggleMod(this)"><span>auth</span><span class="nav-badge">2</span></div>
+          <div class="nav-mod-label" onclick="toggleMod(this)"><span>Authentication</span><span class="nav-badge">3</span></div>
           <div class="nav-mod-body">
-            <a class="nav-ep" href="#action-iam-auth-register" data-target="action-iam-auth-register" data-search="register post /register" onclick="navigateTo('action-iam-auth-register');return false;">
+            <a class="nav-ep" href="#action-iam-authentication-login" data-target="action-iam-authentication-login" data-search="login post /login" onclick="navigateTo('action-iam-authentication-login');return false;">
+              <span class="nav-method nav-method-POST">POST</span>
+              <span class="nav-ep-name">login</span>
+            </a>
+            <a class="nav-ep" href="#action-iam-authentication-register" data-target="action-iam-authentication-register" data-search="register post /register" onclick="navigateTo('action-iam-authentication-register');return false;">
               <span class="nav-method nav-method-POST">POST</span>
               <span class="nav-ep-name">register</span>
             </a>
-            <a class="nav-ep" href="#action-iam-auth-login" data-target="action-iam-auth-login" data-search="login post /login" onclick="navigateTo('action-iam-auth-login');return false;">
+            <a class="nav-ep" href="#action-iam-authentication-logout" data-target="action-iam-authentication-logout" data-search="logout post /logout" onclick="navigateTo('action-iam-authentication-logout');return false;">
               <span class="nav-method nav-method-POST">POST</span>
-              <span class="nav-ep-name">login</span>
+              <span class="nav-ep-name">logout</span>
             </a>
           </div>
         </div>
@@ -798,19 +802,27 @@ a { color: inherit; text-decoration: none; }
       <div class="nav-svc-label" onclick="toggleSvc(this)"><span>card</span><span class="nav-toggle">▾</span></div>
       <div class="nav-svc-body">
         <div class="nav-mod">
-          <div class="nav-mod-label" onclick="toggleMod(this)"><span>Card</span><span class="nav-badge">3</span></div>
+          <div class="nav-mod-label" onclick="toggleMod(this)"><span>Card</span><span class="nav-badge">5</span></div>
           <div class="nav-mod-body">
-            <a class="nav-ep" href="#action-card-card-listcard" data-target="action-card-card-listcard" data-search="listcard get /" onclick="navigateTo('action-card-card-listcard');return false;">
+            <a class="nav-ep" href="#action-card-card-getcarddetails" data-target="action-card-card-getcarddetails" data-search="getcarddetails get /:cardid" onclick="navigateTo('action-card-card-getcarddetails');return false;">
               <span class="nav-method nav-method-GET">GET</span>
-              <span class="nav-ep-name">ListCard</span>
+              <span class="nav-ep-name">getCardDetails</span>
             </a>
-            <a class="nav-ep" href="#action-card-card-getcard" data-target="action-card-card-getcard" data-search="getcard get /:id" onclick="navigateTo('action-card-card-getcard');return false;">
-              <span class="nav-method nav-method-GET">GET</span>
-              <span class="nav-ep-name">GetCard</span>
-            </a>
-            <a class="nav-ep" href="#action-card-card-createcard" data-target="action-card-card-createcard" data-search="createcard post /" onclick="navigateTo('action-card-card-createcard');return false;">
+            <a class="nav-ep" href="#action-card-card-processmerchantpayment" data-target="action-card-card-processmerchantpayment" data-search="processmerchantpayment post /payments" onclick="navigateTo('action-card-card-processmerchantpayment');return false;">
               <span class="nav-method nav-method-POST">POST</span>
-              <span class="nav-ep-name">CreateCard</span>
+              <span class="nav-ep-name">processMerchantPayment</span>
+            </a>
+            <a class="nav-ep" href="#action-card-card-refundtransaction" data-target="action-card-card-refundtransaction" data-search="refundtransaction post /refunds" onclick="navigateTo('action-card-card-refundtransaction');return false;">
+              <span class="nav-method nav-method-POST">POST</span>
+              <span class="nav-ep-name">refundTransaction</span>
+            </a>
+            <a class="nav-ep" href="#action-card-card-voidtransaction" data-target="action-card-card-voidtransaction" data-search="voidtransaction post /voids" onclick="navigateTo('action-card-card-voidtransaction');return false;">
+              <span class="nav-method nav-method-POST">POST</span>
+              <span class="nav-ep-name">voidTransaction</span>
+            </a>
+            <a class="nav-ep" href="#action-card-card-getcardtransactions" data-target="action-card-card-getcardtransactions" data-search="getcardtransactions get /:cardid/transactions" onclick="navigateTo('action-card-card-getcardtransactions');return false;">
+              <span class="nav-method nav-method-GET">GET</span>
+              <span class="nav-ep-name">getCardTransactions</span>
             </a>
           </div>
         </div>
@@ -830,21 +842,16 @@ a { color: inherit; text-decoration: none; }
         </div>
       </div>
     </div>
-    <div class="nav-svc" id="nav-svc-lending">
-      <div class="nav-svc-label" onclick="toggleSvc(this)"><span>lending</span><span class="nav-toggle">▾</span></div>
+    <div class="nav-svc" id="nav-svc-financial">
+      <div class="nav-svc-label" onclick="toggleSvc(this)"><span>financial</span><span class="nav-toggle">▾</span></div>
       <div class="nav-svc-body">
         <div class="nav-mod">
-          <div class="nav-mod-label" onclick="toggleMod(this)"><span>FX</span><span class="nav-badge">1</span></div>
+          <div class="nav-mod-label" onclick="toggleMod(this)"><span>loan</span><span class="nav-badge">1</span></div>
           <div class="nav-mod-body">
-            <a class="nav-ep" href="#action-lending-fx-getexchangerate" data-target="action-lending-fx-getexchangerate" data-search="getexchangerate get /exchange-rate" onclick="navigateTo('action-lending-fx-getexchangerate');return false;">
-              <span class="nav-method nav-method-GET">GET</span>
-              <span class="nav-ep-name">getExchangeRate</span>
+            <a class="nav-ep" href="#action-financial-loan-loansubmit" data-target="action-financial-loan-loansubmit" data-search="loansubmit post /application/submit" onclick="navigateTo('action-financial-loan-loansubmit');return false;">
+              <span class="nav-method nav-method-POST">POST</span>
+              <span class="nav-ep-name">LoanSubmit</span>
             </a>
-          </div>
-        </div>
-        <div class="nav-mod">
-          <div class="nav-mod-label" onclick="toggleMod(this)"><span>Lending</span><span class="nav-badge">0</span></div>
-          <div class="nav-mod-body">
           </div>
         </div>
       </div>
@@ -956,40 +963,39 @@ a { color: inherit; text-decoration: none; }
         </div>
       </div>
     </div>
-    <div class="nav-svc" id="nav-svc-frontend">
-      <div class="nav-svc-label" onclick="toggleSvc(this)"><span>frontend</span><span class="nav-toggle">▾</span></div>
+    <div class="nav-svc" id="nav-svc-gateway">
+      <div class="nav-svc-label" onclick="toggleSvc(this)"><span>gateway</span><span class="nav-toggle">▾</span></div>
       <div class="nav-svc-body">
-        <div class="nav-mod">
-          <div class="nav-mod-label" onclick="toggleMod(this)"><span>Card</span><span class="nav-badge">3</span></div>
-          <div class="nav-mod-body">
-            <a class="nav-ep" href="#action-frontend-card-listcard" data-target="action-frontend-card-listcard" data-search="listcard get /" onclick="navigateTo('action-frontend-card-listcard');return false;">
-              <span class="nav-method nav-method-GET">GET</span>
-              <span class="nav-ep-name">ListCard</span>
-            </a>
-            <a class="nav-ep" href="#action-frontend-card-getcard" data-target="action-frontend-card-getcard" data-search="getcard get /:id" onclick="navigateTo('action-frontend-card-getcard');return false;">
-              <span class="nav-method nav-method-GET">GET</span>
-              <span class="nav-ep-name">GetCard</span>
-            </a>
-            <a class="nav-ep" href="#action-frontend-card-createcard" data-target="action-frontend-card-createcard" data-search="createcard post /" onclick="navigateTo('action-frontend-card-createcard');return false;">
-              <span class="nav-method nav-method-POST">POST</span>
-              <span class="nav-ep-name">CreateCard</span>
-            </a>
-          </div>
-        </div>
       </div>
     </div>
     <div class="nav-group">
-      <div class="nav-group-label" onclick="toggleGroup(this)">Models <span class="nav-badge">31</span></div>
+      <div class="nav-group-label" onclick="toggleGroup(this)">Models <span class="nav-badge">47</span></div>
       <div class="nav-group-body">
-        <a class="nav-type" href="#model-auth" data-target="model-auth" data-search="auth" onclick="navigateTo('model-auth');return false;">auth</a>
-        <a class="nav-type" href="#model-carditem" data-target="model-carditem" data-search="carditem" onclick="navigateTo('model-carditem');return false;">CardItem</a>
-        <a class="nav-type" href="#model-createcardinput" data-target="model-createcardinput" data-search="createcardinput" onclick="navigateTo('model-createcardinput');return false;">CreateCardInput</a>
+        <a class="nav-type" href="#model-changepasswordrequest" data-target="model-changepasswordrequest" data-search="changepasswordrequest" onclick="navigateTo('model-changepasswordrequest');return false;">ChangePasswordRequest</a>
+        <a class="nav-type" href="#model-genericresponse" data-target="model-genericresponse" data-search="genericresponse" onclick="navigateTo('model-genericresponse');return false;">GenericResponse</a>
+        <a class="nav-type" href="#model-jwtresponse" data-target="model-jwtresponse" data-search="jwtresponse" onclick="navigateTo('model-jwtresponse');return false;">JwtResponse</a>
+        <a class="nav-type" href="#model-loginrequest" data-target="model-loginrequest" data-search="loginrequest" onclick="navigateTo('model-loginrequest');return false;">LoginRequest</a>
+        <a class="nav-type" href="#model-registerrequest" data-target="model-registerrequest" data-search="registerrequest" onclick="navigateTo('model-registerrequest');return false;">RegisterRequest</a>
+        <a class="nav-type" href="#model-updateuserrequest" data-target="model-updateuserrequest" data-search="updateuserrequest" onclick="navigateTo('model-updateuserrequest');return false;">UpdateUserRequest</a>
+        <a class="nav-type" href="#model-userresponse" data-target="model-userresponse" data-search="userresponse" onclick="navigateTo('model-userresponse');return false;">UserResponse</a>
+        <a class="nav-type" href="#model-cardsummary" data-target="model-cardsummary" data-search="cardsummary" onclick="navigateTo('model-cardsummary');return false;">CardSummary</a>
+        <a class="nav-type" href="#model-creditcarddetails" data-target="model-creditcarddetails" data-search="creditcarddetails" onclick="navigateTo('model-creditcarddetails');return false;">CreditCardDetails</a>
+        <a class="nav-type" href="#model-carddetailsresponse" data-target="model-carddetailsresponse" data-search="carddetailsresponse" onclick="navigateTo('model-carddetailsresponse');return false;">CardDetailsResponse</a>
+        <a class="nav-type" href="#model-merchantpaymentrequest" data-target="model-merchantpaymentrequest" data-search="merchantpaymentrequest" onclick="navigateTo('model-merchantpaymentrequest');return false;">MerchantPaymentRequest</a>
+        <a class="nav-type" href="#model-refundcardtransactionrequest" data-target="model-refundcardtransactionrequest" data-search="refundcardtransactionrequest" onclick="navigateTo('model-refundcardtransactionrequest');return false;">RefundCardTransactionRequest</a>
+        <a class="nav-type" href="#model-voidcardtransactionrequest" data-target="model-voidcardtransactionrequest" data-search="voidcardtransactionrequest" onclick="navigateTo('model-voidcardtransactionrequest');return false;">VoidCardTransactionRequest</a>
+        <a class="nav-type" href="#model-cardtransactionresponse" data-target="model-cardtransactionresponse" data-search="cardtransactionresponse" onclick="navigateTo('model-cardtransactionresponse');return false;">CardTransactionResponse</a>
+        <a class="nav-type" href="#model-getcardtransactionsrequest" data-target="model-getcardtransactionsrequest" data-search="getcardtransactionsrequest" onclick="navigateTo('model-getcardtransactionsrequest');return false;">GetCardTransactionsRequest</a>
+        <a class="nav-type" href="#model-paginatedcardtransactionresponse" data-target="model-paginatedcardtransactionresponse" data-search="paginatedcardtransactionresponse" onclick="navigateTo('model-paginatedcardtransactionresponse');return false;">PaginatedCardTransactionResponse</a>
         <a class="nav-type" href="#model-accountbalanceresponse" data-target="model-accountbalanceresponse" data-search="accountbalanceresponse" onclick="navigateTo('model-accountbalanceresponse');return false;">AccountBalanceResponse</a>
         <a class="nav-type" href="#model-fundssecuredevent" data-target="model-fundssecuredevent" data-search="fundssecuredevent" onclick="navigateTo('model-fundssecuredevent');return false;">FundsSecuredEvent</a>
         <a class="nav-type" href="#model-insufficientfundsevent" data-target="model-insufficientfundsevent" data-search="insufficientfundsevent" onclick="navigateTo('model-insufficientfundsevent');return false;">InsufficientFundsEvent</a>
         <a class="nav-type" href="#model-accountcreatedevent" data-target="model-accountcreatedevent" data-search="accountcreatedevent" onclick="navigateTo('model-accountcreatedevent');return false;">AccountCreatedEvent</a>
-        <a class="nav-type" href="#model-getratesrequest" data-target="model-getratesrequest" data-search="getratesrequest" onclick="navigateTo('model-getratesrequest');return false;">GetRatesRequest</a>
-        <a class="nav-type" href="#model-getratesresponse" data-target="model-getratesresponse" data-search="getratesresponse" onclick="navigateTo('model-getratesresponse');return false;">GetRatesResponse</a>
+        <a class="nav-type" href="#model-loanapplication" data-target="model-loanapplication" data-search="loanapplication" onclick="navigateTo('model-loanapplication');return false;">LoanApplication</a>
+        <a class="nav-type" href="#model-loanproduct" data-target="model-loanproduct" data-search="loanproduct" onclick="navigateTo('model-loanproduct');return false;">LoanProduct</a>
+        <a class="nav-type" href="#model-loan" data-target="model-loan" data-search="loan" onclick="navigateTo('model-loan');return false;">Loan</a>
+        <a class="nav-type" href="#model-repaymentschedule" data-target="model-repaymentschedule" data-search="repaymentschedule" onclick="navigateTo('model-repaymentschedule');return false;">RepaymentSchedule</a>
+        <a class="nav-type" href="#model-loanapplicationresponse" data-target="model-loanapplicationresponse" data-search="loanapplicationresponse" onclick="navigateTo('model-loanapplicationresponse');return false;">LoanApplicationResponse</a>
         <a class="nav-type" href="#model-notificationtemplate" data-target="model-notificationtemplate" data-search="notificationtemplate" onclick="navigateTo('model-notificationtemplate');return false;">NotificationTemplate</a>
         <a class="nav-type" href="#model-notificationitem" data-target="model-notificationitem" data-search="notificationitem" onclick="navigateTo('model-notificationitem');return false;">NotificationItem</a>
         <a class="nav-type" href="#model-sendnotificationinput" data-target="model-sendnotificationinput" data-search="sendnotificationinput" onclick="navigateTo('model-sendnotificationinput');return false;">SendNotificationInput</a>
@@ -1015,8 +1021,19 @@ a { color: inherit; text-decoration: none; }
       </div>
     </div>
     <div class="nav-group">
-      <div class="nav-group-label" onclick="toggleGroup(this)">Enums <span class="nav-badge">14</span></div>
+      <div class="nav-group-label" onclick="toggleGroup(this)">Enums <span class="nav-badge">25</span></div>
       <div class="nav-group-body">
+        <a class="nav-type" href="#enum-cardtype" data-target="enum-cardtype" data-search="cardtype" onclick="navigateTo('enum-cardtype');return false;">CardType</a>
+        <a class="nav-type" href="#enum-cardnetwork" data-target="enum-cardnetwork" data-search="cardnetwork" onclick="navigateTo('enum-cardnetwork');return false;">CardNetwork</a>
+        <a class="nav-type" href="#enum-cardstatus" data-target="enum-cardstatus" data-search="cardstatus" onclick="navigateTo('enum-cardstatus');return false;">CardStatus</a>
+        <a class="nav-type" href="#enum-cardtransactionstatus" data-target="enum-cardtransactionstatus" data-search="cardtransactionstatus" onclick="navigateTo('enum-cardtransactionstatus');return false;">CardTransactionStatus</a>
+        <a class="nav-type" href="#enum-cardtransactiontype" data-target="enum-cardtransactiontype" data-search="cardtransactiontype" onclick="navigateTo('enum-cardtransactiontype');return false;">CardTransactionType</a>
+        <a class="nav-type" href="#enum-employmentstatus" data-target="enum-employmentstatus" data-search="employmentstatus" onclick="navigateTo('enum-employmentstatus');return false;">EmploymentStatus</a>
+        <a class="nav-type" href="#enum-applicationstatus" data-target="enum-applicationstatus" data-search="applicationstatus" onclick="navigateTo('enum-applicationstatus');return false;">ApplicationStatus</a>
+        <a class="nav-type" href="#enum-loanstatus" data-target="enum-loanstatus" data-search="loanstatus" onclick="navigateTo('enum-loanstatus');return false;">LoanStatus</a>
+        <a class="nav-type" href="#enum-interesttype" data-target="enum-interesttype" data-search="interesttype" onclick="navigateTo('enum-interesttype');return false;">InterestType</a>
+        <a class="nav-type" href="#enum-repaymentfrequency" data-target="enum-repaymentfrequency" data-search="repaymentfrequency" onclick="navigateTo('enum-repaymentfrequency');return false;">RepaymentFrequency</a>
+        <a class="nav-type" href="#enum-installmentstatus" data-target="enum-installmentstatus" data-search="installmentstatus" onclick="navigateTo('enum-installmentstatus');return false;">InstallmentStatus</a>
         <a class="nav-type" href="#enum-notificationstatus" data-target="enum-notificationstatus" data-search="notificationstatus" onclick="navigateTo('enum-notificationstatus');return false;">NotificationStatus</a>
         <a class="nav-type" href="#enum-notificationchannel" data-target="enum-notificationchannel" data-search="notificationchannel" onclick="navigateTo('enum-notificationchannel');return false;">NotificationChannel</a>
         <a class="nav-type" href="#enum-notificationtype" data-target="enum-notificationtype" data-search="notificationtype" onclick="navigateTo('enum-notificationtype');return false;">NotificationType</a>
@@ -1045,48 +1062,68 @@ a { color: inherit; text-decoration: none; }
   <div class="content">
     <div class="stats-row">
       <div class="stat-card"><div class="stat-num">8</div><div class="stat-lbl">Services</div></div>
-      <div class="stat-card"><div class="stat-num">9</div><div class="stat-lbl">Modules</div></div>
-      <div class="stat-card"><div class="stat-num">25</div><div class="stat-lbl">Endpoints</div></div>
-      <div class="stat-card"><div class="stat-num">31</div><div class="stat-lbl">Models</div></div>
-      <div class="stat-card"><div class="stat-num">14</div><div class="stat-lbl">Enums</div></div>
+      <div class="stat-card"><div class="stat-num">8</div><div class="stat-lbl">Modules</div></div>
+      <div class="stat-card"><div class="stat-num">28</div><div class="stat-lbl">Endpoints</div></div>
+      <div class="stat-card"><div class="stat-num">47</div><div class="stat-lbl">Models</div></div>
+      <div class="stat-card"><div class="stat-num">25</div><div class="stat-lbl">Enums</div></div>
     </div>
 
     <div class="svc-block" id="service-iam" data-bc="iam">
       <h2 class="svc-title">iam <code class="svc-url">http://localhost:4333</code></h2>
       <p class="svc-desc">iam</p>
     </div>
-    <div class="mod-header" id="mod-iam-auth" data-bc="iam › auth">
-      <h3 class="mod-title">auth <code class="mod-prefix">/api/auth</code></h3>
+    <div class="mod-header" id="mod-iam-authentication" data-bc="iam › Authentication">
+      <h3 class="mod-title">Authentication <code class="mod-prefix">/api/auth/</code></h3>
+      <p class="mod-desc">Handles authentication operations</p>
     </div>
-    <div class="ep ep-POST" id="action-iam-auth-register" data-bc="iam › auth › register">
+    <div class="ep ep-POST" id="action-iam-authentication-login" data-bc="iam › Authentication › login">
       <div class="ep-head" onclick="toggleEp(this)">
         <span class="mtag mtag-POST">POST</span>
-        <span class="ep-path">/api/auth/register</span>
+        <span class="ep-path">/api/auth//login</span>
         <span class="ep-info">
-          <span class="ep-name">register</span>
-          <button class="copy-btn" data-path="/api/auth/register" onclick="copyPath(event,this.dataset.path)" title="Copy path">⎘</button>
+          <span class="ep-name">login</span>
+          <button class="copy-btn" data-path="/api/auth//login" onclick="copyPath(event,this.dataset.path)" title="Copy path">⎘</button>
         </span>
         <span class="chevron">▶</span>
       </div>
       <div class="ep-detail">
         <dl class="ep-meta">
-          <dt>Output</dt><dd><a class="type-chip" href="#model-auth" onclick="navigateTo('model-auth');return false">auth</a></dd>
+          <dt>Input</dt><dd><a class="type-chip" href="#model-loginrequest" onclick="navigateTo('model-loginrequest');return false">LoginRequest</a></dd>
+          <dt>Output</dt><dd><a class="type-chip" href="#model-jwtresponse" onclick="navigateTo('model-jwtresponse');return false">JwtResponse</a></dd>
+          <dt>Errors</dt><dd><span class="err-chip">UserNotFound <em>404</em></span> <span class="err-chip">InvalidCredentials <em>401</em></span></dd>
         </dl>
       </div>
     </div>
-    <div class="ep ep-POST" id="action-iam-auth-login" data-bc="iam › auth › login">
+    <div class="ep ep-POST" id="action-iam-authentication-register" data-bc="iam › Authentication › register">
       <div class="ep-head" onclick="toggleEp(this)">
         <span class="mtag mtag-POST">POST</span>
-        <span class="ep-path">/api/auth/login</span>
+        <span class="ep-path">/api/auth//register</span>
         <span class="ep-info">
-          <span class="ep-name">login</span>
-          <button class="copy-btn" data-path="/api/auth/login" onclick="copyPath(event,this.dataset.path)" title="Copy path">⎘</button>
+          <span class="ep-name">register</span>
+          <button class="copy-btn" data-path="/api/auth//register" onclick="copyPath(event,this.dataset.path)" title="Copy path">⎘</button>
         </span>
         <span class="chevron">▶</span>
       </div>
       <div class="ep-detail">
         <dl class="ep-meta">
-          <dt>Output</dt><dd><a class="type-chip" href="#model-auth" onclick="navigateTo('model-auth');return false">auth</a></dd>
+          <dt>Input</dt><dd><a class="type-chip" href="#model-registerrequest" onclick="navigateTo('model-registerrequest');return false">RegisterRequest</a></dd>
+          <dt>Output</dt><dd><a class="type-chip" href="#model-userresponse" onclick="navigateTo('model-userresponse');return false">UserResponse</a></dd>
+        </dl>
+      </div>
+    </div>
+    <div class="ep ep-POST" id="action-iam-authentication-logout" data-bc="iam › Authentication › logout">
+      <div class="ep-head" onclick="toggleEp(this)">
+        <span class="mtag mtag-POST">POST</span>
+        <span class="ep-path">/api/auth//logout</span>
+        <span class="ep-info">
+          <span class="ep-name">logout</span>
+          <button class="copy-btn" data-path="/api/auth//logout" onclick="copyPath(event,this.dataset.path)" title="Copy path">⎘</button>
+        </span>
+        <span class="chevron">▶</span>
+      </div>
+      <div class="ep-detail">
+        <dl class="ep-meta">
+          <dt>Output</dt><dd><a class="type-chip" href="#model-genericresponse" onclick="navigateTo('model-genericresponse');return false">GenericResponse</a></dd>
         </dl>
       </div>
     </div>
@@ -1098,53 +1135,92 @@ a { color: inherit; text-decoration: none; }
       <h3 class="mod-title">Card <code class="mod-prefix">/api/card</code></h3>
       <p class="mod-desc">Card service</p>
     </div>
-    <div class="ep ep-GET" id="action-card-card-listcard" data-bc="card › Card › ListCard">
+    <div class="ep ep-GET" id="action-card-card-getcarddetails" data-bc="card › Card › getCardDetails">
       <div class="ep-head" onclick="toggleEp(this)">
         <span class="mtag mtag-GET">GET</span>
-        <span class="ep-path">/api/card/</span>
+        <span class="ep-path">/api/card/<span class="path-param">:cardId</span></span>
         <span class="ep-info">
-          <span class="ep-name">ListCard</span>
-          <button class="copy-btn" data-path="/api/card/" onclick="copyPath(event,this.dataset.path)" title="Copy path">⎘</button>
+          <span class="ep-name">getCardDetails</span>
+          <button class="copy-btn" data-path="/api/card/:cardId" onclick="copyPath(event,this.dataset.path)" title="Copy path">⎘</button>
         </span>
         <span class="chevron">▶</span>
       </div>
       <div class="ep-detail">
         <dl class="ep-meta">
-          <dt>Output</dt><dd><a class="type-chip" href="#model-carditem" onclick="navigateTo('model-carditem');return false">CardItem[]</a></dd>
+          <dt>Output</dt><dd><a class="type-chip" href="#model-carddetailsresponse" onclick="navigateTo('model-carddetailsresponse');return false">CardDetailsResponse</a></dd>
+          <dt>Errors</dt><dd><span class="err-chip">NotFound <em>404</em></span> <span class="err-chip">Unauthorized <em>401</em></span></dd>
         </dl>
       </div>
     </div>
-    <div class="ep ep-GET" id="action-card-card-getcard" data-bc="card › Card › GetCard">
-      <div class="ep-head" onclick="toggleEp(this)">
-        <span class="mtag mtag-GET">GET</span>
-        <span class="ep-path">/api/card/<span class="path-param">:id</span></span>
-        <span class="ep-info">
-          <span class="ep-name">GetCard</span>
-          <button class="copy-btn" data-path="/api/card/:id" onclick="copyPath(event,this.dataset.path)" title="Copy path">⎘</button>
-        </span>
-        <span class="chevron">▶</span>
-      </div>
-      <div class="ep-detail">
-        <dl class="ep-meta">
-          <dt>Output</dt><dd><a class="type-chip" href="#model-carditem" onclick="navigateTo('model-carditem');return false">CardItem</a></dd>
-          <dt>Errors</dt><dd><span class="err-chip">NotFound</span></dd>
-        </dl>
-      </div>
-    </div>
-    <div class="ep ep-POST" id="action-card-card-createcard" data-bc="card › Card › CreateCard">
+    <div class="ep ep-POST" id="action-card-card-processmerchantpayment" data-bc="card › Card › processMerchantPayment">
       <div class="ep-head" onclick="toggleEp(this)">
         <span class="mtag mtag-POST">POST</span>
-        <span class="ep-path">/api/card/</span>
+        <span class="ep-path">/api/card/payments</span>
         <span class="ep-info">
-          <span class="ep-name">CreateCard</span>
-          <button class="copy-btn" data-path="/api/card/" onclick="copyPath(event,this.dataset.path)" title="Copy path">⎘</button>
+          <span class="ep-name">processMerchantPayment</span>
+          <button class="copy-btn" data-path="/api/card/payments" onclick="copyPath(event,this.dataset.path)" title="Copy path">⎘</button>
         </span>
         <span class="chevron">▶</span>
       </div>
       <div class="ep-detail">
         <dl class="ep-meta">
-          <dt>Input</dt><dd><a class="type-chip" href="#model-createcardinput" onclick="navigateTo('model-createcardinput');return false">CreateCardInput</a></dd>
-          <dt>Output</dt><dd><a class="type-chip" href="#model-carditem" onclick="navigateTo('model-carditem');return false">CardItem</a></dd>
+          <dt>Input</dt><dd><a class="type-chip" href="#model-merchantpaymentrequest" onclick="navigateTo('model-merchantpaymentrequest');return false">MerchantPaymentRequest</a></dd>
+          <dt>Output</dt><dd><a class="type-chip" href="#model-cardtransactionresponse" onclick="navigateTo('model-cardtransactionresponse');return false">CardTransactionResponse</a></dd>
+          <dt>Errors</dt><dd><span class="err-chip">InvalidCardToken <em>404</em></span> <span class="err-chip">CardNotActive <em>403</em></span> <span class="err-chip">CardExpired <em>403</em></span> <span class="err-chip">InsufficientCredit <em>422</em></span> <span class="err-chip">InvalidCurrency <em>400</em></span> <span class="err-chip">InvalidAmount <em>400</em></span> <span class="err-chip">Unauthorized <em>401</em></span></dd>
+        </dl>
+      </div>
+    </div>
+    <div class="ep ep-POST" id="action-card-card-refundtransaction" data-bc="card › Card › refundTransaction">
+      <div class="ep-head" onclick="toggleEp(this)">
+        <span class="mtag mtag-POST">POST</span>
+        <span class="ep-path">/api/card/refunds</span>
+        <span class="ep-info">
+          <span class="ep-name">refundTransaction</span>
+          <button class="copy-btn" data-path="/api/card/refunds" onclick="copyPath(event,this.dataset.path)" title="Copy path">⎘</button>
+        </span>
+        <span class="chevron">▶</span>
+      </div>
+      <div class="ep-detail">
+        <dl class="ep-meta">
+          <dt>Input</dt><dd><a class="type-chip" href="#model-refundcardtransactionrequest" onclick="navigateTo('model-refundcardtransactionrequest');return false">RefundCardTransactionRequest</a></dd>
+          <dt>Output</dt><dd><a class="type-chip" href="#model-cardtransactionresponse" onclick="navigateTo('model-cardtransactionresponse');return false">CardTransactionResponse</a></dd>
+          <dt>Errors</dt><dd><span class="err-chip">TransactionNotFound <em>404</em></span> <span class="err-chip">RefundNotAllowed <em>409</em></span> <span class="err-chip">InvalidAmount <em>400</em></span> <span class="err-chip">Unauthorized <em>401</em></span></dd>
+        </dl>
+      </div>
+    </div>
+    <div class="ep ep-POST" id="action-card-card-voidtransaction" data-bc="card › Card › voidTransaction">
+      <div class="ep-head" onclick="toggleEp(this)">
+        <span class="mtag mtag-POST">POST</span>
+        <span class="ep-path">/api/card/voids</span>
+        <span class="ep-info">
+          <span class="ep-name">voidTransaction</span>
+          <button class="copy-btn" data-path="/api/card/voids" onclick="copyPath(event,this.dataset.path)" title="Copy path">⎘</button>
+        </span>
+        <span class="chevron">▶</span>
+      </div>
+      <div class="ep-detail">
+        <dl class="ep-meta">
+          <dt>Input</dt><dd><a class="type-chip" href="#model-voidcardtransactionrequest" onclick="navigateTo('model-voidcardtransactionrequest');return false">VoidCardTransactionRequest</a></dd>
+          <dt>Output</dt><dd><a class="type-chip" href="#model-cardtransactionresponse" onclick="navigateTo('model-cardtransactionresponse');return false">CardTransactionResponse</a></dd>
+          <dt>Errors</dt><dd><span class="err-chip">TransactionNotFound <em>404</em></span> <span class="err-chip">VoidNotAllowed <em>409</em></span> <span class="err-chip">Unauthorized <em>401</em></span></dd>
+        </dl>
+      </div>
+    </div>
+    <div class="ep ep-GET" id="action-card-card-getcardtransactions" data-bc="card › Card › getCardTransactions">
+      <div class="ep-head" onclick="toggleEp(this)">
+        <span class="mtag mtag-GET">GET</span>
+        <span class="ep-path">/api/card/<span class="path-param">:cardId</span>/transactions</span>
+        <span class="ep-info">
+          <span class="ep-name">getCardTransactions</span>
+          <button class="copy-btn" data-path="/api/card/:cardId/transactions" onclick="copyPath(event,this.dataset.path)" title="Copy path">⎘</button>
+        </span>
+        <span class="chevron">▶</span>
+      </div>
+      <div class="ep-detail">
+        <dl class="ep-meta">
+          <dt>Input</dt><dd><a class="type-chip" href="#model-getcardtransactionsrequest" onclick="navigateTo('model-getcardtransactionsrequest');return false">GetCardTransactionsRequest</a></dd>
+          <dt>Output</dt><dd><a class="type-chip" href="#model-paginatedcardtransactionresponse" onclick="navigateTo('model-paginatedcardtransactionresponse');return false">PaginatedCardTransactionResponse</a></dd>
+          <dt>Errors</dt><dd><span class="err-chip">NotFound <em>404</em></span> <span class="err-chip">Unauthorized <em>401</em></span></dd>
         </dl>
       </div>
     </div>
@@ -1172,35 +1248,32 @@ a { color: inherit; text-decoration: none; }
         </dl>
       </div>
     </div>
-    <div class="svc-block" id="service-lending" data-bc="lending">
-      <h2 class="svc-title">lending <code class="svc-url">http://lending-service:3004</code></h2>
-      <p class="svc-desc">lending</p>
+    <div class="svc-block" id="service-financial" data-bc="financial">
+      <h2 class="svc-title">financial <code class="svc-url">http://financial-service:3004</code></h2>
+      <p class="svc-desc">financial</p>
     </div>
-    <div class="mod-header" id="mod-lending-fx" data-bc="lending › FX">
-      <h3 class="mod-title">FX <code class="mod-prefix">/api/financial_service/fx</code></h3>
-      <p class="mod-desc">Lending service</p>
+    <div class="mod-header" id="mod-financial-loan" data-bc="financial › loan">
+      <h3 class="mod-title">loan <code class="mod-prefix">/api/loan</code></h3>
+      <p class="mod-desc">Loan Service - Handles loan applications, approvals, disbursement, and repayments</p>
     </div>
-    <div class="ep ep-GET" id="action-lending-fx-getexchangerate" data-bc="lending › FX › getExchangeRate">
+    <div class="ep ep-POST" id="action-financial-loan-loansubmit" data-bc="financial › loan › LoanSubmit">
       <div class="ep-head" onclick="toggleEp(this)">
-        <span class="mtag mtag-GET">GET</span>
-        <span class="ep-path">/api/financial_service/fx/exchange-rate</span>
+        <span class="mtag mtag-POST">POST</span>
+        <span class="ep-path">/api/loan/application/submit</span>
         <span class="ep-info">
-          <span class="ep-name">getExchangeRate</span>
-          <button class="copy-btn" data-path="/api/financial_service/fx/exchange-rate" onclick="copyPath(event,this.dataset.path)" title="Copy path">⎘</button>
+          <span class="ep-name">LoanSubmit</span>
+          <button class="copy-btn" data-path="/api/loan/application/submit" onclick="copyPath(event,this.dataset.path)" title="Copy path">⎘</button>
         </span>
         <span class="chevron">▶</span>
       </div>
       <div class="ep-detail">
+        <p class="ep-desc">Submit a loan application</p>
         <dl class="ep-meta">
-          <dt>Input</dt><dd><a class="type-chip" href="#model-getratesrequest" onclick="navigateTo('model-getratesrequest');return false">GetRatesRequest</a></dd>
-          <dt>Output</dt><dd><a class="type-chip" href="#model-getratesresponse" onclick="navigateTo('model-getratesresponse');return false">GetRatesResponse</a></dd>
-          <dt>Errors</dt><dd><span class="err-chip">InvalidCurrencyPair <em>400</em></span></dd>
+          <dt>Input</dt><dd><a class="type-chip" href="#model-loanapplication" onclick="navigateTo('model-loanapplication');return false">LoanApplication</a></dd>
+          <dt>Output</dt><dd><a class="type-chip" href="#model-loanapplicationresponse" onclick="navigateTo('model-loanapplicationresponse');return false">LoanApplicationResponse</a></dd>
+          <dt>Errors</dt><dd><span class="err-chip">MissingField <em>400</em></span> <span class="err-chip">InvalidAmount <em>400</em></span></dd>
         </dl>
       </div>
-    </div>
-    <div class="mod-header" id="mod-lending-lending" data-bc="lending › Lending">
-      <h3 class="mod-title">Lending <code class="mod-prefix">/api/financial_service/api/lending</code></h3>
-      <p class="mod-desc">Lending service</p>
     </div>
     <div class="svc-block" id="service-notification" data-bc="notification">
       <h2 class="svc-title">notification <code class="svc-url">http://notification-service:3005</code></h2>
@@ -1534,95 +1607,209 @@ a { color: inherit; text-decoration: none; }
         </dl>
       </div>
     </div>
-    <div class="svc-block" id="service-frontend" data-bc="frontend">
-      <h2 class="svc-title">frontend <code class="svc-url">http://localhost:3000</code></h2>
-      <p class="svc-desc">Frontend SDK — auto-consumes all backend services</p>
-    </div>
-    <div class="mod-header" id="mod-frontend-card" data-bc="frontend › Card">
-      <h3 class="mod-title">Card <code class="mod-prefix">/api/card</code></h3>
-      <p class="mod-desc">Card service</p>
-    </div>
-    <div class="ep ep-GET" id="action-frontend-card-listcard" data-bc="frontend › Card › ListCard">
-      <div class="ep-head" onclick="toggleEp(this)">
-        <span class="mtag mtag-GET">GET</span>
-        <span class="ep-path">/api/card/</span>
-        <span class="ep-info">
-          <span class="ep-name">ListCard</span>
-          <button class="copy-btn" data-path="/api/card/" onclick="copyPath(event,this.dataset.path)" title="Copy path">⎘</button>
-        </span>
-        <span class="chevron">▶</span>
-      </div>
-      <div class="ep-detail">
-        <dl class="ep-meta">
-          <dt>Output</dt><dd><a class="type-chip" href="#model-carditem" onclick="navigateTo('model-carditem');return false">CardItem[]</a></dd>
-        </dl>
-      </div>
-    </div>
-    <div class="ep ep-GET" id="action-frontend-card-getcard" data-bc="frontend › Card › GetCard">
-      <div class="ep-head" onclick="toggleEp(this)">
-        <span class="mtag mtag-GET">GET</span>
-        <span class="ep-path">/api/card/<span class="path-param">:id</span></span>
-        <span class="ep-info">
-          <span class="ep-name">GetCard</span>
-          <button class="copy-btn" data-path="/api/card/:id" onclick="copyPath(event,this.dataset.path)" title="Copy path">⎘</button>
-        </span>
-        <span class="chevron">▶</span>
-      </div>
-      <div class="ep-detail">
-        <dl class="ep-meta">
-          <dt>Output</dt><dd><a class="type-chip" href="#model-carditem" onclick="navigateTo('model-carditem');return false">CardItem</a></dd>
-          <dt>Errors</dt><dd><span class="err-chip">NotFound</span></dd>
-        </dl>
-      </div>
-    </div>
-    <div class="ep ep-POST" id="action-frontend-card-createcard" data-bc="frontend › Card › CreateCard">
-      <div class="ep-head" onclick="toggleEp(this)">
-        <span class="mtag mtag-POST">POST</span>
-        <span class="ep-path">/api/card/</span>
-        <span class="ep-info">
-          <span class="ep-name">CreateCard</span>
-          <button class="copy-btn" data-path="/api/card/" onclick="copyPath(event,this.dataset.path)" title="Copy path">⎘</button>
-        </span>
-        <span class="chevron">▶</span>
-      </div>
-      <div class="ep-detail">
-        <dl class="ep-meta">
-          <dt>Input</dt><dd><a class="type-chip" href="#model-createcardinput" onclick="navigateTo('model-createcardinput');return false">CreateCardInput</a></dd>
-          <dt>Output</dt><dd><a class="type-chip" href="#model-carditem" onclick="navigateTo('model-carditem');return false">CardItem</a></dd>
-        </dl>
-      </div>
+    <div class="svc-block" id="service-gateway" data-bc="gateway">
+      <h2 class="svc-title">gateway <code class="svc-url">http://localhost:9000</code></h2>
+      <p class="svc-desc">gateway</p>
     </div>
     <h2 class="types-title" id="section-models" data-bc="Models">Models</h2>
-    <div class="type-card" id="model-auth" data-bc="Models › auth">
+    <div class="type-card" id="model-changepasswordrequest" data-bc="Models › ChangePasswordRequest">
       <div class="type-head">
-        <span class="type-name">auth</span>
-        <span class="used-by">Used by: <span class="ub-chip">auth.register</span>, <span class="ub-chip">auth.login</span></span>
+        <span class="type-name">ChangePasswordRequest</span>
       </div>
       <table class="fields-table"><thead><tr><th>Field</th><th>Type</th><th>Attributes</th></tr></thead><tbody>
-        <tr><td class="fn">id</td><td><span class="plain-chip">string</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
-        <tr><td class="fn">email</td><td><span class="plain-chip">string</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">oldPassword</td><td><span class="plain-chip">string</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">newPassword</td><td><span class="plain-chip">string</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+      </tbody></table>
+    </div>
+    <div class="type-card" id="model-genericresponse" data-bc="Models › GenericResponse">
+      <div class="type-head">
+        <span class="type-name">GenericResponse</span>
+        <span class="used-by">Used by: <span class="ub-chip">Authentication.logout</span></span>
+      </div>
+      <table class="fields-table"><thead><tr><th>Field</th><th>Type</th><th>Attributes</th></tr></thead><tbody>
+        <tr><td class="fn">message</td><td><span class="plain-chip">string</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">success</td><td><span class="plain-chip">bool</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+      </tbody></table>
+    </div>
+    <div class="type-card" id="model-jwtresponse" data-bc="Models › JwtResponse">
+      <div class="type-head">
+        <span class="type-name">JwtResponse</span>
+        <span class="used-by">Used by: <span class="ub-chip">Authentication.login</span></span>
+      </div>
+      <table class="fields-table"><thead><tr><th>Field</th><th>Type</th><th>Attributes</th></tr></thead><tbody>
+        <tr><td class="fn">accessToken</td><td><span class="plain-chip">string</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">tokenType</td><td><span class="plain-chip">string</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+      </tbody></table>
+    </div>
+    <div class="type-card" id="model-loginrequest" data-bc="Models › LoginRequest">
+      <div class="type-head">
+        <span class="type-name">LoginRequest</span>
+        <span class="used-by">Used by: <span class="ub-chip">Authentication.login</span></span>
+      </div>
+      <table class="fields-table"><thead><tr><th>Field</th><th>Type</th><th>Attributes</th></tr></thead><tbody>
+        <tr><td class="fn">userName</td><td><span class="plain-chip">string</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
         <tr><td class="fn">password</td><td><span class="plain-chip">string</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
       </tbody></table>
     </div>
-    <div class="type-card" id="model-carditem" data-bc="Models › CardItem">
+    <div class="type-card" id="model-registerrequest" data-bc="Models › RegisterRequest">
       <div class="type-head">
-        <span class="type-name">CardItem</span>
-        <span class="type-desc">A card entity</span>
-        <span class="used-by">Used by: <span class="ub-chip">Card.ListCard</span>, <span class="ub-chip">Card.GetCard</span>, <span class="ub-chip">Card.CreateCard</span></span>
+        <span class="type-name">RegisterRequest</span>
+        <span class="used-by">Used by: <span class="ub-chip">Authentication.register</span></span>
+      </div>
+      <table class="fields-table"><thead><tr><th>Field</th><th>Type</th><th>Attributes</th></tr></thead><tbody>
+        <tr><td class="fn">userName</td><td><span class="plain-chip">string</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">email</td><td><span class="plain-chip">string</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">password</td><td><span class="plain-chip">string</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">role</td><td><span class="plain-chip">string</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+      </tbody></table>
+    </div>
+    <div class="type-card" id="model-updateuserrequest" data-bc="Models › UpdateUserRequest">
+      <div class="type-head">
+        <span class="type-name">UpdateUserRequest</span>
+      </div>
+      <table class="fields-table"><thead><tr><th>Field</th><th>Type</th><th>Attributes</th></tr></thead><tbody>
+        <tr><td class="fn">userName</td><td><span class="plain-chip">string</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">email</td><td><span class="plain-chip">string</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+      </tbody></table>
+    </div>
+    <div class="type-card" id="model-userresponse" data-bc="Models › UserResponse">
+      <div class="type-head">
+        <span class="type-name">UserResponse</span>
+        <span class="used-by">Used by: <span class="ub-chip">Authentication.register</span></span>
       </div>
       <table class="fields-table"><thead><tr><th>Field</th><th>Type</th><th>Attributes</th></tr></thead><tbody>
         <tr><td class="fn">id</td><td><span class="plain-chip">uuid</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
-        <tr><td class="fn">name</td><td><span class="plain-chip">string</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
-        <tr><td class="fn">createdAt</td><td><span class="plain-chip">datetime</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">userName</td><td><span class="plain-chip">string</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">email</td><td><span class="plain-chip">string</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">role</td><td><span class="plain-chip">string</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
       </tbody></table>
     </div>
-    <div class="type-card" id="model-createcardinput" data-bc="Models › CreateCardInput">
+    <div class="type-card" id="model-cardsummary" data-bc="Models › CardSummary">
       <div class="type-head">
-        <span class="type-name">CreateCardInput</span>
-        <span class="used-by">Used by: <span class="ub-chip">Card.CreateCard</span></span>
+        <span class="type-name">CardSummary</span>
       </div>
       <table class="fields-table"><thead><tr><th>Field</th><th>Type</th><th>Attributes</th></tr></thead><tbody>
-        <tr><td class="fn">name</td><td><span class="plain-chip">string</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">id</td><td><span class="plain-chip">uuid</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">accountId</td><td><span class="plain-chip">uuid</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">customerId</td><td><span class="plain-chip">uuid</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">cardToken</td><td><span class="plain-chip">string</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">lastFourDigits</td><td><span class="plain-chip">string</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">cardType</td><td><a class="type-chip" href="#enum-cardtype" onclick="navigateTo('enum-cardtype');return false">CardType</a></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">cardNetwork</td><td><a class="type-chip" href="#enum-cardnetwork" onclick="navigateTo('enum-cardnetwork');return false">CardNetwork</a></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">status</td><td><a class="type-chip" href="#enum-cardstatus" onclick="navigateTo('enum-cardstatus');return false">CardStatus</a></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">expiryMonth</td><td><span class="plain-chip">int</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">expiryYear</td><td><span class="plain-chip">int</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">issuedAt</td><td><span class="plain-chip">datetime</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">activatedAt</td><td><span class="plain-chip">datetime</span></td><td><div class="attr-wrap"><span class="fa-opt">optional</span></div></td></tr>
+        <tr><td class="fn">blockedAt</td><td><span class="plain-chip">datetime</span></td><td><div class="attr-wrap"><span class="fa-opt">optional</span></div></td></tr>
+        <tr><td class="fn">blockReason</td><td><span class="plain-chip">string</span></td><td><div class="attr-wrap"><span class="fa-opt">optional</span></div></td></tr>
+      </tbody></table>
+    </div>
+    <div class="type-card" id="model-creditcarddetails" data-bc="Models › CreditCardDetails">
+      <div class="type-head">
+        <span class="type-name">CreditCardDetails</span>
+      </div>
+      <table class="fields-table"><thead><tr><th>Field</th><th>Type</th><th>Attributes</th></tr></thead><tbody>
+        <tr><td class="fn">creditLimit</td><td><span class="plain-chip">decimal</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">availableCredit</td><td><span class="plain-chip">decimal</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">currentBalance</td><td><span class="plain-chip">decimal</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">minimumPayment</td><td><span class="plain-chip">decimal</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">paymentDueDate</td><td><span class="plain-chip">date</span></td><td><div class="attr-wrap"><span class="fa-opt">optional</span></div></td></tr>
+        <tr><td class="fn">annualInterestRate</td><td><span class="plain-chip">decimal</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">billingCycleDay</td><td><span class="plain-chip">int</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">lastStatementDate</td><td><span class="plain-chip">date</span></td><td><div class="attr-wrap"><span class="fa-opt">optional</span></div></td></tr>
+      </tbody></table>
+    </div>
+    <div class="type-card" id="model-carddetailsresponse" data-bc="Models › CardDetailsResponse">
+      <div class="type-head">
+        <span class="type-name">CardDetailsResponse</span>
+        <span class="used-by">Used by: <span class="ub-chip">Card.getCardDetails</span></span>
+      </div>
+      <table class="fields-table"><thead><tr><th>Field</th><th>Type</th><th>Attributes</th></tr></thead><tbody>
+        <tr><td class="fn">card</td><td><a class="type-chip" href="#model-cardsummary" onclick="navigateTo('model-cardsummary');return false">CardSummary</a></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">creditDetails</td><td><a class="type-chip" href="#model-creditcarddetails" onclick="navigateTo('model-creditcarddetails');return false">CreditCardDetails</a></td><td><div class="attr-wrap"><span class="fa-opt">optional</span></div></td></tr>
+      </tbody></table>
+    </div>
+    <div class="type-card" id="model-merchantpaymentrequest" data-bc="Models › MerchantPaymentRequest">
+      <div class="type-head">
+        <span class="type-name">MerchantPaymentRequest</span>
+        <span class="used-by">Used by: <span class="ub-chip">Card.processMerchantPayment</span></span>
+      </div>
+      <table class="fields-table"><thead><tr><th>Field</th><th>Type</th><th>Attributes</th></tr></thead><tbody>
+        <tr><td class="fn">cardToken</td><td><span class="plain-chip">string</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">merchantId</td><td><span class="plain-chip">uuid</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">amount</td><td><span class="plain-chip">decimal</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">currency</td><td><span class="plain-chip">string</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">idempotencyKey</td><td><span class="plain-chip">string</span></td><td><div class="attr-wrap"><span class="fa-opt">optional</span></div></td></tr>
+        <tr><td class="fn">merchantReference</td><td><span class="plain-chip">string</span></td><td><div class="attr-wrap"><span class="fa-opt">optional</span></div></td></tr>
+        <tr><td class="fn">description</td><td><span class="plain-chip">string</span></td><td><div class="attr-wrap"><span class="fa-opt">optional</span></div></td></tr>
+      </tbody></table>
+    </div>
+    <div class="type-card" id="model-refundcardtransactionrequest" data-bc="Models › RefundCardTransactionRequest">
+      <div class="type-head">
+        <span class="type-name">RefundCardTransactionRequest</span>
+        <span class="used-by">Used by: <span class="ub-chip">Card.refundTransaction</span></span>
+      </div>
+      <table class="fields-table"><thead><tr><th>Field</th><th>Type</th><th>Attributes</th></tr></thead><tbody>
+        <tr><td class="fn">transactionId</td><td><span class="plain-chip">uuid</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">reason</td><td><span class="plain-chip">string</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">amount</td><td><span class="plain-chip">decimal</span></td><td><div class="attr-wrap"><span class="fa-opt">optional</span></div></td></tr>
+      </tbody></table>
+    </div>
+    <div class="type-card" id="model-voidcardtransactionrequest" data-bc="Models › VoidCardTransactionRequest">
+      <div class="type-head">
+        <span class="type-name">VoidCardTransactionRequest</span>
+        <span class="used-by">Used by: <span class="ub-chip">Card.voidTransaction</span></span>
+      </div>
+      <table class="fields-table"><thead><tr><th>Field</th><th>Type</th><th>Attributes</th></tr></thead><tbody>
+        <tr><td class="fn">transactionId</td><td><span class="plain-chip">uuid</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">reason</td><td><span class="plain-chip">string</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+      </tbody></table>
+    </div>
+    <div class="type-card" id="model-cardtransactionresponse" data-bc="Models › CardTransactionResponse">
+      <div class="type-head">
+        <span class="type-name">CardTransactionResponse</span>
+        <span class="used-by">Used by: <span class="ub-chip">Card.processMerchantPayment</span>, <span class="ub-chip">Card.refundTransaction</span>, <span class="ub-chip">Card.voidTransaction</span></span>
+      </div>
+      <table class="fields-table"><thead><tr><th>Field</th><th>Type</th><th>Attributes</th></tr></thead><tbody>
+        <tr><td class="fn">transactionId</td><td><span class="plain-chip">uuid</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">cardId</td><td><span class="plain-chip">uuid</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">merchantId</td><td><span class="plain-chip">uuid</span></td><td><div class="attr-wrap"><span class="fa-opt">optional</span></div></td></tr>
+        <tr><td class="fn">authCode</td><td><span class="plain-chip">string</span></td><td><div class="attr-wrap"><span class="fa-opt">optional</span></div></td></tr>
+        <tr><td class="fn">ledgerTransactionId</td><td><span class="plain-chip">uuid</span></td><td><div class="attr-wrap"><span class="fa-opt">optional</span></div></td></tr>
+        <tr><td class="fn">amount</td><td><span class="plain-chip">decimal</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">currency</td><td><span class="plain-chip">string</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">amountInBaseCurrency</td><td><span class="plain-chip">decimal</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">exchangeRate</td><td><span class="plain-chip">decimal</span></td><td><div class="attr-wrap"><span class="fa-opt">optional</span></div></td></tr>
+        <tr><td class="fn">status</td><td><a class="type-chip" href="#enum-cardtransactionstatus" onclick="navigateTo('enum-cardtransactionstatus');return false">CardTransactionStatus</a></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">type</td><td><a class="type-chip" href="#enum-cardtransactiontype" onclick="navigateTo('enum-cardtransactiontype');return false">CardTransactionType</a></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">processedAt</td><td><span class="plain-chip">datetime</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+      </tbody></table>
+    </div>
+    <div class="type-card" id="model-getcardtransactionsrequest" data-bc="Models › GetCardTransactionsRequest">
+      <div class="type-head">
+        <span class="type-name">GetCardTransactionsRequest</span>
+        <span class="used-by">Used by: <span class="ub-chip">Card.getCardTransactions</span></span>
+      </div>
+      <table class="fields-table"><thead><tr><th>Field</th><th>Type</th><th>Attributes</th></tr></thead><tbody>
+        <tr><td class="fn">status</td><td><a class="type-chip" href="#enum-cardtransactionstatus" onclick="navigateTo('enum-cardtransactionstatus');return false">CardTransactionStatus</a></td><td><div class="attr-wrap"><span class="fa-opt">optional</span></div></td></tr>
+        <tr><td class="fn">type</td><td><a class="type-chip" href="#enum-cardtransactiontype" onclick="navigateTo('enum-cardtransactiontype');return false">CardTransactionType</a></td><td><div class="attr-wrap"><span class="fa-opt">optional</span></div></td></tr>
+        <tr><td class="fn">page</td><td><span class="plain-chip">int</span></td><td><div class="attr-wrap"><span class="fa-default">= 0</span></div></td></tr>
+        <tr><td class="fn">pageSize</td><td><span class="plain-chip">int</span></td><td><div class="attr-wrap"><span class="fa-default">= 20</span></div></td></tr>
+      </tbody></table>
+    </div>
+    <div class="type-card" id="model-paginatedcardtransactionresponse" data-bc="Models › PaginatedCardTransactionResponse">
+      <div class="type-head">
+        <span class="type-name">PaginatedCardTransactionResponse</span>
+        <span class="used-by">Used by: <span class="ub-chip">Card.getCardTransactions</span></span>
+      </div>
+      <table class="fields-table"><thead><tr><th>Field</th><th>Type</th><th>Attributes</th></tr></thead><tbody>
+        <tr><td class="fn">content</td><td><a class="type-chip" href="#model-cardtransactionresponse" onclick="navigateTo('model-cardtransactionresponse');return false">CardTransactionResponse[]</a></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">pageNumber</td><td><span class="plain-chip">int</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">pageSize</td><td><span class="plain-chip">int</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">totalElements</td><td><span class="plain-chip">long</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">totalPages</td><td><span class="plain-chip">int</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">isLast</td><td><span class="plain-chip">bool</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
       </tbody></table>
     </div>
     <div class="type-card" id="model-accountbalanceresponse" data-bc="Models › AccountBalanceResponse">
@@ -1663,26 +1850,98 @@ a { color: inherit; text-decoration: none; }
         <tr><td class="fn">createdAt</td><td><span class="plain-chip">datetime</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
       </tbody></table>
     </div>
-    <div class="type-card" id="model-getratesrequest" data-bc="Models › GetRatesRequest">
+    <div class="type-card" id="model-loanapplication" data-bc="Models › LoanApplication">
       <div class="type-head">
-        <span class="type-name">GetRatesRequest</span>
-        <span class="used-by">Used by: <span class="ub-chip">FX.getExchangeRate</span></span>
+        <span class="type-name">LoanApplication</span>
+        <span class="used-by">Used by: <span class="ub-chip">loan.LoanSubmit</span></span>
       </div>
       <table class="fields-table"><thead><tr><th>Field</th><th>Type</th><th>Attributes</th></tr></thead><tbody>
-        <tr><td class="fn">sourceCurrency</td><td><span class="plain-chip">string</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
-        <tr><td class="fn">destinationCurrency</td><td><span class="plain-chip">string</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">id</td><td><span class="plain-chip">uuid</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">customerId</td><td><span class="plain-chip">uuid</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">productId</td><td><span class="plain-chip">uuid</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">requestedAmount</td><td><span class="plain-chip">decimal</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">requestedTenure</td><td><span class="plain-chip">int</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">purpose</td><td><span class="plain-chip">string</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">employmentStatus</td><td><a class="type-chip" href="#enum-employmentstatus" onclick="navigateTo('enum-employmentstatus');return false">EmploymentStatus</a></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">annualIncome</td><td><span class="plain-chip">decimal</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">applicationStatus</td><td><a class="type-chip" href="#enum-applicationstatus" onclick="navigateTo('enum-applicationstatus');return false">ApplicationStatus</a></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">submittedAt</td><td><span class="plain-chip">datetime</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">reviewedAt</td><td><span class="plain-chip">datetime</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">remarks</td><td><span class="plain-chip">string</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
       </tbody></table>
     </div>
-    <div class="type-card" id="model-getratesresponse" data-bc="Models › GetRatesResponse">
+    <div class="type-card" id="model-loanproduct" data-bc="Models › LoanProduct">
       <div class="type-head">
-        <span class="type-name">GetRatesResponse</span>
-        <span class="used-by">Used by: <span class="ub-chip">FX.getExchangeRate</span></span>
+        <span class="type-name">LoanProduct</span>
       </div>
       <table class="fields-table"><thead><tr><th>Field</th><th>Type</th><th>Attributes</th></tr></thead><tbody>
-        <tr><td class="fn">sourceCurrency</td><td><span class="plain-chip">string</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
-        <tr><td class="fn">destinationCurrency</td><td><span class="plain-chip">string</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
-        <tr><td class="fn">exchangeRate</td><td><span class="plain-chip">decimal</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
-        <tr><td class="fn">timestamp</td><td><span class="plain-chip">datetime</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">id</td><td><span class="plain-chip">uuid</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">name</td><td><span class="plain-chip">string</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">productDescription</td><td><span class="plain-chip">string</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">minAmount</td><td><span class="plain-chip">decimal</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">maxAmount</td><td><span class="plain-chip">decimal</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">minTenureMonths</td><td><span class="plain-chip">int</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">maxTenureMonths</td><td><span class="plain-chip">int</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">interestRate</td><td><span class="plain-chip">decimal</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">interestType</td><td><a class="type-chip" href="#enum-interesttype" onclick="navigateTo('enum-interesttype');return false">InterestType</a></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">processingFee</td><td><span class="plain-chip">decimal</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">repaymentFrequency</td><td><a class="type-chip" href="#enum-repaymentfrequency" onclick="navigateTo('enum-repaymentfrequency');return false">RepaymentFrequency</a></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">active</td><td><span class="plain-chip">bool</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">createdAt</td><td><span class="plain-chip">datetime</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+      </tbody></table>
+    </div>
+    <div class="type-card" id="model-loan" data-bc="Models › Loan">
+      <div class="type-head">
+        <span class="type-name">Loan</span>
+      </div>
+      <table class="fields-table"><thead><tr><th>Field</th><th>Type</th><th>Attributes</th></tr></thead><tbody>
+        <tr><td class="fn">id</td><td><span class="plain-chip">uuid</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">loanNumber</td><td><span class="plain-chip">string</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">applicationId</td><td><span class="plain-chip">uuid</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">customerId</td><td><span class="plain-chip">uuid</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">accountId</td><td><span class="plain-chip">uuid</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">productId</td><td><span class="plain-chip">uuid</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">principalAmount</td><td><span class="plain-chip">decimal</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">interestRate</td><td><span class="plain-chip">decimal</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">interestType</td><td><a class="type-chip" href="#enum-interesttype" onclick="navigateTo('enum-interesttype');return false">InterestType</a></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">tenureMonths</td><td><span class="plain-chip">int</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">emiAmount</td><td><span class="plain-chip">decimal</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">outstandingBalance</td><td><span class="plain-chip">decimal</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">disbursedAmount</td><td><span class="plain-chip">decimal</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">repaymentFrequency</td><td><a class="type-chip" href="#enum-repaymentfrequency" onclick="navigateTo('enum-repaymentfrequency');return false">RepaymentFrequency</a></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">loanStatus</td><td><a class="type-chip" href="#enum-loanstatus" onclick="navigateTo('enum-loanstatus');return false">LoanStatus</a></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">startDate</td><td><span class="plain-chip">date</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">endDate</td><td><span class="plain-chip">date</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">disbursementDate</td><td><span class="plain-chip">datetime</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">createdAt</td><td><span class="plain-chip">datetime</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">updatedAt</td><td><span class="plain-chip">datetime</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+      </tbody></table>
+    </div>
+    <div class="type-card" id="model-repaymentschedule" data-bc="Models › RepaymentSchedule">
+      <div class="type-head">
+        <span class="type-name">RepaymentSchedule</span>
+      </div>
+      <table class="fields-table"><thead><tr><th>Field</th><th>Type</th><th>Attributes</th></tr></thead><tbody>
+        <tr><td class="fn">id</td><td><span class="plain-chip">uuid</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">loanId</td><td><span class="plain-chip">uuid</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">installmentNumber</td><td><span class="plain-chip">int</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">dueDate</td><td><span class="plain-chip">date</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">principalComponent</td><td><span class="plain-chip">decimal</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">interestComponent</td><td><span class="plain-chip">decimal</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">totalAmount</td><td><span class="plain-chip">decimal</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">remainingBalance</td><td><span class="plain-chip">decimal</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">installmentStatus</td><td><a class="type-chip" href="#enum-installmentstatus" onclick="navigateTo('enum-installmentstatus');return false">InstallmentStatus</a></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+      </tbody></table>
+    </div>
+    <div class="type-card" id="model-loanapplicationresponse" data-bc="Models › LoanApplicationResponse">
+      <div class="type-head">
+        <span class="type-name">LoanApplicationResponse</span>
+        <span class="used-by">Used by: <span class="ub-chip">loan.LoanSubmit</span></span>
+      </div>
+      <table class="fields-table"><thead><tr><th>Field</th><th>Type</th><th>Attributes</th></tr></thead><tbody>
+        <tr><td class="fn">applicationId</td><td><span class="plain-chip">uuid</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">status</td><td><a class="type-chip" href="#enum-applicationstatus" onclick="navigateTo('enum-applicationstatus');return false">ApplicationStatus</a></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">submittedAt</td><td><span class="plain-chip">datetime</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
       </tbody></table>
     </div>
     <div class="type-card" id="model-notificationtemplate" data-bc="Models › NotificationTemplate">
@@ -1959,6 +2218,7 @@ a { color: inherit; text-decoration: none; }
         <tr><td class="fn">sourceCurrency</td><td><span class="plain-chip">string</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
         <tr><td class="fn">destinationCurrency</td><td><span class="plain-chip">string</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
         <tr><td class="fn">type</td><td><a class="type-chip" href="#enum-transactiontype" onclick="navigateTo('enum-transactiontype');return false">TransactionType</a></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
+        <tr><td class="fn">initiatedByUserId</td><td><span class="plain-chip">uuid</span></td><td><div class="attr-wrap"><span class="fa-opt">optional</span></div></td></tr>
       </tbody></table>
     </div>
     <div class="type-card" id="model-transactionresponse" data-bc="Models › TransactionResponse">
@@ -1979,6 +2239,7 @@ a { color: inherit; text-decoration: none; }
         <span class="used-by">Used by: <span class="ub-chip">Transaction.getAccountTransactions</span></span>
       </div>
       <table class="fields-table"><thead><tr><th>Field</th><th>Type</th><th>Attributes</th></tr></thead><tbody>
+        <tr><td class="fn">currency</td><td><span class="plain-chip">string</span></td><td><div class="attr-wrap"><span class="fa-none">&mdash;</span></div></td></tr>
         <tr><td class="fn">page</td><td><span class="plain-chip">int</span></td><td><div class="attr-wrap"><span class="fa-default">= 0</span></div></td></tr>
         <tr><td class="fn">pageSize</td><td><span class="plain-chip">int</span></td><td><div class="attr-wrap"><span class="fa-default">= 20</span></div></td></tr>
       </tbody></table>
@@ -1998,6 +2259,143 @@ a { color: inherit; text-decoration: none; }
       </tbody></table>
     </div>
     <h2 class="types-title" id="section-enums" data-bc="Enums">Enums</h2>
+    <div class="type-card" id="enum-cardtype" data-bc="Enums › CardType">
+      <div class="type-head">
+        <span class="type-name">CardType</span>
+        <span class="used-by">Used by: <span class="ub-chip">CardSummary</span></span>
+      </div>
+      <div class="enum-chips">
+        <span class="ev-chip">CREDIT</span>
+        <span class="ev-chip">DEBIT</span>
+      </div>
+    </div>
+    <div class="type-card" id="enum-cardnetwork" data-bc="Enums › CardNetwork">
+      <div class="type-head">
+        <span class="type-name">CardNetwork</span>
+        <span class="used-by">Used by: <span class="ub-chip">CardSummary</span></span>
+      </div>
+      <div class="enum-chips">
+        <span class="ev-chip">VISA</span>
+        <span class="ev-chip">MASTERCARD</span>
+        <span class="ev-chip">AMEX</span>
+      </div>
+    </div>
+    <div class="type-card" id="enum-cardstatus" data-bc="Enums › CardStatus">
+      <div class="type-head">
+        <span class="type-name">CardStatus</span>
+        <span class="used-by">Used by: <span class="ub-chip">CardSummary</span></span>
+      </div>
+      <div class="enum-chips">
+        <span class="ev-chip">PENDING</span>
+        <span class="ev-chip">ACTIVE</span>
+        <span class="ev-chip">BLOCKED</span>
+        <span class="ev-chip">EXPIRED</span>
+      </div>
+    </div>
+    <div class="type-card" id="enum-cardtransactionstatus" data-bc="Enums › CardTransactionStatus">
+      <div class="type-head">
+        <span class="type-name">CardTransactionStatus</span>
+        <span class="used-by">Used by: <span class="ub-chip">CardTransactionResponse</span>, <span class="ub-chip">GetCardTransactionsRequest</span></span>
+      </div>
+      <div class="enum-chips">
+        <span class="ev-chip">PENDING</span>
+        <span class="ev-chip">APPROVED</span>
+        <span class="ev-chip">DECLINED</span>
+        <span class="ev-chip">REFUNDED</span>
+        <span class="ev-chip">VOIDED</span>
+      </div>
+    </div>
+    <div class="type-card" id="enum-cardtransactiontype" data-bc="Enums › CardTransactionType">
+      <div class="type-head">
+        <span class="type-name">CardTransactionType</span>
+        <span class="used-by">Used by: <span class="ub-chip">CardTransactionResponse</span>, <span class="ub-chip">GetCardTransactionsRequest</span></span>
+      </div>
+      <div class="enum-chips">
+        <span class="ev-chip">PURCHASE</span>
+        <span class="ev-chip">REFUND</span>
+        <span class="ev-chip">VOID</span>
+        <span class="ev-chip">CASH_ADVANCE</span>
+      </div>
+    </div>
+    <div class="type-card" id="enum-employmentstatus" data-bc="Enums › EmploymentStatus">
+      <div class="type-head">
+        <span class="type-name">EmploymentStatus</span>
+        <span class="used-by">Used by: <span class="ub-chip">LoanApplication</span></span>
+      </div>
+      <div class="enum-chips">
+        <span class="ev-chip">EMPLOYED</span>
+        <span class="ev-chip">SELF_EMPLOYED</span>
+        <span class="ev-chip">UNEMPLOYED</span>
+        <span class="ev-chip">STUDENT</span>
+        <span class="ev-chip">RETIRED</span>
+      </div>
+    </div>
+    <div class="type-card" id="enum-applicationstatus" data-bc="Enums › ApplicationStatus">
+      <div class="type-head">
+        <span class="type-name">ApplicationStatus</span>
+        <span class="used-by">Used by: <span class="ub-chip">LoanApplication</span>, <span class="ub-chip">LoanApplicationResponse</span></span>
+      </div>
+      <div class="enum-chips">
+        <span class="ev-chip">SUBMITTED</span>
+        <span class="ev-chip">UNDER_REVIEW</span>
+        <span class="ev-chip">APPROVED</span>
+        <span class="ev-chip">REJECTED</span>
+        <span class="ev-chip">CANCELLED</span>
+      </div>
+    </div>
+    <div class="type-card" id="enum-loanstatus" data-bc="Enums › LoanStatus">
+      <div class="type-head">
+        <span class="type-name">LoanStatus</span>
+        <span class="used-by">Used by: <span class="ub-chip">Loan</span></span>
+      </div>
+      <div class="enum-chips">
+        <span class="ev-chip">PENDING</span>
+        <span class="ev-chip">UNDER_REVIEW</span>
+        <span class="ev-chip">APPROVED</span>
+        <span class="ev-chip">REJECTED</span>
+        <span class="ev-chip">DISBURSED</span>
+        <span class="ev-chip">ACTIVE</span>
+        <span class="ev-chip">OVERDUE</span>
+        <span class="ev-chip">DEFAULTED</span>
+        <span class="ev-chip">CLOSED</span>
+        <span class="ev-chip">WRITTEN_OFF</span>
+      </div>
+    </div>
+    <div class="type-card" id="enum-interesttype" data-bc="Enums › InterestType">
+      <div class="type-head">
+        <span class="type-name">InterestType</span>
+        <span class="used-by">Used by: <span class="ub-chip">LoanProduct</span>, <span class="ub-chip">Loan</span></span>
+      </div>
+      <div class="enum-chips">
+        <span class="ev-chip">FIXED</span>
+        <span class="ev-chip">FLOATING</span>
+      </div>
+    </div>
+    <div class="type-card" id="enum-repaymentfrequency" data-bc="Enums › RepaymentFrequency">
+      <div class="type-head">
+        <span class="type-name">RepaymentFrequency</span>
+        <span class="used-by">Used by: <span class="ub-chip">LoanProduct</span>, <span class="ub-chip">Loan</span></span>
+      </div>
+      <div class="enum-chips">
+        <span class="ev-chip">WEEKLY</span>
+        <span class="ev-chip">MONTHLY</span>
+        <span class="ev-chip">QUARTERLY</span>
+        <span class="ev-chip">SEMI_ANNUALLY</span>
+        <span class="ev-chip">ANNUALLY</span>
+      </div>
+    </div>
+    <div class="type-card" id="enum-installmentstatus" data-bc="Enums › InstallmentStatus">
+      <div class="type-head">
+        <span class="type-name">InstallmentStatus</span>
+        <span class="used-by">Used by: <span class="ub-chip">RepaymentSchedule</span></span>
+      </div>
+      <div class="enum-chips">
+        <span class="ev-chip">PENDING</span>
+        <span class="ev-chip">PAID</span>
+        <span class="ev-chip">OVERDUE</span>
+        <span class="ev-chip">MISSED</span>
+      </div>
+    </div>
     <div class="type-card" id="enum-notificationstatus" data-bc="Enums › NotificationStatus">
       <div class="type-head">
         <span class="type-name">NotificationStatus</span>
