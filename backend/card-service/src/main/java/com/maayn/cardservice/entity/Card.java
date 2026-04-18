@@ -13,6 +13,8 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
+import lombok.Data;
+import lombok.Getter;
 import maayn.veld.generated.models.card.CardNetwork;
 import maayn.veld.generated.models.card.CardStatus;
 import maayn.veld.generated.models.card.CardType;
@@ -24,6 +26,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Entity
+@Data
 @Table(name = "cards")
 public class Card {
 

@@ -10,7 +10,10 @@ import com.maayn.cardservice.service.support.CardAccessService;
 import com.maayn.cardservice.service.support.CardRulesValidator;
 import com.maayn.cardservice.service.support.CardTransactionFactory;
 import com.maayn.cardservice.service.support.CreditBalanceService;
+import com.maayn.cardservice.service.support.MerchantPaymentService;
 import com.maayn.cardservice.service.support.TransactionGateway;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import maayn.veld.generated.errors.CardErrors;
 import maayn.veld.generated.errors.ProcessMerchantPaymentException;
 import maayn.veld.generated.models.card.*;
@@ -24,11 +27,14 @@ import java.sql.Time;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-@Service
 /**
- * Executes merchant purchase requests against a card.
- * The flow validates input, enforces card rules, calls the transaction service, then stores the local card transaction.
+ * Executes merchant purchase requests against a card (SOLID: Single Responsibility).
+ * Delegates to MerchantPaymentService for payment flow processing.
+ * Uses proper dependency injection with @RequiredArgsConstructor.
  */
+@Service
+@Slf4j
+@RequiredArgsConstructor
 public class CardPaymentService {
 
     private final CardAccessService cardAccessService;
@@ -38,82 +44,37 @@ public class CardPaymentService {
     private final CreditBalanceService creditBalanceService;
     private final CardTransactionRepository cardTransactionRepository;
     private final CardRepository cardRepository;
-
-    
-    //TODO: USE Dependency Injections like professionals
-    public CardPaymentService(
-            CardAccessService cardAccessService,
-            CardRulesValidator cardRulesValidator,
-            TransactionGateway transactionGateway,
-            CardTransactionFactory cardTransactionFactory,
-            CreditBalanceService creditBalanceService,
-            CardTransactionRepository cardTransactionRepository, CardRepository cardRepository
-    ) {
-        this.cardAccessService = cardAccessService;
-        this.cardRulesValidator = cardRulesValidator;
-        this.transactionGateway = transactionGateway;
-        this.cardTransactionFactory = cardTransactionFactory;
-        this.creditBalanceService = creditBalanceService;
-        this.cardTransactionRepository = cardTransactionRepository;
-        this.cardRepository = cardRepository;
-    }
+    private final MerchantPaymentService merchantPaymentService;
 
     @Transactional
     public CardTransactionResponse process(MerchantPaymentRequest input) throws ProcessMerchantPaymentException, Exception {
-        cardRulesValidator.validateMerchantPaymentRequest(input);
-
-        // Reuse an existing transaction if the same idempotency key was already processed successfully.
-        String idempotencyKey = resolvePaymentIdempotencyKey(input);
-        CardTransaction cached = cardAccessService.findTransactionByIdempotencyKey(idempotencyKey).orElse(null);
-        if (cached != null) {
-            return CardMapper.toTransactionResponse(cached);
-        }
-
-//        Card card = cardAccessService.getCardByToken(input.getCardToken());
-//        cardRulesValidator.validateCardForPayment(card, input.getCurrency(), input.getAmount());
-        //TODO: implement actual flow to create a card 
-        Card card = new Card();
-        card.setAccountId(UUID.fromString("99999999-9999-9999-9999-999999999999"));
-        card.setCardToken(input.getCardToken());
-        card.setLastFourDigits("1234");
-        card.setCardType(CardType.DEBIT);
-        card.setActivatedAt(LocalDateTime.now().minusDays(30));
-        card.setExpiryMonth(12);
-        card.setExpiryYear(2025);
-        card.setIssuedAt(LocalDateTime.now().minusDays(365));
-        card.setCardNetwork(CardNetwork.VISA);
-        card.setCustomerId(UUID.fromString("00000000-0000-0000-0000-000000000000"));
-        card.setStatus(CardStatus.ACTIVE);
-        cardRepository.save(card);
-
-        TransactionResponse transferResult;
         try {
-            // Move funds from the card-linked account into the bank cash vault through the transaction service.
-            transferResult = transactionGateway.transfer(
-                    card.getAccountId(),
-                    SystemAccounts.CASH_VAULT_ID,
+            log.info("Processing merchant payment for merchant: {}", input.getMerchantId());
+            
+            cardRulesValidator.validateMerchantPaymentRequest(input);
+
+            // Reuse an existing transaction if the same idempotency key was already processed successfully
+            String idempotencyKey = resolvePaymentIdempotencyKey(input);
+            CardTransaction cached = cardAccessService.findTransactionByIdempotencyKey(idempotencyKey).orElse(null);
+            if (cached != null) {
+                log.info("Returning cached transaction for idempotency key: {}", idempotencyKey);
+                return CardMapper.toTransactionResponse(cached);
+            }
+
+            // Delegate to merchant payment service which handles both CREDIT and DEBIT flows
+            return merchantPaymentService.processMerchantPayment(
+                    input.getCardToken(),
+                    input.getMerchantId().toString(),
+                    input.getIban(),
+                    input.getCvv(),
+                    input.getExpiryDate(),
                     input.getAmount(),
                     input.getCurrency(),
-                    idempotencyKey,
-                    TransactionType.CARD_PAYMENT
+                    idempotencyKey
             );
         } catch (TransactionGatewayException ex) {
             throw mapPaymentGatewayFailure(ex);
         }
-
-        CardTransaction transaction = cardTransactionFactory.createPurchase(
-                card,
-                input.getMerchantId(),
-                idempotencyKey,
-                transferResult.getReferenceNumber(),
-                input.getAmount(),
-                input.getCurrency()
-        );
-
-        // Credit cards also maintain an internal credit ledger that mirrors the approved charge.
-        creditBalanceService.applyCharge(card, input.getAmount());
-        cardTransactionRepository.save(transaction);
-        return CardMapper.toTransactionResponse(transaction);
     }
 
     private ProcessMerchantPaymentException mapPaymentGatewayFailure(TransactionGatewayException ex) throws ProcessMerchantPaymentException {
