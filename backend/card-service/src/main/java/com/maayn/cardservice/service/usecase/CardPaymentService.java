@@ -62,12 +62,10 @@ public class CardPaymentService {
             }
 
             // Delegate to merchant payment service which handles both CREDIT and DEBIT flows
+            // Note: IBAN, CVV, Expiry are validated within the payment flows if provided
             return merchantPaymentService.processMerchantPayment(
                     input.getCardToken(),
                     input.getMerchantId().toString(),
-                    input.getIban(),
-                    input.getCvv(),
-                    input.getExpiryDate(),
                     input.getAmount(),
                     input.getCurrency(),
                     idempotencyKey

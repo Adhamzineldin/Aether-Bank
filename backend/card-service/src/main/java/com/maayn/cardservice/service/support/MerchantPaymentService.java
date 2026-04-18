@@ -28,16 +28,14 @@ public class MerchantPaymentService {
     private final CardTransactionRepository cardTransactionRepository;
 
     /**
-     * Process merchant payment with IBAN, CVV, and expiry date.
+     * Process merchant payment with amount and currency.
      * Uses factory to delegate to appropriate payment flow (Credit/Debit).
+     * IBAN, CVV, Expiry are optionally validated within payment flows.
      */
     @Transactional
     public CardTransactionResponse processMerchantPayment(
             String cardToken,
             String merchantId,
-            String iban,
-            String cvv,
-            String expiryDate,
             BigDecimal amount,
             String currency,
             String idempotencyKey) throws Exception {
@@ -59,9 +57,9 @@ public class MerchantPaymentService {
         return paymentFlow.processPayment(
                 card,
                 merchantId,
-                iban,
-                cvv,
-                expiryDate,
+                null,  // iban - optional
+                null,  // cvv - optional
+                null,  // expiryDate - optional
                 amount,
                 currency,
                 idempotencyKey
