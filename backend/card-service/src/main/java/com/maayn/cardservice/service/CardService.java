@@ -21,6 +21,10 @@ import maayn.veld.generated.services.ICardService;
 import org.springframework.stereotype.Service;
 
 @Service
+/**
+ * Entry point exposed to the generated controller layer.
+ * This class keeps the API surface small and delegates each operation to a focused use-case service.
+ */
 public class CardService implements ICardService {
 
     private final CardDetailsQueryService cardDetailsQueryService;
@@ -47,26 +51,31 @@ public class CardService implements ICardService {
 
     @Override
     public CardDetailsResponse getCardDetails(String cardId) throws GetCardDetailsException, Exception {
+        // Read-only card lookup handled by the dedicated query service.
         return cardDetailsQueryService.getCardDetails(cardId);
     }
 
     @Override
     public CardTransactionResponse processMerchantPayment(MerchantPaymentRequest input) throws ProcessMerchantPaymentException, Exception {
+        // Purchase flow: validate request, move funds, persist local transaction state.
         return cardPaymentService.process(input);
     }
 
     @Override
     public CardTransactionResponse refundTransaction(RefundCardTransactionRequest input) throws RefundTransactionException, Exception {
+        // Refund flow: validate the original purchase, reverse the transfer, record the refund.
         return cardRefundService.refund(input);
     }
 
     @Override
     public CardTransactionResponse voidTransaction(VoidCardTransactionRequest input) throws VoidTransactionException, Exception {
+        // Void flow: cancel a recent approved purchase and restore the card balance.
         return cardVoidService.voidTransaction(input);
     }
 
     @Override
     public PaginatedCardTransactionResponse getCardTransactions(String cardId, GetCardTransactionsRequest input) throws GetCardTransactionsException, Exception {
+        // Transaction history supports pagination plus optional status/type filters.
         return cardTransactionHistoryService.getTransactions(cardId, input);
     }
 }

@@ -16,6 +16,10 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.UUID;
 
 @Service
+/**
+ * Reads paginated card transaction history.
+ * Optional filters are applied only when present so the repository query stays aligned with the request.
+ */
 public class CardTransactionHistoryService {
 
     private final CardAccessService cardAccessService;
@@ -30,6 +34,7 @@ public class CardTransactionHistoryService {
     public PaginatedCardTransactionResponse getTransactions(String cardId, GetCardTransactionsRequest input) throws GetCardTransactionsException {
         UUID parsedCardId = cardAccessService.getExistingCardId(cardId);
         GetCardTransactionsRequest request = input != null ? input : new GetCardTransactionsRequest();
+        // Default pagination keeps the endpoint usable even when the caller omits paging parameters.
         if (request.getPage() == null) {
             request.setPage(0);
         }
@@ -40,6 +45,7 @@ public class CardTransactionHistoryService {
         Pageable pageable = PageRequest.of(request.getPage(), request.getPageSize());
         Page<CardTransaction> page;
 
+        // Pick the narrowest repository query that matches the filter combination supplied by the client.
         if (request.getStatus() != null && request.getType() != null) {
             page = cardTransactionRepository.findByCardIdAndStatusAndType(parsedCardId, request.getStatus(), request.getType(), pageable);
         } else if (request.getStatus() != null) {

@@ -16,6 +16,10 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Service
+/**
+ * Centralizes repository lookups plus the API-specific errors that should be thrown when data is missing or malformed.
+ * This keeps the use-case services focused on business flow rather than lookup boilerplate.
+ */
 public class CardAccessService {
 
     private final CardRepository cardRepository;
@@ -63,6 +67,7 @@ public class CardAccessService {
         try {
             return UUID.fromString(raw);
         } catch (IllegalArgumentException ex) {
+            // Invalid UUIDs are surfaced as the same domain error type the API already expects.
             throw exception;
         }
     }

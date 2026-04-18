@@ -1,0 +1,38 @@
+import "./common.model.veld"
+
+model CertificateApplication {
+  id: uuid
+  customerId: uuid
+  accountId: uuid
+  principal: decimal
+  interestRate: decimal
+  termDays: int
+  autoRenew: bool
+  applicationStatus: ApplicationStatus
+  submittedAt: datetime
+  reviewedAt: datetime
+  remarks: string
+}
+
+model CertificateApplicationResponse {
+  applicationId: uuid
+  status: ApplicationStatus
+  submittedAt: datetime
+}
+
+model Certificate {
+  id: uuid
+  certificateNumber: string
+  customerId: uuid
+  accountId: uuid
+  principal: decimal
+  interestRate: decimal
+  termDays: int
+  openDate: datetime
+  maturityDate: datetime
+  status: CertificateStatus
+  interestEarned: decimal
+  autoRenew: bool
+  createdAt: datetime
+  updatedAt: datetime
+}

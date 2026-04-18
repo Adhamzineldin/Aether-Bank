@@ -1,0 +1,43 @@
+import "./common.model.veld"
+
+model MortgageApplication {
+  id: uuid
+  customerId: uuid
+  propertyAddress: string
+  propertyValue: decimal
+  requestedAmount: decimal
+  downPayment: decimal
+  interestRate: decimal
+  termYears: int
+  employmentStatus: EmploymentStatus
+  annualIncome: decimal
+  applicationStatus: ApplicationStatus
+  submittedAt: datetime
+  reviewedAt: datetime
+  remarks: string
+}
+
+model MortgageApplicationResponse {
+  applicationId: uuid
+  status: ApplicationStatus
+  submittedAt: datetime
+}
+
+model Mortgage {
+  id: uuid
+  mortgageNumber: string
+  applicationId: uuid
+  customerId: uuid
+  propertyAddress: string
+  propertyValue: decimal
+  loanAmount: decimal
+  downPayment: decimal
+  interestRate: decimal
+  termYears: int
+  monthlyPayment: decimal
+  outstandingBalance: decimal
+  status: MortgageStatus
+  disbursementDate: datetime
+  createdAt: datetime
+  updatedAt: datetime
+}

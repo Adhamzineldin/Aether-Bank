@@ -1,0 +1,18 @@
+import "../models/certificate.model.veld"
+
+module certificate {
+  description: "Certificate service"
+  prefix: /certificates
+
+  action CertificateSubmit {
+    description: "Submit a certificate application"
+    method: POST
+    path: /application/submit
+    input: CertificateApplication
+    output: CertificateApplicationResponse
+    errors: [
+      MissingField:400,
+      InvalidAmount:400
+    ]
+  }
+}

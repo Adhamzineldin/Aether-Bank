@@ -12,6 +12,10 @@ import java.math.BigDecimal;
 import java.util.UUID;
 
 @Component
+/**
+ * Thin adapter around the generated transaction SDK.
+ * It normalizes the transfer request shape the card service needs and translates SDK errors into domain-specific reasons.
+ */
 public class TransactionGateway {
 
     private final TransactionClient transactionClient;
@@ -32,6 +36,7 @@ public class TransactionGateway {
     ) throws Exception {
         TransferRequest transferRequest = new TransferRequest();
         String normalizedCurrency = cardRulesValidator.normalizeCurrency(currency);
+        // Card flows always move the same currency on both sides because FX handling is not implemented here.
         transferRequest.setIdempotencyKey(idempotencyKey);
         transferRequest.setSourceAccountId(sourceAccountId);
         transferRequest.setDestinationAccountId(destinationAccountId);
@@ -44,6 +49,7 @@ public class TransactionGateway {
         try {
             return transactionClient.transaction.transfer(transferRequest);
         } catch (SdkApiError error) {
+            // Reduce the SDK's wire-level errors to a small set of business reasons the card service can map cleanly.
             if ("INVALID_AMOUNT".equals(error.getCode())) {
                 throw new TransactionGatewayException(TransactionGatewayException.Reason.INVALID_AMOUNT, error.getMessage());
             }
