@@ -1,0 +1,35 @@
+server:
+  port: 8080   # different from transaction-service
+
+spring:
+  application:
+    name: financial-service
+
+  devtools:
+    restart:
+      enabled: true
+      additional-paths:
+        - src/main/java
+        - src/main/resources
+      exclude:
+        - static/**
+        - public/**
+    livereload:
+      enabled: true
+
+  # MongoDB Connection
+  # RabbitMQ (same pattern as transaction service)
+  rabbitmq:
+    host: localhost
+    port: 5673
+    publisher-confirm-type: correlated
+    publisher-returns: true
+  mongodb:
+    representation:
+      uuid: standard
+    uri: mongodb://localhost:27017/financial_service
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/

@@ -1,8 +1,9 @@
 package com.maayn.financialservice.validation;
 
-import com.maayn.financialservice.entity.LoanApplication;
-import maayn.veld.generated.errors.LoanErrors;
+import maayn.veld.generated.errors.loanErrors;
+import maayn.veld.generated.models.loan.LoanApplication;
 import org.springframework.stereotype.Component;
+import lombok.*;
 
 import java.math.BigDecimal;
 
@@ -21,7 +22,7 @@ public class LoanValidator {
 
     private void validateCustomer(LoanApplication application) {
         if (application.getCustomerId() == null) {
-            throw LoanErrors.LoanApplicationErrors.invalidCustomer(
+            throw loanErrors.LoanSubmitErrors.missingField(
                     "Customer ID is required"
             );
         }
@@ -29,7 +30,7 @@ public class LoanValidator {
 
     private void validateProduct(LoanApplication application) {
         if (application.getProductId() == null) {
-            throw LoanErrors.LoanApplicationErrors.invalidProduct(
+            throw loanErrors.LoanSubmitErrors.missingField(
                     "Loan product ID is required"
             );
         }
@@ -38,16 +39,16 @@ public class LoanValidator {
     private void validatePositiveAmount(LoanApplication application) {
         if (application.getRequestedAmount() == null ||
                 application.getRequestedAmount().compareTo(BigDecimal.ZERO) <= 0) {
-            throw LoanErrors.LoanApplicationErrors.invalidAmount(
+            throw loanErrors.LoanSubmitErrors.invalidAmount(
                     "Requested amount must be greater than 0"
             );
         }
     }
 
     private void validateTenure(LoanApplication application) {
-        if (application.getRequestedTenureMonths() == null ||
-                application.getRequestedTenureMonths() <= 0) {
-            throw LoanErrors.LoanApplicationErrors.invalidTenure(
+        if (application.getRequestedTenure() == null ||
+                application.getRequestedTenure() <= 0) {
+            throw loanErrors.LoanSubmitErrors.invalidAmount(
                     "Requested tenure must be greater than 0"
             );
         }
@@ -56,7 +57,7 @@ public class LoanValidator {
     private void validateIncome(LoanApplication application) {
         if (application.getAnnualIncome() == null ||
                 application.getAnnualIncome().compareTo(BigDecimal.ZERO) <= 0) {
-            throw LoanErrors.LoanApplicationErrors.invalidIncome(
+            throw loanErrors.LoanSubmitErrors.invalidAmount(
                     "Annual income must be greater than 0"
             );
         }
@@ -65,7 +66,7 @@ public class LoanValidator {
     private void validatePurpose(LoanApplication application) {
         if (application.getPurpose() == null ||
                 application.getPurpose().trim().isEmpty()) {
-            throw LoanErrors.LoanApplicationErrors.invalidPurpose(
+            throw loanErrors.LoanSubmitErrors.missingField(
                     "Loan purpose cannot be empty"
             );
         }
@@ -73,7 +74,7 @@ public class LoanValidator {
 
     private void validateEmploymentStatus(LoanApplication application) {
         if (application.getEmploymentStatus() == null) {
-            throw LoanErrors.LoanApplicationErrors.invalidEmploymentStatus(
+            throw loanErrors.LoanSubmitErrors.missingField(
                     "Employment status is required"
             );
         }

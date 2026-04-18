@@ -11,163 +11,28 @@ module loan {
   // ================================
 
   action LoanSubmit {
-    description: "Submit a new loan application"
+    description: "Submit a loan application"
     method: POST
     path: /application/submit
     input: LoanApplication
     output: LoanApplicationResponse
+    errors: [
+      MissingField:400,
+      InvalidAmount:400,
+    ]
   }
 
-  action GetLoan {
-    description: "Retrieve a loan application by its ID"
-    method: GET
-    path: /application/:id
-    output: LoanApplication
-  }
-
-  action GetCustomerLoans {
-    description: "Retrieve all loan applications for a specific customer"
-    method: GET
-    path: /application/customer/:customerId
-    output: LoanApplication[]
-  }
-
-  action CancelLoanApplication {
-    description: "Cancel a pending loan application"
-    method: PATCH
-    path: /application/:id/cancel
-    output: LoanApplicationResponse
-  }
-
-  // ================================
-  // LOAN APPROVAL & REVIEW
-  // ================================
-
-//  action ApproveLoanApplication {
-//    description: "Approve a loan application"
-//    method: POST
-//    path: /application/:id/approve
-//    input: LoanApprovalRequest
-//    output: LoanResponse
+//  action GetLoan {
+//    description: "Retrieve a loan application by its ID"
+//    method: GET
+//    path: /application/:id
+//    output: LoanApplication
 //  }
 //
-//  action RejectLoanApplication {
-//    description: "Reject a loan application"
-//    method: POST
-//    path: /application/:id/reject
-//    input: LoanRejectionRequest
-//    output: LoanApplicationResponse
+//  action GetCustomerLoans {
+//    description: "Retrieve all loan applications for a specific customer"
+//    method: GET
+//    path: /application/customer/:customerId
+//    output: LoanApplication[]
 //  }
-
-  // ================================
-  // LOAN MANAGEMENT
-  // ================================
-
-  action GetApprovedLoan {
-    description: "Retrieve an approved loan by ID"
-    method: GET
-    path: /:loanId
-    output: Loan
-  }
-
-  action GetCustomerApprovedLoans {
-    description: "Retrieve all approved loans for a specific customer"
-    method: GET
-    path: /customer/:customerId
-    output: Loan[]
-  }
-
-  action GetAllLoans {
-    description: "Retrieve all loans (Admin only)"
-    method: GET
-    path: /
-    output: Loan[]
-  }
-
-  // ================================
-  // LOAN DISBURSEMENT
-  // ================================
-
-//  action DisburseLoan {
-//    description: "Disburse funds for an approved loan"
-//    method: POST
-//    path: /:loanId/disburse
-//    input: LoanDisbursementRequest
-//    output: LoanDisbursementResponse
-//  }
-
-  // ================================
-  // REPAYMENT MANAGEMENT
-  // ================================
-
-  action GetRepaymentSchedule {
-    description: "Retrieve the repayment schedule for a loan"
-    method: GET
-    path: /:loanId/repayment-schedule
-    output: RepaymentSchedule[]
-  }
-
-//  action MakeLoanPayment {
-//    description: "Make a repayment toward a loan"
-//    method: POST
-//    path: /:loanId/payment
-//    input: LoanPaymentRequest
-//    output: LoanPaymentResponse
-//  }
-
-  action GetLoanPayments {
-    description: "Retrieve all payments made for a loan"
-    method: GET
-    path: /:loanId/payments
-    output: LoanPayment[]
-  }
-
-  // ================================
-  // COLLATERAL MANAGEMENT (OPTIONAL)
-  // ================================
-
-  action AddCollateral {
-    description: "Add collateral to a secured loan"
-    method: POST
-    path: /:loanId/collateral
-    input: Collateral
-    output: Collateral
-  }
-
-  action GetLoanCollaterals {
-    description: "Retrieve all collaterals linked to a loan"
-    method: GET
-    path: /:loanId/collaterals
-    output: Collateral[]
-  }
-
-  // ================================
-  // DOCUMENT MANAGEMENT (OPTIONAL)
-  // ================================
-
-  action UploadLoanDocument {
-    description: "Upload a document for a loan application"
-    method: POST
-    path: /application/:id/documents
-    input: LoanDocument
-    output: LoanDocument
-  }
-
-  action GetLoanDocuments {
-    description: "Retrieve documents associated with a loan application"
-    method: GET
-    path: /application/:id/documents
-    output: LoanDocument[]
-  }
-
-  // ================================
-  // LOAN APPROVAL HISTORY
-  // ================================
-
-  action GetLoanApprovals {
-    description: "Retrieve approval history for a loan application"
-    method: GET
-    path: /application/:id/approvals
-    output: LoanApproval[]
-  }
 }
