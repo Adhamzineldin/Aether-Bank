@@ -1,10 +1,6 @@
 package com.maayn.financialservice.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import maayn.veld.generated.models.certificate.ApplicationStatus;
 import maayn.veld.generated.models.loan.EmploymentStatus;
 import maayn.veld.generated.models.shared.InterestType;
@@ -30,6 +26,7 @@ import java.util.UUID;
 public class LoanApplicationDocument {
 
     @Id
+    
     private UUID id;
 
     @Indexed

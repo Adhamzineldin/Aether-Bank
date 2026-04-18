@@ -1,5 +1,5 @@
 server:
-  port: 8080
+  port: 8090
 
 spring:
   application:
@@ -19,8 +19,6 @@ spring:
 
   data:
     mongodb:
-      uri: mongodb://localhost:27017/financial_service
-      uuid-representation: standard
       auto-index-creation: true
 
   rabbitmq:
@@ -28,6 +26,10 @@ spring:
     port: 5673
     publisher-confirm-type: correlated
     publisher-returns: true
+  mongodb:
+    uri: mongodb://localhost:27017/financial_service
+    representation:
+      uuid: standard
 
 eureka:
   client:
