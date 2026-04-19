@@ -2,7 +2,7 @@ import "../models/loan.model.veld"
 
 module loan {
   description: "Loan service"
-  prefix: /auth/loans
+  prefix: /api/loan
 
   action LoanSubmit {
     description: "Submit a loan application"

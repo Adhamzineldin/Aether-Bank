@@ -1,9 +1,14 @@
 package com.maayn.financialservice.entity;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import maayn.veld.generated.models.certificate.ApplicationStatus;
 import maayn.veld.generated.models.loan.EmploymentStatus;
 import maayn.veld.generated.models.shared.InterestType;
+import com.maayn.financialservice.domain.loan.LoanType;
 import maayn.veld.generated.models.shared.LoanStatus;
 import maayn.veld.generated.models.shared.RepaymentFrequency;
 import org.springframework.data.annotation.Id;
@@ -26,14 +31,16 @@ import java.util.UUID;
 public class LoanApplicationDocument {
 
     @Id
-    
-    private UUID id;
+    @Builder.Default
+    private UUID id = UUID.randomUUID();
 
     @Indexed
     private UUID customerId;
 
     @Indexed
     private UUID productId;
+
+    private LoanType loanType;
 
     @Field(targetType = FieldType.DECIMAL128)
     private BigDecimal requestedAmount;

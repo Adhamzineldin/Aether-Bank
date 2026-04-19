@@ -27,14 +27,16 @@ enum LoanStatus {
   WRITTEN_OFF
 }
 
-enum MortgageStatus {
-  PENDING,
-  UNDER_REVIEW,
-  APPROVED,
-  REJECTED,
-  ACTIVE,
-  DELINQUENT,
-  CLOSED
+enum LoanType {
+  MORTGAGE,
+  AUTO,
+  PERSONAL,
+  STUDENT,
+  BUSINESS,
+  CREDIT_CARD,
+  PAYDAY,
+  BRIDGE,
+  LINE_OF_CREDIT
 }
 
 enum CertificateStatus {
