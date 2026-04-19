@@ -1,0 +1,87 @@
+package com.maayn.cardservice.service;
+
+import com.maayn.cardservice.entity.Card;
+import com.maayn.cardservice.entity.CreditCardDetailsEntity;
+import com.maayn.cardservice.gateway.AccountGateway;
+import com.maayn.cardservice.repository.CardRepository;
+import com.maayn.cardservice.repository.CreditCardDetailsRepository;
+import lombok.RequiredArgsConstructor;
+import maayn.veld.generated.models.card.CardNetwork;
+import maayn.veld.generated.models.card.CardStatus;
+import maayn.veld.generated.models.card.CardType;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.util.Objects;
+import java.util.UUID;
+
+@Service
+@RequiredArgsConstructor
+public class CardCreationService {
+
+    private static final BigDecimal MINIMUM_PAYMENT_RATE = new BigDecimal("0.02");
+
+    private final CardRepository cardRepository;
+    private final CreditCardDetailsRepository creditCardDetailsRepository;
+    private final AccountGateway accountGateway;
+
+    /**
+     * Debit card links to an existing account — verifies the account exists first.
+     */
+    @Transactional
+    public Card createDebitCard(UUID accountId, UUID customerId, CardNetwork network) {
+        Objects.requireNonNull(accountId, "Account ID is required");
+        Objects.requireNonNull(customerId, "Customer ID is required");
+        Objects.requireNonNull(network, "Card network is required");
+        accountGateway.verifyDebitAccountExists(accountId);
+        return cardRepository.save(buildBaseCard(accountId, customerId, CardType.DEBIT, network));
+    }
+
+    /**
+     * Credit card provisions a dedicated account funded from the vault with the credit limit.
+     * The account is created in the transaction service, then funded before the card is persisted.
+     */
+    @Transactional
+    public Card createCreditCard(UUID customerId, CardNetwork network, BigDecimal creditLimit, BigDecimal annualInterestRate, String currency) {
+        Objects.requireNonNull(customerId, "Customer ID is required");
+        Objects.requireNonNull(network, "Card network is required");
+        if (creditLimit == null || creditLimit.compareTo(BigDecimal.ZERO) <= 0) throw new IllegalArgumentException("Credit limit must be positive");
+        if (annualInterestRate == null || annualInterestRate.compareTo(BigDecimal.ZERO) < 0) throw new IllegalArgumentException("Annual interest rate cannot be negative");
+
+        UUID creditAccountId = accountGateway.provisionCreditAccount(creditLimit, currency);
+        Card card = cardRepository.save(buildBaseCard(creditAccountId, customerId, CardType.CREDIT, network));
+        CreditCardDetailsEntity details = creditCardDetailsRepository.save(buildCreditDetails(card, creditLimit, annualInterestRate));
+        card.setCreditDetails(details);
+        return card;
+    }
+
+    private Card buildBaseCard(UUID accountId, UUID customerId, CardType type, CardNetwork network) {
+        Card card = new Card();
+        card.setAccountId(accountId);
+        card.setCustomerId(customerId);
+        card.setCardType(type);
+        card.setCardNetwork(network);
+        card.setStatus(CardStatus.ACTIVE);
+        card.setCardToken("card_" + UUID.randomUUID().toString().replace("-", ""));
+        card.setLastFourDigits(String.format("%04d", (int) (Math.random() * 10000)));
+        LocalDate expiry = LocalDate.now().plusYears(5);
+        card.setExpiryMonth(expiry.getMonthValue());
+        card.setExpiryYear(expiry.getYear());
+        return card;
+    }
+
+    private CreditCardDetailsEntity buildCreditDetails(Card card, BigDecimal creditLimit, BigDecimal annualInterestRate) {
+        CreditCardDetailsEntity details = new CreditCardDetailsEntity();
+        details.setCard(card);
+        details.setCreditLimit(creditLimit);
+        details.setAvailableCredit(creditLimit);
+        details.setCurrentBalance(BigDecimal.ZERO);
+        details.setMinimumPayment(creditLimit.multiply(MINIMUM_PAYMENT_RATE));
+        details.setAnnualInterestRate(annualInterestRate);
+        details.setBillingCycleDay(1);
+        details.setPaymentDueDate(LocalDate.now().plusMonths(1));
+        return details;
+    }
+}
