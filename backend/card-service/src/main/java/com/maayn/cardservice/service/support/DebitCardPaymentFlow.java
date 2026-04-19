@@ -7,6 +7,7 @@ import com.maayn.cardservice.entity.CardTransaction;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import maayn.veld.generated.models.card.CardTransactionResponse;
+import maayn.veld.generated.models.card.CardStatus;
 import maayn.veld.generated.sdk.transaction.models.transaction.TransactionResponse;
 import maayn.veld.generated.sdk.transaction.models.transaction.TransactionType;
 import org.springframework.stereotype.Component;
@@ -39,10 +40,20 @@ public class DebitCardPaymentFlow implements PaymentFlow {
             String currency,
             String idempotencyKey) throws Exception {
 
-        log.info("Processing DEBIT card payment for merchant: {} with IBAN: {}", merchantId, maskIban(iban));
+        log.info("Processing DEBIT card payment for merchant: {}", merchantId);
 
-        // Validate merchant payment details
-        merchantPaymentValidator.validateMerchantPayment(iban, cvv, expiryDate, card);
+        // Validate card state (status, blocking)
+        if (card.getStatus() != CardStatus.ACTIVE) {
+            throw new IllegalArgumentException("Card is not active. Current status: " + card.getStatus());
+        }
+        if (card.getBlockedAt() != null) {
+            throw new IllegalArgumentException("Card is blocked: " + card.getBlockReason());
+        }
+
+        // Validate optional merchant payment details if provided
+        if (iban != null || cvv != null || expiryDate != null) {
+            merchantPaymentValidator.validateMerchantPayment(iban, cvv, expiryDate, card);
+        }
 
         // Process through transaction gateway (funds deducted immediately)
         TransactionResponse transferResult = transactionGateway.transfer(
@@ -75,13 +86,8 @@ public class DebitCardPaymentFlow implements PaymentFlow {
         return PaymentFlowType.DEBIT_CARD;
     }
 
-    private UUID getMerchantVaultAccount() {
+    private String getMerchantVaultAccount() {
         // In production, this would be dynamic based on merchant routing
-        return UUID.fromString("99999999-9999-9999-9999-999999999998") ;
-    }
-
-    private String maskIban(String iban) {
-        if (iban == null || iban.length() < 8) return iban;
-        return iban.substring(0, 4) + "****" + iban.substring(iban.length() - 4);
+        return "99999999-9999-9999-9999-999999999998";
     }
 }
