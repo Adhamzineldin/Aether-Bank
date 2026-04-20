@@ -1,0 +1,52 @@
+// Mortgage module for Financial Service
+
+import "../models/mortgage.model.veld"
+
+module Mortgage {
+  description: "Mortgage application and management service"
+  prefix: /mortgages
+  
+  action submitMortgageApplication {
+    description: "Submit a new mortgage application"
+    method: POST
+    path: /application
+    input: MortgageApplication
+    output: MortgageApplicationResponse
+    errors: [
+      MissingField:400,
+      InvalidAmount:400,
+      InvalidCreditScore:400
+    ]
+  }
+  
+  action getMortgage {
+    description: "Get mortgage details by ID"
+    method: GET
+    path: /:mortgageId
+    output: Mortgage
+    errors: [
+      MortgageNotFound:404
+    ]
+  }
+  
+  action listCustomerMortgages {
+    description: "List all mortgages for a customer"
+    method: GET
+    path: /customer/:customerId
+    output: Mortgage[]
+    errors: [
+      CustomerNotFound:404
+    ]
+  }
+  
+  action getMortgageSchedule {
+    description: "Get repayment schedule for a mortgage"
+    method: GET
+    path: /:mortgageId/schedule
+    output: MortgageRepaymentSchedule[]
+    errors: [
+      MortgageNotFound:404
+    ]
+  }
+}
+

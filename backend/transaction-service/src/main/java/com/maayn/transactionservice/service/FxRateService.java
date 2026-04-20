@@ -1,8 +1,10 @@
 package com.maayn.transactionservice.service;
 
-import com.maayn.transactionservice.client.FinancialServiceClient;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import maayn.veld.generated.sdk.financial.FinancialClient;
+import maayn.veld.generated.sdk.financial.models.fx.GetRatesRequest;
+import maayn.veld.generated.sdk.financial.models.fx.GetRatesResponse;
 import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -13,7 +15,7 @@ import java.util.Map;
 @Slf4j
 public class FxRateService {
 
-    private final FinancialServiceClient financialServiceClient;
+    private final FinancialClient financialClient;
 
     // Fallback static rates in case Financial Service is unavailable
     private static final Map<String, BigDecimal> FALLBACK_RATES = Map.of(
@@ -24,15 +26,20 @@ public class FxRateService {
     );
 
     /**
-     * Fetches live FX rate from Financial Service.
+     * Fetches live FX rate from Financial Service using Veld SDK.
      * Falls back to cached rates if service is unavailable.
      */
     public BigDecimal getRate(String sourceCurrency, String destCurrency) {
         if (sourceCurrency.equals(destCurrency)) return BigDecimal.ONE;
 
         try {
-            // Call Financial Service for live rate
-            var response = financialServiceClient.getExchangeRate(sourceCurrency, destCurrency);
+            // Call Financial Service for live rate using Veld SDK
+            GetRatesRequest request = new GetRatesRequest();
+            request.setSourceCurrency(sourceCurrency);
+            request.setDestinationCurrency(destCurrency);
+            
+            GetRatesResponse response = financialClient.fX.getExchangeRate(request);
+            
             log.info("Fetched live FX rate from Financial Service: {} -> {} = {}", 
                     sourceCurrency, destCurrency, response.getExchangeRate());
             return response.getExchangeRate();

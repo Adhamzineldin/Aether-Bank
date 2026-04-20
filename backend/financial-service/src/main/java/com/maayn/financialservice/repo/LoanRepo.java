@@ -2,6 +2,7 @@ package com.maayn.financialservice.repo;
 
 import com.maayn.financialservice.entity.LoanApplicationDocument;
 import maayn.veld.generated.models.certificate.ApplicationStatus;
+import maayn.veld.generated.models.shared.LoanStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -44,6 +45,8 @@ public interface LoanRepo extends MongoRepository<LoanApplicationDocument, UUID>
     List<LoanApplicationDocument> findAllByOrderBySubmittedAtDesc();
 
     List<LoanApplicationDocument> findAll(Sort sort);
+
+    List<LoanApplicationDocument> findByLoanStatus(LoanStatus status);
 
     void deleteByCustomerId(UUID customerId);
 }

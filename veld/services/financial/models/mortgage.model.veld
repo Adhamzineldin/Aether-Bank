@@ -1,5 +1,7 @@
 // Mortgage models for Financial Service
 
+import "./common.model.veld"
+
 enum MortgageStatus {
   PENDING,
   UNDER_REVIEW,
