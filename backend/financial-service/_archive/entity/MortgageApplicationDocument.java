@@ -1,8 +1,13 @@
 package com.maayn.financialservice.entity;
 
-import com.maayn.financialservice.model.CertificateStatus;
-import lombok.*;
-import maayn.veld.generated.models.loan.ApplicationStatus;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import maayn.veld.generated.models.certificate.ApplicationStatus;
+import maayn.veld.generated.models.loan.EmploymentStatus;
+import maayn.veld.generated.models.shared.MortgageStatus;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -13,13 +18,13 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-@Document(collection = "certificate_applications")
+@Document(collection = "mortgage_applications")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class CertificateApplicationDocument {
+public class MortgageApplicationDocument {
 
     @Id
     private UUID id;
@@ -27,34 +32,42 @@ public class CertificateApplicationDocument {
     @Indexed
     private UUID customerId;
 
-    @Indexed
-    private UUID accountId;
-
     @Indexed(unique = true)
-    private String certificateNumber;
+    private String mortgageNumber;
+
+    private String propertyAddress;
 
     @Field(targetType = FieldType.DECIMAL128)
-    private BigDecimal principal;
+    private BigDecimal propertyValue;
+
+    @Field(targetType = FieldType.DECIMAL128)
+    private BigDecimal requestedAmount;
+
+    @Field(targetType = FieldType.DECIMAL128)
+    private BigDecimal downPayment;
 
     @Field(targetType = FieldType.DECIMAL128)
     private BigDecimal interestRate;
 
-    private Integer termDays;
-    private Boolean autoRenew;
+    private Integer termYears;
+
+    private EmploymentStatus employmentStatus;
+
+    @Field(targetType = FieldType.DECIMAL128)
+    private BigDecimal annualIncome;
 
     @Builder.Default
     private ApplicationStatus applicationStatus = ApplicationStatus.SUBMITTED;
 
     private LocalDateTime submittedAt;
-    private LocalDateTime reviewedAt;
-    private String remarks;
-    private LocalDateTime openDate;
-    private LocalDateTime maturityDate;
-    private CertificateStatus certificateStatus;
 
-    @Field(targetType = FieldType.DECIMAL128)
-    private BigDecimal interestEarned;
+    private LocalDateTime reviewedAt;
+
+    private String remarks;
+
+    private MortgageStatus mortgageStatus;
 
     private LocalDateTime createdAt;
+
     private LocalDateTime updatedAt;
 }

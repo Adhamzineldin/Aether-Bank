@@ -1,13 +1,9 @@
 package com.maayn.financialservice.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import maayn.veld.generated.models.certificate.ApplicationStatus;
+import com.maayn.financialservice.model.MortgageStatus;
+import lombok.*;
+import maayn.veld.generated.models.loan.ApplicationStatus;
 import maayn.veld.generated.models.loan.EmploymentStatus;
-import maayn.veld.generated.models.shared.MortgageStatus;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -50,7 +46,6 @@ public class MortgageApplicationDocument {
     private BigDecimal interestRate;
 
     private Integer termYears;
-
     private EmploymentStatus employmentStatus;
 
     @Field(targetType = FieldType.DECIMAL128)
@@ -60,14 +55,9 @@ public class MortgageApplicationDocument {
     private ApplicationStatus applicationStatus = ApplicationStatus.SUBMITTED;
 
     private LocalDateTime submittedAt;
-
     private LocalDateTime reviewedAt;
-
     private String remarks;
-
     private MortgageStatus mortgageStatus;
-
     private LocalDateTime createdAt;
-
     private LocalDateTime updatedAt;
 }
