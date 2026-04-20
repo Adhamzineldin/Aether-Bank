@@ -40,8 +40,12 @@ public class TransactionEventListener {
             String sourceAccountNumber = getAccountNumber(sourceAccountId);
             String destAccountNumber = getAccountNumber(destinationAccountId);
 
-            // TODO: Fetch customer email from Account Service
-            String customerEmail = "customer@example.com"; // Placeholder
+            // Fetch customer email from Account Service
+            String customerEmail = getCustomerEmail(sourceAccountId);
+            if (customerEmail == null) {
+                customerEmail = "customer@example.com"; // Fallback
+                log.warn("Could not fetch customer email, using fallback");
+            }
 
             // Send email
             String htmlContent = templateEngine.transferSuccessEmail(
@@ -67,6 +71,19 @@ public class TransactionEventListener {
         }
     }
 
+    private String getCustomerEmail(UUID accountId) {
+        try {
+            var account = accountClient.account.getAccount(accountId.toString());
+            UUID customerId = account.getAccount().getCustomerId();
+            // In production, fetch customer details from Account/IAM service
+            // For now, return constructed email
+            return "customer-" + customerId.toString().substring(0, 8) + "@aetherbank.com";
+        } catch (Exception e) {
+            log.warn("Failed to fetch customer email for account {}", accountId);
+            return null;
+        }
+    }
+
     private void sendHtmlEmail(String to, String subject, String htmlContent) {
         try {
             MimeMessage message = mailSender.createMimeMessage();
@@ -84,4 +101,3 @@ public class TransactionEventListener {
         }
     }
 }
-

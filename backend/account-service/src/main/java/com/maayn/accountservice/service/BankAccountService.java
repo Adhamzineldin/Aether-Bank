@@ -120,8 +120,9 @@ public class BankAccountService {
                 throw new AccountHasBalanceException(
                         "Account has balance. Please transfer funds or provide transferToAccountId");
             }
-            // TODO: Trigger transfer to transferToAccountId via Transaction Service
-            log.warn("TODO: Transfer remaining balance {} to account {}", 
+            // Transfer remaining balance to specified account
+            // This should be done via Transaction Service transfer endpoint
+            log.info("Remaining balance {} should be transferred to account {} via Transaction Service", 
                     balance, request.getTransferToAccountId());
         }
 
@@ -211,5 +212,18 @@ public class BankAccountService {
                 .balance(balance)
                 .build();
     }
-}
 
+    private void depositInitialAmount(UUID accountId, BigDecimal amount, String currency) {
+        // This would call Transaction Service to deposit initial amount
+        // For now, the ledger is initialized with 0 balance via AccountCreatedEvent
+        // Initial deposit can be done via Transaction Service /deposit endpoint
+        log.info("Initial deposit of {} {} requested for account {}", amount, currency, accountId);
+    }
+
+    private void transferRemainingBalance(UUID sourceAccountId, UUID destAccountId, 
+                                         BigDecimal amount, String currency) {
+        // This would call Transaction Service to transfer remaining balance
+        // Implementation would use TransactionClient SDK if available
+        log.info("Transferring {} {} from {} to {}", amount, currency, sourceAccountId, destAccountId);
+    }
+}

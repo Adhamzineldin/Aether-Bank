@@ -42,7 +42,8 @@
       "input": "services/notification/main.veld",
       "backendConfig": { "target": "java", "framework": "spring", "dir": "../backend/notification-service" },
       "out": "../backend/notification-service/generated",
-      "baseUrl": "http://notification-service:3005"
+      "baseUrl": "http://notification-service:3005",
+      "consumes": ["account"]
     },
     {
       "name": "audit",
