@@ -18,37 +18,28 @@ public class FxRateService {
     public BigDecimal getRate(String sourceCurrency, String destinationCurrency) {
         String source = normalize(sourceCurrency);
         String destination = normalize(destinationCurrency);
+        if (source.equals(destination)) return BigDecimal.ONE;
 
-        if (source.equals(destination)) {
-            return BigDecimal.ONE;
-        }
+        BigDecimal direct = RATES.get(rateKey(source, destination));
+        if (direct != null) return direct;
 
-        BigDecimal directRate = RATES.get(rateKey(source, destination));
-        if (directRate != null) {
-            return directRate;
-        }
-
-        BigDecimal inverseRate = RATES.get(rateKey(destination, source));
-        if (inverseRate != null) {
-            return BigDecimal.ONE.divide(inverseRate, 8, RoundingMode.HALF_UP);
-        }
+        BigDecimal inverse = RATES.get(rateKey(destination, source));
+        if (inverse != null) return BigDecimal.ONE.divide(inverse, 8, RoundingMode.HALF_UP);
 
         throw new IllegalArgumentException("Unsupported currency pair: " + source + " -> " + destination);
     }
 
-    public BigDecimal calculateDestinationAmount(BigDecimal sourceAmount, BigDecimal rate) {
-        return sourceAmount.multiply(rate).setScale(2, RoundingMode.HALF_UP);
+    public BigDecimal convert(BigDecimal amount, String sourceCurrency, String destinationCurrency) {
+        return amount.multiply(getRate(sourceCurrency, destinationCurrency)).setScale(2, RoundingMode.HALF_UP);
     }
 
-    private static String rateKey(String sourceCurrency, String destinationCurrency) {
-        return normalize(sourceCurrency) + "_" + normalize(destinationCurrency);
+    private static String rateKey(String source, String destination) {
+        return normalize(source) + "_" + normalize(destination);
     }
 
     private static String normalize(String currency) {
-        if (currency == null || currency.isBlank()) {
+        if (currency == null || currency.isBlank())
             throw new IllegalArgumentException("Currency code is required");
-        }
-
         return currency.trim().toUpperCase();
     }
 }
