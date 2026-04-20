@@ -1,0 +1,285 @@
+╔══════════════════════════════════════════════════════════════════╗
+║                  PHASE 7 MANUAL EXECUTION GUIDE                 ║
+║                   File Deletion & Replacement                   ║
+╚══════════════════════════════════════════════════════════════════╝
+
+CURRENT STATUS: Ready for manual execution
+Total files to delete: 22
+Location: backend\card-service\src\main\java\com\maayn\cardservice\
+
+
+STEP 1: DELETE FILES FROM service/support/ (21 FILES)
+═══════════════════════════════════════════════════════════════════
+
+Navigate to:
+C:\Users\moham\IdeaProjects\Aether-Bank\backend\card-service\src\main\java\com\maayn\cardservice\service\support\
+
+Files to DELETE (using Windows Explorer or File Manager):
+─────────────────────────────────────────────────────────────────
+❌ AbstractCardCreator.java
+❌ CardAccessService.java
+❌ CardCreator.java
+❌ CardCreatorFactory.java
+❌ CardIssuanceValidator.java
+❌ CreditCardCreator.java
+❌ CreditCardPaymentFlow.java
+❌ CvvValidator.java
+❌ DebitCardCreator.java
+❌ DebitCardPaymentFlow.java
+❌ ExpiryDateValidator.java
+❌ IbanValidator.java
+❌ MerchantPaymentRequestDto.java
+❌ MerchantPaymentService.java
+❌ MerchantPaymentValidator.java
+❌ MerchantVaultAccountService.java
+❌ PaymentFlow.java
+❌ PaymentFlowConfiguration.java
+❌ PaymentFlowFactory.java
+❌ PaymentFlowType.java
+❌ TransactionGateway.java
+
+Files to KEEP (do not delete):
+─────────────────────────────────────────────────────────────────
+✅ CardRulesValidator.java
+✅ CardTransactionFactory.java
+✅ CreditBalanceService.java
+✅ PAYMENT_FLOW_EXAMPLES.md
+
+HOW TO DELETE (Choose One Method):
+─────────────────────────────────────────────────────────────────
+
+METHOD A - Windows Explorer (Easiest)
+1. Open Windows Explorer
+2. Navigate to: C:\Users\moham\IdeaProjects\Aether-Bank\backend\card-service\src\main\java\com\maayn\cardservice\service\support\
+3. Select the 21 files listed above (Ctrl+Click for multiple)
+4. Right-click → Delete (or press Delete key)
+5. Confirm deletion
+
+METHOD B - IDE (IntelliJ IDEA)
+1. Open IntelliJ IDEA
+2. Navigate to service/support/ in Project Tree
+3. Right-click each file → Delete
+4. Confirm deletion
+
+METHOD C - Command Line (Batch)
+Open Command Prompt and run:
+───────────────────────────────────────────────────────────────
+cd C:\Users\moham\IdeaProjects\Aether-Bank\backend\card-service\src\main\java\com\maayn\cardservice\service\support\
+del AbstractCardCreator.java CardAccessService.java CardCreator.java CardCreatorFactory.java CardIssuanceValidator.java CreditCardCreator.java CreditCardPaymentFlow.java CvvValidator.java DebitCardCreator.java DebitCardPaymentFlow.java ExpiryDateValidator.java IbanValidator.java MerchantPaymentRequestDto.java MerchantPaymentService.java MerchantPaymentValidator.java MerchantVaultAccountService.java PaymentFlow.java PaymentFlowConfiguration.java PaymentFlowFactory.java PaymentFlowType.java TransactionGateway.java
+
+
+STEP 2: DELETE FILE FROM service/usecase/ (1 FILE)
+═══════════════════════════════════════════════════════════════════
+
+Navigate to:
+C:\Users\moham\IdeaProjects\Aether-Bank\backend\card-service\src\main\java\com\maayn\cardservice\service\usecase\
+
+File to DELETE:
+───────────────────────────────────────────────────────────────
+❌ CardIssuanceService.java
+
+Files to KEEP:
+───────────────────────────────────────────────────────────────
+✅ CardDetailsQueryService.java
+✅ CardPaymentService.java
+✅ CardPaymentService_NEW.java (will rename to CardPaymentService.java)
+✅ CardRefundService.java
+✅ CardTransactionHistoryService.java
+✅ CardVoidService.java
+
+HOW TO DELETE:
+1. Windows Explorer: Right-click → Delete
+2. IDE: Right-click → Delete
+3. Command Line: 
+   cd C:\Users\moham\IdeaProjects\Aether-Bank\backend\card-service\src\main\java\com\maayn\cardservice\service\usecase\
+   del CardIssuanceService.java
+
+
+STEP 3: REPLACE CardPaymentService.java
+═══════════════════════════════════════════════════════════════════
+
+Location:
+C:\Users\moham\IdeaProjects\Aether-Bank\backend\card-service\src\main\java\com\maayn\cardservice\service\usecase\
+
+Actions:
+1. Delete: CardPaymentService.java
+2. Rename: CardPaymentService_NEW.java → CardPaymentService.java
+
+HOW TO REPLACE:
+
+METHOD A - Windows Explorer
+1. Go to service/usecase/ folder
+2. Right-click CardPaymentService.java → Delete
+3. Right-click CardPaymentService_NEW.java → Rename
+4. Change name to: CardPaymentService.java
+
+METHOD B - IDE (IntelliJ IDEA)
+1. Right-click CardPaymentService.java → Delete
+2. Right-click CardPaymentService_NEW.java → Refactor → Rename
+3. Change name to: CardPaymentService.java
+
+METHOD C - Command Line
+───────────────────────────────────────────────────────────────
+cd C:\Users\moham\IdeaProjects\Aether-Bank\backend\card-service\src\main\java\com\maayn\cardservice\service\usecase\
+del CardPaymentService.java
+ren CardPaymentService_NEW.java CardPaymentService.java
+
+
+STEP 4: VERIFY COMPILATION
+═══════════════════════════════════════════════════════════════════
+
+Navigate to project root:
+C:\Users\moham\IdeaProjects\Aether-Bank\backend\card-service
+
+Run Maven compilation:
+───────────────────────────────────────────────────────────────
+mvn clean compile
+
+Expected output:
+✅ BUILD SUCCESS
+   [INFO] Total time: X.XXs
+   [INFO] Finished at: 2026-04-19Txx:xx:xx+02:00
+   [INFO] BUILD SUCCESS
+
+If you see "BUILD SUCCESS", Phase 7 is complete! ✅
+
+
+VERIFICATION CHECKLIST
+═══════════════════════════════════════════════════════════════════
+
+After each step, verify:
+
+STEP 1 - After deleting support/ files:
+[ ] AbstractCardCreator.java - DELETED
+[ ] CardAccessService.java - DELETED
+[ ] CardCreator.java - DELETED
+[ ] CardCreatorFactory.java - DELETED
+[ ] CardIssuanceValidator.java - DELETED
+[ ] CreditCardCreator.java - DELETED
+[ ] CreditCardPaymentFlow.java - DELETED
+[ ] CvvValidator.java - DELETED
+[ ] DebitCardCreator.java - DELETED
+[ ] DebitCardPaymentFlow.java - DELETED
+[ ] ExpiryDateValidator.java - DELETED
+[ ] IbanValidator.java - DELETED
+[ ] MerchantPaymentRequestDto.java - DELETED
+[ ] MerchantPaymentService.java - DELETED
+[ ] MerchantPaymentValidator.java - DELETED
+[ ] MerchantVaultAccountService.java - DELETED
+[ ] PaymentFlow.java - DELETED
+[ ] PaymentFlowConfiguration.java - DELETED
+[ ] PaymentFlowFactory.java - DELETED
+[ ] PaymentFlowType.java - DELETED
+[ ] TransactionGateway.java - DELETED
+[ ] CardRulesValidator.java - KEPT
+[ ] CardTransactionFactory.java - KEPT
+[ ] CreditBalanceService.java - KEPT
+
+STEP 2 - After deleting usecase/ file:
+[ ] CardIssuanceService.java - DELETED
+[ ] CardPaymentService.java - EXISTS (old version)
+[ ] CardPaymentService_NEW.java - EXISTS
+
+STEP 3 - After replacing:
+[ ] CardPaymentService.java - EXISTS (new refactored version)
+[ ] CardPaymentService_NEW.java - DELETED/RENAMED
+
+STEP 4 - After compilation:
+[ ] mvn clean compile returned: BUILD SUCCESS
+
+
+WHAT'S BEING REMOVED
+═══════════════════════════════════════════════════════════════════
+
+Card Issuance System (7 files):
+  - AbstractCardCreator.java ❌
+  - CardCreator.java ❌
+  - CardCreatorFactory.java ❌
+  - CardIssuanceValidator.java ❌
+  - CreditCardCreator.java ❌
+  - DebitCardCreator.java ❌
+  - CardIssuanceService.java ❌
+
+Payment Flows (6 files):
+  - PaymentFlow.java ❌
+  - PaymentFlowType.java ❌
+  - PaymentFlowFactory.java ❌
+  - PaymentFlowConfiguration.java ❌
+  - CreditCardPaymentFlow.java ❌
+  - DebitCardPaymentFlow.java ❌
+
+Merchant Payment (4 files):
+  - MerchantPaymentService.java ❌
+  - MerchantPaymentValidator.java ❌
+  - MerchantPaymentRequestDto.java ❌
+  - MerchantVaultAccountService.java ❌
+
+Scattered Validators (3 files - now in CardValidator):
+  - CvvValidator.java ❌
+  - ExpiryDateValidator.java ❌
+  - IbanValidator.java ❌
+
+Obsolete Services (2 files):
+  - CardAccessService.java ❌
+  - TransactionGateway.java ❌
+
+
+WHAT'S BEING KEPT
+═══════════════════════════════════════════════════════════════════
+
+Support Services (3 files):
+  ✅ CardRulesValidator.java
+  ✅ CardTransactionFactory.java
+  ✅ CreditBalanceService.java
+
+Use-case Services (5 files):
+  ✅ CardDetailsQueryService.java
+  ✅ CardPaymentService.java (NEW - refactored)
+  ✅ CardRefundService.java
+  ✅ CardVoidService.java
+  ✅ CardTransactionHistoryService.java
+
+
+IMPACT SUMMARY
+═══════════════════════════════════════════════════════════════════
+
+Before:  51 Java files in card-service
+After:   29 Java files in card-service
+Reduction: 43% fewer files
+
+✅ Consolidates validation logic
+✅ Removes duplicate payment flows
+✅ Eliminates obsolete components
+✅ Modernizes with professional DI
+✅ Aligns with transaction-service architecture
+
+
+TROUBLESHOOTING
+═══════════════════════════════════════════════════════════════════
+
+If files won't delete:
+- Close IDE (IntelliJ IDEA) first
+- Close Git clients or file explorers
+- Retry deletion
+
+If build fails:
+- Check that all 22 files were actually deleted
+- Verify CardPaymentService was properly renamed
+- Run: mvn clean compile -X (for debug output)
+
+If rename fails:
+- Ensure old CardPaymentService.java was fully deleted first
+- Refresh IDE (F5 in Explorer or reload in IDE)
+
+
+NEXT STEPS
+═══════════════════════════════════════════════════════════════════
+
+After Phase 7 completes:
+1. ✅ Complete: Delete 22 files
+2. ✅ Complete: Replace CardPaymentService
+3. ✅ Complete: Verify compilation (BUILD SUCCESS)
+4. ⏳ Phase 8: Create execution services
+5. ⏳ Phase 9: Create listeners & aspects
+
+Ready? Start with STEP 1 above! 🚀

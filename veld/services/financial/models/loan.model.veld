@@ -4,11 +4,16 @@ model LoanApplication {
   id: uuid
   customerId: uuid
   productId: uuid
+  loanType: LoanType
   requestedAmount: decimal
   requestedTenure: int
   purpose: string
   employmentStatus: EmploymentStatus
   annualIncome: decimal
+  propertyAddress: string
+  propertyValue: decimal
+  downPayment: decimal
+  termYears: int
   applicationStatus: ApplicationStatus
   submittedAt: datetime
   reviewedAt: datetime
@@ -20,6 +25,7 @@ model LoanProduct {
   id: uuid
   name: string
   productDescription: string
+  loanType: LoanType
   minAmount: decimal
   maxAmount: decimal
   minTenureMonths: int
@@ -39,6 +45,7 @@ model Loan {
   customerId: uuid
   accountId: uuid
   productId: uuid
+  loanType: LoanType
   principalAmount: decimal
   interestRate: decimal
   interestType: InterestType

@@ -12,6 +12,7 @@ public class LoanValidator {
     public void validateSubmission(LoanApplication application) {
         validateCustomer(application);
         validateProduct(application);
+        validateLoanType(application);
         validatePositiveAmount(application);
         validateTenure(application);
         validateIncome(application);
@@ -31,6 +32,14 @@ public class LoanValidator {
         if (application.getProductId() == null) {
             throw loanErrors.LoanSubmitErrors.missingField(
                     "Loan product ID is required"
+            );
+        }
+    }
+
+    private void validateLoanType(LoanApplication application) {
+        if (application.getLoanType() == null) {
+            throw loanErrors.LoanSubmitErrors.missingField(
+                    "Loan type is required"
             );
         }
     }
