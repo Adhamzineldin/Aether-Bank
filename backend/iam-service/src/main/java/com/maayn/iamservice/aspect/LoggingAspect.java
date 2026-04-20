@@ -8,31 +8,38 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+/**
+ * Logging Aspect
+ * AOP interceptor for logging service method execution
+ */
 @Aspect
 @Component
 public class LoggingAspect {
 
     private static final Logger logger = LoggerFactory.getLogger(LoggingAspect.class);
 
-    // Intercept all service methods
-    @Around("execution(* com.maayn.iamservice.service.impl..*(..))")
+    /**
+     * Intercept all service method calls
+     */
+    @Around("execution(* com.maayn.iamservice.service..*(..))")
     public Object logServiceMethods(ProceedingJoinPoint joinPoint) throws Throwable {
 
         String methodName = joinPoint.getSignature().toShortString();
+        long startTime = System.currentTimeMillis();
 
-        logger.info("➡ Entering method: {}", methodName);
+        logger.debug("➡ Entering method: {}", methodName);
 
         Object result;
 
         try {
             result = joinPoint.proceed();
-            logger.info("✔ Method success: {}", methodName);
+            long duration = System.currentTimeMillis() - startTime;
+            logger.debug("✔ Method completed: {} ({}ms)", methodName, duration);
         } catch (Throwable ex) {
-            logger.error("Exception in method: {} | {}", methodName, ex.getMessage());
+            long duration = System.currentTimeMillis() - startTime;
+            logger.error("✗ Exception in method: {} ({}ms) | {}", methodName, duration, ex.getMessage());
             throw ex;
         }
-
-        logger.info("Exiting method: {}", methodName);
 
         return result;
     }

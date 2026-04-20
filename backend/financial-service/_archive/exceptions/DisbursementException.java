@@ -1,4 +1,4 @@
-package com.maayn.financialservice.exception;
+package com.maayn.financialservice.exceptions;
 
 public class DisbursementException extends RuntimeException {
 

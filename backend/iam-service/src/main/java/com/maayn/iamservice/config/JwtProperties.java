@@ -1,13 +1,21 @@
 package com.maayn.iamservice.config;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.stereotype.Component;
 
-@ConfigurationProperties(prefix = "security.jwt")
+/**
+ * JWT Configuration Properties
+ * Binds to jwt.* properties from application.yml
+ */
+@Component
+@ConfigurationProperties(prefix = "jwt")
 public class JwtProperties {
     private String secret;
     private long expirationMs;
+    private long refreshExpirationMs;
     private String issuer;
 
+    // Getters and Setters
     public String getSecret() {
         return secret;
     }
@@ -22,6 +30,14 @@ public class JwtProperties {
 
     public void setExpirationMs(long expirationMs) {
         this.expirationMs = expirationMs;
+    }
+
+    public long getRefreshExpirationMs() {
+        return refreshExpirationMs;
+    }
+
+    public void setRefreshExpirationMs(long refreshExpirationMs) {
+        this.refreshExpirationMs = refreshExpirationMs;
     }
 
     public String getIssuer() {

@@ -1,28 +1,78 @@
 server:
   port: 4333
+  servlet:
+    context-path: /
 
 spring:
   application:
     name: iam-service
-
-  # PostgreSQL Connection (Matches your Docker Compose)
+  
+  # PostgreSQL Database Configuration
   datasource:
-    url: jdbc:postgresql://localhost:5433/iam_service
-    username: root
-    password: password
+    url: ${DATABASE_URL:jdbc:postgresql://localhost:5433/iam_service}
+    username: ${DATABASE_USERNAME:root}
+    password: ${DATABASE_PASSWORD:password}
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 20
+      minimum-idle: 5
+      connection-timeout: 30000
+
   jpa:
     hibernate:
-      ddl-auto: update # Automatically creates your database tables from your Java code
-    show-sql: true     # Prints SQL to your console for debugging
+      ddl-auto: validate  # Validate schema but don't auto-create (use Flyway for migrations)
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: true
+        use_sql_comments: true
+        jdbc:
+          batch_size: 20
+        order_inserts: true
+        order_updates: true
 
+  # Logging Configuration
+  logging:
+    level:
+      root: INFO
+      com.maayn.iamservice: DEBUG
+      org.springframework.security: DEBUG
+      org.springframework.web: DEBUG
+
+# JWT Configuration
+jwt:
+  secret: ${JWT_SECRET:your-256-bit-secret-key-must-be-at-least-32-characters-long-for-security}
+  expiration-ms: ${JWT_EXPIRATION_MS:900000}  # 15 minutes
+  refresh-expiration-ms: ${JWT_REFRESH_EXPIRATION_MS:604800000}  # 7 days
+  issuer: "iam-service"
+
+# Eureka Service Discovery
 eureka:
   client:
     service-url:
-      defaultZone: http://localhost:8761/eureka/
+      defaultZone: ${EUREKA_SERVER_URL:http://localhost:8761/eureka/}
+    register-with-eureka: true
+    fetch-registry: true
 
-security:
-  jwt:
-    # Must match the gateway verifier key for token validation/routing.
-    secret: ${JWT_SECRET:change-this-to-a-long-shared-secret-at-least-32-characters}
-    expiration-ms: 3600000
-    issuer: "iam-service"
+# Management Endpoints
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+  endpoint:
+    health:
+      show-details: when-authorized
+
+# Logging
+logging:
+  level:
+    com.maayn.iamservice: DEBUG
+    org.springframework.security: DEBUG
+  file:
+    name: logs/iam-service.log
+  logback:
+    rollingpolicy:
+      max-file-size: 10MB
+      max-history: 10
+

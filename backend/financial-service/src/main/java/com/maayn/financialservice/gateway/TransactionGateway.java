@@ -1,6 +1,6 @@
 package com.maayn.financialservice.gateway;
 
-import com.maayn.financialservice.exception.DisbursementException;
+import com.maayn.financialservice.exceptions.DisbursementException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import maayn.veld.generated.sdk.account.constants.SystemAccounts;

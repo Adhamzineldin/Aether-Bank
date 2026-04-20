@@ -1,8 +1,12 @@
 package com.maayn.financialservice.entity;
 
-import com.maayn.financialservice.model.CertificateStatus;
-import lombok.*;
-import maayn.veld.generated.models.loan.ApplicationStatus;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import maayn.veld.generated.models.certificate.ApplicationStatus;
+import maayn.veld.generated.models.shared.CertificateStatus;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -40,21 +44,28 @@ public class CertificateApplicationDocument {
     private BigDecimal interestRate;
 
     private Integer termDays;
+
     private Boolean autoRenew;
 
     @Builder.Default
     private ApplicationStatus applicationStatus = ApplicationStatus.SUBMITTED;
 
     private LocalDateTime submittedAt;
+
     private LocalDateTime reviewedAt;
+
     private String remarks;
+
     private LocalDateTime openDate;
+
     private LocalDateTime maturityDate;
+
     private CertificateStatus certificateStatus;
 
     @Field(targetType = FieldType.DECIMAL128)
     private BigDecimal interestEarned;
 
     private LocalDateTime createdAt;
+
     private LocalDateTime updatedAt;
 }

@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(mkdir -p /c/Users/moham/IdeaProjects/Aether-Bank/backend/card-service/src/main/java/com/maayn/cardservice/_archive/entity /c/Users/moham/IdeaProjects/Aether-Bank/backend/card-service/src/main/java/com/maayn/cardservice/_archive/repository /c/Users/moham/IdeaProjects/Aether-Bank/backend/card-service/src/main/java/com/maayn/cardservice/_archive/mapper /c/Users/moham/IdeaProjects/Aether-Bank/backend/card-service/src/main/java/com/maayn/cardservice/_archive/exception)",
+      "Bash(cp '/c/Users/moham/IdeaProjects/Aether-Bank/backend/card-service/src/main/java/com/maayn/cardservice/entity/*.java' /c/Users/moham/IdeaProjects/Aether-Bank/backend/card-service/src/main/java/com/maayn/cardservice/_archive/entity/)",
+      "Bash(cp '/c/Users/moham/IdeaProjects/Aether-Bank/backend/card-service/src/main/java/com/maayn/cardservice/repository/*.java' /c/Users/moham/IdeaProjects/Aether-Bank/backend/card-service/src/main/java/com/maayn/cardservice/_archive/repository/)",
+      "Bash(cp '/c/Users/moham/IdeaProjects/Aether-Bank/backend/card-service/src/main/java/com/maayn/cardservice/mapper/*.java' /c/Users/moham/IdeaProjects/Aether-Bank/backend/card-service/src/main/java/com/maayn/cardservice/_archive/mapper/)",
+      "Bash(cp '/c/Users/moham/IdeaProjects/Aether-Bank/backend/card-service/src/main/java/com/maayn/cardservice/exception/*.java' /c/Users/moham/IdeaProjects/Aether-Bank/backend/card-service/src/main/java/com/maayn/cardservice/_archive/exception/)",
+      "Bash(xargs grep *)",
+      "Bash(git add *)",
+      "Bash(git commit *)",
+      "Bash(git push *)"
+    ]
+  }
+}
