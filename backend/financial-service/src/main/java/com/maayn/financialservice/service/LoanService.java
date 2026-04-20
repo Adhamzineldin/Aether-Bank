@@ -1,6 +1,7 @@
 package com.maayn.financialservice.service;
 
 import com.maayn.financialservice.entity.LoanApplicationDocument;
+import com.maayn.financialservice.events.FinancialEventPublisher;
 import com.maayn.financialservice.mappers.LoanMapper;
 import com.maayn.financialservice.repo.LoanRepo;
 import com.maayn.financialservice.support.ReferenceNumberGenerator;
@@ -27,6 +28,7 @@ public class LoanService implements ILoanService {
     private final LoanMapper loanMapper;
     private final LoanValidator loanValidator;
     private final ReferenceNumberGenerator referenceNumberGenerator;
+    private final FinancialEventPublisher eventPublisher;
 
     @Override
     public LoanApplicationResponse loanSubmit(LoanApplication request) {
@@ -38,6 +40,14 @@ public class LoanService implements ILoanService {
 
         LoanApplicationDocument savedLoan = loanRepository.save(loan);
         log.info("Loan application {} submitted successfully.", savedLoan.getId());
+        
+        // Publish event to trigger workflow
+        eventPublisher.publishLoanSubmitted(
+            savedLoan.getId(), 
+            savedLoan.getCustomerId(), 
+            savedLoan.getRequestedAmount()
+        );
+        
         return loanMapper.toResponse(savedLoan);
     }
 

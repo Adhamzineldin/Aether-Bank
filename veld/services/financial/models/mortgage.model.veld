@@ -1,0 +1,71 @@
+// Mortgage models for Financial Service
+
+enum MortgageStatus {
+  PENDING,
+  UNDER_REVIEW,
+  APPROVED,
+  REJECTED,
+  DISBURSED,
+  ACTIVE,
+  OVERDUE,
+  DEFAULTED,
+  CLOSED,
+  WRITTEN_OFF
+}
+
+model MortgageApplication {
+  id: uuid
+  customerId: uuid
+  propertyAddress: string
+  propertyValue: decimal
+  downPayment: decimal
+  requestedAmount: decimal
+  termYears: int
+  employmentStatus: EmploymentStatus
+  annualIncome: decimal
+  creditScore?: int
+  applicationStatus: ApplicationStatus
+  submittedAt: datetime
+  reviewedAt?: datetime
+  remarks?: string
+}
+
+model MortgageApplicationResponse {
+  applicationId: uuid
+  status: ApplicationStatus
+  submittedAt: datetime
+}
+
+model Mortgage {
+  id: uuid
+  mortgageNumber: string
+  applicationId: uuid
+  customerId: uuid
+  accountId: uuid
+  propertyAddress: string
+  propertyValue: decimal
+  principalAmount: decimal
+  interestRate: decimal
+  termMonths: int
+  monthlyPayment: decimal
+  outstandingBalance: decimal
+  status: MortgageStatus
+  startDate: date
+  endDate: date
+  disbursementDate?: datetime
+  createdAt: datetime
+  updatedAt: datetime
+}
+
+model MortgageRepaymentSchedule {
+  id: uuid
+  mortgageId: uuid
+  installmentNumber: int
+  dueDate: date
+  principalComponent: decimal
+  interestComponent: decimal
+  totalAmount: decimal
+  remainingBalance: decimal
+  installmentStatus: InstallmentStatus
+}
+

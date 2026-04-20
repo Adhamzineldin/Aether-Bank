@@ -1,0 +1,99 @@
+import "../models/investment.model.veld"
+
+module Investment {
+  description: "Investment and portfolio management service"
+  prefix: /api/investment
+
+  action openInvestmentAccount {
+    description: "Open a new investment account"
+    method: POST
+    path: /account
+    input: OpenInvestmentAccountRequest
+    output: InvestmentAccountResponse
+    errors: [
+      CustomerNotFound:404,
+      AccountNotFound:404,
+      InvalidCurrency:400
+    ]
+  }
+
+  action getInvestmentAccount {
+    description: "Get investment account details"
+    method: GET
+    path: /account/:accountId
+    output: InvestmentAccountResponse
+    errors: [
+      AccountNotFound:404
+    ]
+  }
+
+  action buyAsset {
+    description: "Purchase an investment asset"
+    method: POST
+    path: /account/:accountId/buy
+    input: BuyAssetRequest
+    output: TransactionResponse
+    errors: [
+      AccountNotFound:404,
+      AssetNotFound:404,
+      InsufficientFunds:422,
+      InvalidQuantity:400,
+      MarketClosed:400
+    ]
+  }
+
+  action sellAsset {
+    description: "Sell an investment asset"
+    method: POST
+    path: /account/:accountId/sell
+    input: SellAssetRequest
+    output: TransactionResponse
+    errors: [
+      AccountNotFound:404,
+      AssetNotFound:404,
+      InsufficientHolding:422,
+      InvalidQuantity:400,
+      MarketClosed:400
+    ]
+  }
+
+  action getPortfolio {
+    description: "Get portfolio holdings and valuation"
+    method: GET
+    path: /account/:accountId/portfolio
+    input: GetPortfolioRequest
+    output: Portfolio
+    errors: [
+      AccountNotFound:404
+    ]
+  }
+
+  action getPerformance {
+    description: "Get investment performance metrics"
+    method: GET
+    path: /account/:accountId/performance
+    input: GetPerformanceRequest
+    output: PerformanceMetrics
+    errors: [
+      AccountNotFound:404
+    ]
+  }
+
+  action listAssets {
+    description: "List available assets for trading"
+    method: GET
+    path: /assets
+    output: Asset[]
+  }
+
+  action getAsset {
+    description: "Get asset details and current price"
+    method: GET
+    path: /assets/:symbol
+    output: Asset
+    errors: [
+      AssetNotFound:404
+    ]
+  }
+}
+

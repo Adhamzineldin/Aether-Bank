@@ -6,11 +6,68 @@ module Account {
   description: "Account service"
   prefix: /account
   
- 
-  action doesAccountExist {
-      method: GET
-      path: /:accountId/exists
-      output: bool
+  action openAccount {
+    description: "Open a new bank account"
+    method: POST
+    path: /
+    input: OpenAccountRequest
+    output: AccountResponse
+    errors: [
+      CustomerNotFound:404,
+      InvalidCurrency:400,
+      InvalidAccountType:400
+    ]
   }
-  
+
+  action getAccount {
+    description: "Get account details with balance"
+    method: GET
+    path: /:accountId
+    output: AccountResponse
+    errors: [
+      AccountNotFound:404
+    ]
+  }
+
+  action listCustomerAccounts {
+    description: "List all accounts for a customer"
+    method: GET
+    path: /customer/:customerId
+    output: AccountResponse[]
+    errors: [
+      CustomerNotFound:404
+    ]
+  }
+
+  action closeAccount {
+    description: "Close an account"
+    method: POST
+    path: /:accountId/close
+    input: CloseAccountRequest
+    output: AccountResponse
+    errors: [
+      AccountNotFound:404,
+      AccountHasBalance:400,
+      AccountAlreadyClosed:400
+    ]
+  }
+
+  action updateAccountStatus {
+    description: "Update account status (freeze/activate)"
+    method: PUT
+    path: /:accountId/status
+    input: UpdateAccountStatusRequest
+    output: AccountResponse
+    errors: [
+      AccountNotFound:404,
+      InvalidStatusTransition:400
+    ]
+  }
+
+  action doesAccountExist {
+    description: "Check if account exists"
+    method: GET
+    path: /:accountId/exists
+    output: bool
+  }
 }

@@ -39,6 +39,24 @@ model getAccountTransactionsRequest {
   pageSize: int = 20
 }
 
+model DepositRequest {
+  accountId: uuid
+  amount: decimal
+  currency: string
+  idempotencyKey: string
+  reference?: string
+  description?: string
+}
+
+model WithdrawRequest {
+  accountId: uuid
+  amount: decimal
+  currency: string
+  idempotencyKey: string
+  reference?: string
+  description?: string
+}
+
 model PaginatedTransactionResponse {
     content: TransactionResponse[]
     pageNumber: int

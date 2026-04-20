@@ -1,25 +1,81 @@
-  constant SystemAccounts {
-     CASH_VAULT_ID: uuid = "00000000-0000-0000-0000-000000000000"
-     FX_MARKET_MAKER_ID: uuid = "99999999-9999-9999-9999-999999999999"
-  }
-  
-  model AccountBalanceResponse {
-       accountId: uuid
-       balance: decimal
-       currency: string
-  }
-  
-  model FundsSecuredEvent {
-      transactionId: string
-      status: string 
-  }
-  
-  model InsufficientFundsEvent {
-      transactionId: string
-      reason: string
-  }
-  
-  
-  
- 
- 
+enum AccountType {
+  CHECKING,
+  SAVINGS,
+  INVESTMENT
+}
+
+enum AccountStatus {
+  PENDING,
+  ACTIVE,
+  FROZEN,
+  CLOSED
+}
+
+constant SystemAccounts {
+  CASH_VAULT_ID: uuid = "00000000-0000-0000-0000-000000000000"
+  FX_MARKET_MAKER_ID: uuid = "99999999-9999-9999-9999-999999999999"
+}
+
+model BankAccount {
+  id: uuid
+  accountNumber: string
+  customerId: uuid
+  accountType: AccountType
+  status: AccountStatus
+  currency: string
+  openedDate: datetime
+  closedDate?: datetime
+  createdAt: datetime
+  updatedAt: datetime
+}
+
+model OpenAccountRequest {
+  customerId: uuid
+  accountType: AccountType
+  currency: string
+  initialDeposit?: decimal
+}
+
+model CloseAccountRequest {
+  reason: string
+  transferToAccountId?: uuid
+}
+
+model UpdateAccountStatusRequest {
+  status: AccountStatus
+  reason?: string
+}
+
+model AccountResponse {
+  account: BankAccount
+  balance: decimal
+}
+
+model AccountBalanceResponse {
+  accountId: uuid
+  balance: decimal
+  currency: string
+}
+
+model AccountCreatedEvent {
+  accountId: uuid
+  currency: string
+  timestamp: datetime
+}
+
+model AccountClosedEvent {
+  accountId: uuid
+  customerId: uuid
+  timestamp: datetime
+}
+
+model FundsSecuredEvent {
+  transactionId: string
+  status: string 
+}
+
+model InsufficientFundsEvent {
+  transactionId: string
+  reason: string
+}
+

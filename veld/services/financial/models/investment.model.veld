@@ -1,0 +1,134 @@
+enum AssetType {
+  MUTUAL_FUND,
+  STOCK,
+  BOND,
+  ETF
+}
+
+enum InvestmentStatus {
+  PENDING,
+  ACTIVE,
+  SUSPENDED,
+  CLOSED
+}
+
+enum TransactionStatus {
+  PENDING,
+  COMPLETED,
+  FAILED,
+  CANCELLED
+}
+
+model InvestmentAccount {
+  id: uuid
+  accountNumber: string
+  customerId: uuid
+  accountId: uuid
+  status: InvestmentStatus
+  totalValue: decimal
+  currency: string
+  openedDate: datetime
+  closedDate?: datetime
+  createdAt: datetime
+  updatedAt: datetime
+}
+
+model Asset {
+  symbol: string
+  name: string
+  assetType: AssetType
+  currentPrice: decimal
+  currency: string
+}
+
+model AssetHolding {
+  investmentAccountId: uuid
+  symbol: string
+  assetType: AssetType
+  quantity: decimal
+  averagePurchasePrice: decimal
+  currentPrice: decimal
+  totalValue: decimal
+  unrealizedGainLoss: decimal
+  purchaseDate: datetime
+}
+
+model InvestmentTransaction {
+  id: uuid
+  investmentAccountId: uuid
+  symbol: string
+  transactionType: string
+  quantity: decimal
+  pricePerUnit: decimal
+  totalAmount: decimal
+  fees: decimal
+  status: TransactionStatus
+  executedAt: datetime
+  createdAt: datetime
+}
+
+model Portfolio {
+  investmentAccountId: uuid
+  totalValue: decimal
+  totalCost: decimal
+  unrealizedGainLoss: decimal
+  holdings: AssetHolding[]
+  currency: string
+  lastUpdated: datetime
+}
+
+model PerformanceMetrics {
+  investmentAccountId: uuid
+  totalReturn: decimal
+  totalReturnPercentage: decimal
+  dayChange: decimal
+  dayChangePercentage: decimal
+  weekChange: decimal
+  monthChange: decimal
+  yearChange: decimal
+  startDate: date
+  endDate: date
+}
+
+// Request Models
+
+model OpenInvestmentAccountRequest {
+  customerId: uuid
+  accountId: uuid
+  currency: string
+  initialDeposit?: decimal
+}
+
+model BuyAssetRequest {
+  symbol: string
+  quantity: decimal
+  priceLimit?: decimal
+}
+
+model SellAssetRequest {
+  symbol: string
+  quantity: decimal
+  priceLimit?: decimal
+}
+
+model GetPortfolioRequest {
+  includeHistoricalData?: bool
+}
+
+model GetPerformanceRequest {
+  startDate?: date
+  endDate?: date
+}
+
+// Response Models
+
+model InvestmentAccountResponse {
+  account: InvestmentAccount
+  portfolio?: Portfolio
+}
+
+model TransactionResponse {
+  transaction: InvestmentTransaction
+  newHolding?: AssetHolding
+}
+

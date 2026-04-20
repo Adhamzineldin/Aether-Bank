@@ -1,5 +1,2 @@
-model AccountCreatedEvent {
-    accountId: uuid
-    currency: string
-    createdAt: datetime
-}
+// AccountCreatedEvent moved to account.model.veld
+
