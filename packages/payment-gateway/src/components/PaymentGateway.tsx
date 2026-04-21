@@ -26,6 +26,7 @@ export const PaymentGateway: React.FC<PaymentGatewayProps> = ({
   sandbox = false,
   onCancel,
   onMethodChange,
+  processor,
 }) => {
   const [selectedMethod, setSelectedMethod] = useState<string>(methods[0] || 'card');
   const [isProcessing, setIsProcessing] = useState(false);
@@ -38,24 +39,29 @@ export const PaymentGateway: React.FC<PaymentGatewayProps> = ({
   const processPayment = async (paymentData: any) => {
     setIsProcessing(true);
     try {
-      // In production, this would call your backend API
-      // For now, simulate payment processing
-      await new Promise(resolve => setTimeout(resolve, sandbox ? 1000 : 2000));
-
-      // Simulate success (90% success rate in sandbox)
-      const isSuccess = sandbox ? Math.random() > 0.1 : true;
-
-      if (isSuccess) {
-        const result: PaymentResult = {
+      let result: PaymentResult;
+      if (processor) {
+        result = await processor({
+          method: selectedMethod as any,
+          card: paymentData,
+          bank: paymentData,
+          amount,
+          currency,
+          orderId,
+        });
+      } else {
+        await new Promise(resolve => setTimeout(resolve, sandbox ? 1000 : 2000));
+        const isSuccess = sandbox ? Math.random() > 0.1 : true;
+        if (!isSuccess) throw new Error('Payment declined');
+        result = {
           success: true,
           transactionId: `TXN-${Date.now()}`,
           message: 'Payment processed successfully',
           timestamp: new Date(),
         };
-        onSuccess(result);
-      } else {
-        throw new Error('Payment declined');
       }
+      if (result.success) onSuccess(result);
+      else throw new Error(result.message || 'Payment failed');
     } catch (error) {
       onError(error as Error);
     } finally {

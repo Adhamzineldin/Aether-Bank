@@ -1,0 +1,28 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import './tokens.css';
+
+@layer base {
+  * { @apply border-border; }
+  html, body, #root { @apply h-full; }
+  body { @apply bg-bg text-fg; font-feature-settings: 'cv11', 'ss01'; }
+  ::selection { @apply bg-primary/20 text-fg; }
+  *:focus-visible { @apply outline-none ring-2 ring-ring ring-offset-2 ring-offset-bg; }
+  /* Scrollbar */
+  ::-webkit-scrollbar { @apply w-2 h-2; }
+  ::-webkit-scrollbar-track { @apply bg-transparent; }
+  ::-webkit-scrollbar-thumb { @apply bg-border rounded-full; }
+  ::-webkit-scrollbar-thumb:hover { @apply bg-muted-fg/50; }
+}
+
+@layer components {
+  .glass {
+    @apply bg-card/70 backdrop-blur-xl border border-border/60;
+  }
+  .gradient-primary {
+    background-image: linear-gradient(135deg, rgb(var(--color-primary)), rgb(99 102 241));
+  }
+}
+

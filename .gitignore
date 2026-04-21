@@ -121,3 +121,6 @@ generated
 /veld/.veld-cache.json
 /.veld.lock.json
 /.veld-cache.json
+
+node_modules/
+dist/

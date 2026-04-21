@@ -12,6 +12,7 @@ export type {
   PaymentResult,
   PaymentGatewayConfig,
   PaymentToken,
+  PaymentData,
 } from './types';
 
 export {

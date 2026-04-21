@@ -61,6 +61,22 @@ export interface PaymentGatewayProps {
   // Callbacks
   onCancel?: () => void;
   onMethodChange?: (method: string) => void;
+
+  /**
+   * Optional async processor invoked when the user submits payment data.
+   * If provided, this REPLACES the built-in mock processor — host apps inject
+   * real backend calls (e.g. card-service merchant payment) here.
+   */
+  processor?: (data: PaymentData) => Promise<PaymentResult>;
+}
+
+export interface PaymentData {
+  method: 'card' | 'bank_transfer' | 'apple_pay' | 'google_pay' | 'qr_code';
+  card?: CardDetails;
+  bank?: BankTransferDetails;
+  amount: number;
+  currency: string;
+  orderId?: string;
 }
 
 export interface PaymentGatewayConfig {
