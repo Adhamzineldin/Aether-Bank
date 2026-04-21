@@ -13,7 +13,14 @@ export default defineConfig({
       '@lib': path.resolve(__dirname, 'src/lib'),
       '@stores': path.resolve(__dirname, 'src/stores'),
       '@veld': path.resolve(__dirname, 'src/generated'),
+      // Force react/react-dom to resolve from the frontend's node_modules so
+      // file:-linked workspace packages (e.g. @aether/payment-gateway) that
+      // import "react/jsx-runtime" always find them, even in Docker where
+      // the package lives outside the app's node_modules tree.
+      react: path.resolve(__dirname, 'node_modules/react'),
+      'react-dom': path.resolve(__dirname, 'node_modules/react-dom'),
     },
+    dedupe: ['react', 'react-dom'],
   },
   plugins: [react()],
   server: {

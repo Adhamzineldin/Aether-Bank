@@ -1,37 +1,37 @@
 server:
-  port: 3030
+  port: ${SERVER_PORT:3030}
 
 spring:
   application:
-    name: workflow-notification-service
+    name: notification-service
 
   data:
     mongodb:
-#      Will check the deprecated method
-      uri: mongodb://localhost:27030/workflow_notification_service
+      uri: ${SPRING_DATA_MONGODB_URI:mongodb://localhost:27017/notification_db}
       auto-index-creation: true
+      uuid-representation: standard
 
-#  Will check where to configure rabbitmq
+  rabbitmq:
+    host: ${SPRING_RABBITMQ_HOST:localhost}
+    port: ${SPRING_RABBITMQ_PORT:5672}
 
   mail:
-    host: smtp.gmail.com
-    port: 587
-    username: ${MAIL_USERNAME}
-    password: ${MAIL_PASSWORD}
+    host: ${SPRING_MAIL_HOST:smtp.gmail.com}
+    port: ${SPRING_MAIL_PORT:587}
+    username: ${SPRING_MAIL_USERNAME:${MAIL_USERNAME:}}
+    password: ${SPRING_MAIL_PASSWORD:${MAIL_PASSWORD:}}
     properties:
       mail.smtp.auth: true
-      mail.smtp.starttls.enabe: true
-
+      mail.smtp.starttls.enable: true
 
 eureka:
   client:
     service-url:
-      default-zone: http://localhost:8761/eureka/
-#      How other services will find me (hostname or ip) // check this one Adham
-#  instance:
-#    prefer-ip-address: true
+      defaultZone: ${EUREKA_CLIENT_SERVICEURL_DEFAULTZONE:http://localhost:8761/eureka/}
+  instance:
+    prefer-ip-address: true
 
 logging:
   level:
     com.maayn.notificationservice: DEBUG
-    org.springframework.data.mongodb: DEBUG
+    org.springframework.data.mongodb: INFO

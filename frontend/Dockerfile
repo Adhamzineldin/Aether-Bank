@@ -1,18 +1,24 @@
 # Multi-stage build for React frontend
+# Build context is the repository root so we can access ../packages/payment-gateway
 
 # Stage 1: Build the application
 FROM node:22-alpine AS build
 
 WORKDIR /app
 
-# Copy package files
-COPY package*.json ./
+# Copy the local workspace package referenced by frontend/package.json
+# (file:../packages/payment-gateway). Preserve the relative layout so the
+# "file:" link resolves correctly inside the container.
+COPY packages/payment-gateway /packages/payment-gateway
 
-# Install dependencies
+# Copy frontend package manifests first for better layer caching
+COPY frontend/package*.json /app/
+
+# Install dependencies (resolves the file: dependency above)
 RUN npm install
 
-# Copy source code
-COPY . .
+# Copy the rest of the frontend source
+COPY frontend/ /app/
 
 # Build the application
 RUN npm run build
@@ -24,11 +30,10 @@ FROM nginx:alpine
 COPY --from=build /app/dist /usr/share/nginx/html
 
 # Copy custom nginx configuration
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+COPY frontend/nginx.conf /etc/nginx/conf.d/default.conf
 
 # Expose port 80
 EXPOSE 80
 
 # Start nginx
 CMD ["nginx", "-g", "daemon off;"]
-

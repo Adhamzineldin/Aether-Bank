@@ -27,7 +27,6 @@ public class AuditLog {
     private UUID id;
 
     @Column
-    @GeneratedValue
     private UUID userId;
 
     @Column(nullable = false, length = 100)
