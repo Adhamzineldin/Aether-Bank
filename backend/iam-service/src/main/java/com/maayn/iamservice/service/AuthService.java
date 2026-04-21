@@ -18,7 +18,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.Locale;
 
 /**
  * Authentication Service
@@ -102,13 +101,13 @@ public class AuthService implements IAuthenticationService {
         // Validate input
         registrationValidator.validate(request.getEmail(), request.getPassword());
 
-        // Get or create role
-        String requestedRole = request.getRole() == null || request.getRole().isBlank()
-                ? "CUSTOMER"
-                : request.getRole().trim().toUpperCase(Locale.ROOT);
-
-        Role role = roleRepository.findByName(requestedRole)
-                .orElseGet(() -> roleRepository.save(Role.builder().name(requestedRole).build()));
+        // SECURITY: public self-registration always lands the user in the CUSTOMER
+        // role regardless of what the client sends. Elevated roles (ADMIN,
+        // SUPERADMIN, EMPLOYEE, ...) can only be granted afterwards by a superadmin
+        // via the user-management endpoints.
+        final String DEFAULT_ROLE = "CUSTOMER";
+        Role role = roleRepository.findByName(DEFAULT_ROLE)
+                .orElseGet(() -> roleRepository.save(Role.builder().name(DEFAULT_ROLE).build()));
 
         // Create user
         User user = User.builder()
