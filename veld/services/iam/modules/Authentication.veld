@@ -7,7 +7,6 @@ import "../models/GenericResponse.veld"
 
 module Authentication {
   description: "Handles authentication operations"
-  prefix: /
 
   action login {
     method: POST

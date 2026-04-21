@@ -7,9 +7,11 @@ spring:
 
   data:
     mongodb:
-      uri: ${SPRING_DATA_MONGODB_URI:mongodb://localhost:27017/notification_db}
       auto-index-creation: true
-      uuid-representation: standard
+  mongodb:
+    uri: ${SPRING_MONGODB_URI:${SPRING_DATA_MONGODB_URI:mongodb://localhost:27017/notification_db}}
+    representation:
+      uuid: standard
 
   rabbitmq:
     host: ${SPRING_RABBITMQ_HOST:localhost}

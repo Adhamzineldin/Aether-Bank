@@ -20,18 +20,20 @@ spring:
   data:
     mongodb:
       auto-index-creation: true
-
-  rabbitmq:
-    host: localhost
-    port: 5673
-    publisher-confirm-type: correlated
-    publisher-returns: true
   mongodb:
-    uri: mongodb://localhost:27017/financial_service
+    uri: ${SPRING_MONGODB_URI:${SPRING_DATA_MONGODB_URI:mongodb://localhost:27017/financial_service}}
     representation:
       uuid: standard
+
+  rabbitmq:
+    host: ${SPRING_RABBITMQ_HOST:localhost}
+    port: ${SPRING_RABBITMQ_PORT:5673}
+    publisher-confirm-type: correlated
+    publisher-returns: true
 
 eureka:
   client:
     service-url:
-      defaultZone: http://localhost:8761/eureka/
+      defaultZone: ${EUREKA_CLIENT_SERVICEURL_DEFAULTZONE:http://localhost:8761/eureka/}
+  instance:
+    prefer-ip-address: true

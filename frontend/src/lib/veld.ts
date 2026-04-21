@@ -1,4 +1,4 @@
-import { VeldApiClient } from '@veld/client/api';
+import { VeldApiClient } from '@veld/client';
 import { useAuthStore } from '@stores/authStore';
 import { env } from './env';
 
