@@ -2,7 +2,7 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { decodeJwt } from '@lib/jwt';
 
-export type Role = 'CUSTOMER' | 'EMPLOYEE' | 'ADMIN' | string;
+export type Role = 'CUSTOMER' | 'EMPLOYEE' | 'ADMIN' | 'SUPERADMIN' | string;
 
 export interface SessionUser {
   id: string;

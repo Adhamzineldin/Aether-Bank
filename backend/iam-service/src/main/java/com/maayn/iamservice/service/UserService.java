@@ -5,6 +5,7 @@ import com.maayn.iamservice.domain.entity.User;
 import com.maayn.iamservice.repository.RoleRepository;
 import com.maayn.iamservice.repository.UserRepository;
 import com.maayn.iamservice.security.PasswordHashService;
+import com.maayn.iamservice.web.AdminUserView;
 import maayn.veld.generated.errors.NotFoundException;
 import maayn.veld.generated.models.authentication.UserResponse;
 import maayn.veld.generated.models.shared.ChangePasswordRequest;
@@ -12,7 +13,10 @@ import maayn.veld.generated.models.shared.UpdateUserRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Comparator;
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 /**
  * User Management Service
@@ -42,6 +46,51 @@ public class UserService {
     public UserResponse getUser(UUID userId) {
         User user = findUserOrThrow(userId);
         return toResponse(user);
+    }
+
+    // ============================================================================
+    // Admin / management operations (rich DTO including all roles + flags)
+    // ============================================================================
+
+    @Transactional(readOnly = true)
+    public List<AdminUserView> listUsers() {
+        return userRepository.findAll().stream()
+                .sorted(Comparator.comparing(User::getCreatedAt).reversed())
+                .map(this::toAdminView)
+                .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public AdminUserView getUserAdminView(UUID userId) {
+        return toAdminView(findUserOrThrow(userId));
+    }
+
+    @Transactional(readOnly = true)
+    public List<String> listRoleNames() {
+        return roleRepository.findAll().stream()
+                .map(Role::getName)
+                .sorted()
+                .collect(Collectors.toList());
+    }
+
+    private AdminUserView toAdminView(User user) {
+        List<String> roleNames = user.getRoles().stream()
+                .map(Role::getName)
+                .sorted()
+                .collect(Collectors.toList());
+        return new AdminUserView(
+                user.getId(),
+                user.getUsername(),
+                user.getEmail(),
+                user.getFullName(),
+                roleNames,
+                Boolean.TRUE.equals(user.getIsActive()),
+                Boolean.TRUE.equals(user.getIsEmailVerified()),
+                user.isAccountLocked(),
+                Boolean.TRUE.equals(user.getMfaEnabled()),
+                user.getCreatedAt(),
+                user.getLastLogin()
+        );
     }
 
     /**
