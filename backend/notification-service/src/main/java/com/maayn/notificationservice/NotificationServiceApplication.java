@@ -7,7 +7,7 @@ import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.context.annotation.Import;
 
 @SpringBootApplication
-@EnableDiscoveryClient // Check why
+@EnableDiscoveryClient
 @Import(VeldAutoConfiguration.class)
 public class NotificationServiceApplication {
 

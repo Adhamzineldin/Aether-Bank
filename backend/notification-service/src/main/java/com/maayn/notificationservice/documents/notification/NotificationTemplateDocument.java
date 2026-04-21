@@ -10,6 +10,7 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 @Document(collection = "notification_templates")
 @Data
 @Builder
@@ -17,15 +18,14 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class NotificationTemplateDocument {
     @Id
-    private String id;
+    private UUID id;
 
     private String eventType;
     private String channel;
     private String titleTemplate;
     private String bodyTemplate;
-    private Long version;
-    private boolean isActive;
-
+    private Integer version;
+    private Boolean isActive;
 
     @CreatedDate
     private LocalDateTime createdAt;

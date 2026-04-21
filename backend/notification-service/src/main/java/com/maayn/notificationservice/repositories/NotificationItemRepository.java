@@ -1,8 +1,8 @@
 package com.maayn.notificationservice.repositories;
 
 import com.maayn.notificationservice.documents.notification.NotificationItemDocument;
-import maayn.veld.generated.models.NotificationStatus;
-import maayn.veld.generated.models.NotificationType;
+import maayn.veld.generated.models.notification.NotificationStatus;
+import maayn.veld.generated.models.notification.NotificationType;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
 import java.util.List;

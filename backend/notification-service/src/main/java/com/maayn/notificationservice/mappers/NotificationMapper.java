@@ -2,7 +2,7 @@ package com.maayn.notificationservice.mappers;
 
 import com.maayn.notificationservice.documents.notification.NotificationItemDocument;
 import com.maayn.notificationservice.documents.notification.NotificationTemplateDocument;
-import maayn.veld.generated.models.*;
+import maayn.veld.generated.models.notification.*;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
@@ -16,7 +16,7 @@ public class NotificationMapper {
             return null;
         }
         return new NotificationItem(
-                doc.getId() != null ? UUID.fromString(doc.getId()) : null,
+                doc.getId() != null ? doc.getId() : null,
                 doc.getUserId(),
                 doc.getType(),
                 doc.getChannel(),
@@ -40,27 +40,27 @@ public class NotificationMapper {
             return null;
         }
         return new NotificationTemplate(
-                doc.getId() != null ? UUID.fromString(doc.getId()) : null,
+                doc.getId() != null ? doc.getId() : null,
                 doc.getEventType() != null ? NotificationEventType.fromValue(doc.getEventType()) : null,
                 doc.getChannel() != null ? NotificationChannel.fromValue(doc.getChannel()) : null,
                 doc.getTitleTemplate(),
                 doc.getBodyTemplate(),
                 doc.getVersion(),
-                doc.isActive(),
+            doc.getIsActive(),
                 doc.getCreatedAt(),
                 doc.getUpdatedAt()
         );
     }
 
-    public NotificationTemplateDocument toTemplateDocument(CreateTemplateInput input, long version) {
+    public NotificationTemplateDocument toTemplateDocument(CreateTemplateInput input, int version) {
         return NotificationTemplateDocument.builder()
-                .id(UUID.randomUUID().toString())
+                .id(UUID.randomUUID())
                 .eventType(input.getEventType() != null ? input.getEventType().getValue() : null)
                 .channel(input.getChannel() != null ? input.getChannel().getValue() : null)
                 .titleTemplate(input.getTitleTemplate())
                 .bodyTemplate(input.getBodyTemplate())
                 .version(version)
-                .isActive(true)
+                .isActive(Boolean.TRUE)
                 .build();
     }
 
@@ -69,10 +69,10 @@ public class NotificationMapper {
             String title,
             String message,
             UUID templateId,
-            Long templateVersion
+                Integer templateVersion
     ) {
         return NotificationItemDocument.builder()
-                .id(UUID.randomUUID().toString())
+                .id(UUID.randomUUID())
                 .userId(input.getUserId())
                 .type(input.getType())
                 .channel(input.getChannel())
@@ -83,7 +83,7 @@ public class NotificationMapper {
                 .title(title)
                 .message(message)
                 .status(NotificationStatus.PENDING)
-                .retryCount(0L)
+                .retryCount(0)
                 .build();
     }
 
