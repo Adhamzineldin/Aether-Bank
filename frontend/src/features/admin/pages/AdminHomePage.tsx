@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { Users, ShieldCheck, Bell, ListChecks } from 'lucide-react';
+import { Users, ShieldCheck, Bell, ListChecks, GitBranch } from 'lucide-react';
 import { PageHeader } from '@shared/ui/PageHeader';
 import { Card, CardContent } from '@shared/ui/Card';
 import { ROUTES } from '@app/routes';
@@ -10,6 +10,12 @@ const tiles = [
   { to: ROUTES.audit, icon: ShieldCheck, title: 'Audit logs', desc: 'System-wide activity trail.' },
   { to: ROUTES.templates, icon: Bell, title: 'Notification templates', desc: 'Manage outbound templates.' },
   { to: ROUTES.workflow, icon: ListChecks, title: 'Workflows', desc: 'Approval inbox.' },
+  {
+    to: ROUTES.workflowTemplates,
+    icon: GitBranch,
+    title: 'Workflow templates',
+    desc: 'Customize approval steps and employee roles.',
+  },
 ];
 
 export default function AdminHomePage() {

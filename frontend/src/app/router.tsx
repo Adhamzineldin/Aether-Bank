@@ -67,6 +67,7 @@ const UsersListPage = lazy(() => import('@features/admin/pages/UsersListPage'));
 const UserDetailPage = lazy(() => import('@features/admin/pages/UserDetailPage'));
 const RolesPage = lazy(() => import('@features/admin/pages/RolesPage'));
 const AuditLogsPage = lazy(() => import('@features/admin/pages/AuditLogsPage'));
+const WorkflowTemplatesPage = lazy(() => import('@features/admin/pages/WorkflowTemplatesPage'));
 
 const WorkflowInboxPage = lazy(() => import('@features/workflow/pages/WorkflowInboxPage'));
 const WorkflowDetailPage = lazy(() => import('@features/workflow/pages/WorkflowDetailPage'));
@@ -157,6 +158,7 @@ export const router = createBrowserRouter([
           { path: ROUTES.adminRoles, element: <RolesPage /> },
           { path: ROUTES.audit, element: <AuditLogsPage /> },
           { path: ROUTES.templates, element: <TemplatesPage /> },
+          { path: ROUTES.workflowTemplates, element: <WorkflowTemplatesPage /> },
         ],
       },
     ],

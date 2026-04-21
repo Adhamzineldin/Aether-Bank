@@ -31,8 +31,15 @@ import java.util.UUID;
 public class DataSeeder {
     private static final Logger log = LoggerFactory.getLogger(DataSeeder.class);
     /** Canonical set of roles recognised by the system. */
+    /**
+     * Canonical platform roles plus the approval-workflow roles that admins can
+     * assign to employees so a workflow template step can route a task to the
+     * right inbox. Keep in sync with {@code StepRole} on the Veld workflow spec
+     * ({@code RISK}, {@code MANAGER}, {@code DIRECTOR}).
+     */
     private static final List<String> DEFAULT_ROLES =
-            List.of("SUPERADMIN", "ADMIN", "EMPLOYEE", "CUSTOMER");
+            List.of("SUPERADMIN", "ADMIN", "EMPLOYEE", "CUSTOMER",
+                    "RISK", "MANAGER", "DIRECTOR");
     /**
      * Well-known fixed UUID for the bootstrap superadmin.
      * Shared with account-service and transaction-service so demo accounts can be

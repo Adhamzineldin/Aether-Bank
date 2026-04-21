@@ -1,7 +1,7 @@
 import { NavLink } from 'react-router-dom';
 import {
   LayoutDashboard, Wallet, ArrowLeftRight, CreditCard, Banknote, Home as HomeIcon,
-  PiggyBank, TrendingUp, Globe2, Users, Bell, ShieldCheck, ScrollText, ListChecks, Sparkles,
+  PiggyBank, TrendingUp, Globe2, Users, Bell, ShieldCheck, ScrollText, ListChecks, Sparkles, GitBranch,
 } from 'lucide-react';
 import { cn } from '@shared/utils/cn';
 import { useUIStore } from '@stores/uiStore';
@@ -33,6 +33,7 @@ const employeeItems: Item[] = [
 const adminItems: Item[] = [
   { to: ROUTES.adminUsers, label: 'Users', icon: <Users className="h-4 w-4" />, roles: ['ADMIN', 'SUPERADMIN'] },
   { to: ROUTES.templates, label: 'Templates', icon: <Bell className="h-4 w-4" />, roles: ['ADMIN', 'SUPERADMIN'] },
+  { to: ROUTES.workflowTemplates, label: 'Workflow rules', icon: <GitBranch className="h-4 w-4" />, roles: ['ADMIN', 'SUPERADMIN'] },
 ];
 
 export function Sidebar() {

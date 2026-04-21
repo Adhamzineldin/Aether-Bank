@@ -52,6 +52,7 @@ export const ROUTES = {
   adminRoles: '/admin/roles',
   audit: '/admin/audit',
   templates: '/admin/notifications/templates',
+  workflowTemplates: '/admin/workflows/templates',
   workflow: '/workflow',
   workflowDetail: (id = ':id') => `/workflow/${id}`,
   // system
