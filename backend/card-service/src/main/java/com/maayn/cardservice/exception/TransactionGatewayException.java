@@ -9,6 +9,11 @@ public class TransactionGatewayException extends RuntimeException {
         this.reason = reason;
     }
 
+    public TransactionGatewayException(String message, Throwable cause) {
+        super(message, cause);
+        this.reason = Reason.UNKNOWN;
+    }
+
     public Reason getReason() {
         return reason;
     }

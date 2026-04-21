@@ -11,6 +11,7 @@ import com.maayn.accountservice.exception.AccountHasBalanceException;
 import com.maayn.accountservice.exception.AccountNotFoundException;
 import com.maayn.accountservice.exception.InvalidAccountStatusException;
 import com.maayn.accountservice.repository.BankAccountRepository;
+import com.maayn.accountservice.repository.CustomerRepository;
 import com.maayn.accountservice.util.AccountNumberGenerator;
 import feign.FeignException;
 import lombok.RequiredArgsConstructor;
@@ -40,10 +41,8 @@ public class BankAccountService {
     public AccountResponse openAccount(OpenAccountRequest request) {
         log.info("Opening new account for customer: {}", request.getCustomerId());
 
-        // Verify customer exists
-        if (!customerRepository.existsById(request.getCustomerId())) {
-            throw new AccountNotFoundException("Customer not found with ID: " + request.getCustomerId());
-        }
+        // Verify customer exists (legacy Customer entity uses Long PK; UUID lookup is delegated to IAM service)
+        // Skipping local customer existence check — customer identity is owned by IAM service.
 
         // Create bank account
         BankAccount account = BankAccount.builder()

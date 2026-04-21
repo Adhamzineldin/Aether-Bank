@@ -5,6 +5,6 @@
 import "./services/iam/main.veld"
 import "./services/card/main.veld"
 import "./services/account/main.veld"
-import "./services/lending/main.veld"
+import "./services/financial/main.veld"
 import "./services/notification/main.veld"
 import "./services/transaction/main.veld"

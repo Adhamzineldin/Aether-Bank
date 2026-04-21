@@ -4,6 +4,7 @@ import com.maayn.financialservice.entity.CertificateApplicationDocument;
 import com.maayn.financialservice.repo.CertificateRepo;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import maayn.veld.generated.models.shared.CertificateStatus;
 import maayn.veld.generated.sdk.transaction.TransactionClient;
 import maayn.veld.generated.sdk.transaction.models.transaction.TransactionType;
 import maayn.veld.generated.sdk.transaction.models.transaction.TransferRequest;
@@ -38,14 +39,14 @@ public class CertificateInterestScheduler {
         
         // Find all active certificates
         List<CertificateApplicationDocument> activeCertificates = 
-            certificateRepository.findByCertificateStatus("ACTIVE");
+            certificateRepository.findByCertificateStatus(CertificateStatus.ACTIVE);
 
         log.info("Found {} active certificates to check", activeCertificates.size());
 
         for (CertificateApplicationDocument certificate : activeCertificates) {
             try {
                 if (certificate.getMaturityDate() != null && 
-                    !today.isBefore(certificate.getMaturityDate())) {
+                    !today.isBefore(certificate.getMaturityDate().toLocalDate())) {
                     processCertificateMaturity(certificate);
                 }
             } catch (Exception e) {
@@ -64,7 +65,7 @@ public class CertificateInterestScheduler {
         log.info("Starting monthly compound interest calculation for certificates...");
 
         List<CertificateApplicationDocument> activeCertificates = 
-            certificateRepository.findByCertificateStatus("ACTIVE");
+            certificateRepository.findByCertificateStatus(CertificateStatus.ACTIVE);
 
         for (CertificateApplicationDocument certificate : activeCertificates) {
             try {
@@ -98,7 +99,7 @@ public class CertificateInterestScheduler {
             transactionClient.transaction.transfer(transferRequest);
 
             // Update certificate status
-            certificate.setCertificateStatus("MATURED");
+            certificate.setCertificateStatus(CertificateStatus.MATURED);
             certificate.setMaturedAmount(finalAmount);
             certificateRepository.save(certificate);
 
@@ -113,7 +114,7 @@ public class CertificateInterestScheduler {
 
     private void addCompoundInterest(CertificateApplicationDocument certificate) {
         if (certificate.getCurrentValue() == null) {
-            certificate.setCurrentValue(certificate.getPrincipalAmount());
+            certificate.setCurrentValue(certificate.getPrincipal());
         }
 
         // Calculate monthly interest (compound)
@@ -140,9 +141,9 @@ public class CertificateInterestScheduler {
         // A = P(1 + r/n)^(nt)
         // Where: P = principal, r = annual rate, n = 12 (monthly compounding), t = years
 
-        BigDecimal principal = certificate.getPrincipalAmount();
+        BigDecimal principal = certificate.getPrincipal();
         BigDecimal annualRate = certificate.getInterestRate().divide(new BigDecimal("100"), 6, RoundingMode.HALF_UP);
-        int months = certificate.getTenureMonths();
+        int months = Math.max(1, certificate.getTermDays() / 30);
         
         // Monthly rate
         BigDecimal monthlyRate = annualRate.divide(new BigDecimal("12"), 6, RoundingMode.HALF_UP);

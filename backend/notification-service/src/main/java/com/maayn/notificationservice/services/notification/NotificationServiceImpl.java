@@ -1,7 +1,7 @@
 package com.maayn.notificationservice.services.notification;
 
 import maayn.veld.generated.errors.*;
-import maayn.veld.generated.models.*;
+import maayn.veld.generated.models.notification.*;
 import maayn.veld.generated.services.INotificationService;
 import org.springframework.stereotype.Service;
 

@@ -169,7 +169,7 @@ public class MortgageService implements IMortgageService {
             installment.setInterestComponent(interestPayment);
             installment.setTotalAmount(monthlyPayment);
             installment.setRemainingBalance(remainingBalance.max(BigDecimal.ZERO));
-            installment.setInstallmentStatus(maayn.veld.generated.models.shared.InstallmentStatus.PENDING);
+            installment.setInstallmentStatus(maayn.veld.generated.models.mortgage.InstallmentStatus.PENDING);
             
             schedule.add(installment);
         }

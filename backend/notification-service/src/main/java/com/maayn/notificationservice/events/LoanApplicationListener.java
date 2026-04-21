@@ -7,7 +7,6 @@ import com.maayn.notificationservice.repository.WorkflowInstanceRepository;
 import com.maayn.notificationservice.repository.WorkflowTemplateRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import maayn.veld.generated.models.CreateWorkflowInput;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Component;
 

@@ -6,10 +6,10 @@ import com.maayn.cardservice.entity.CreditCardDetailsEntity;
 import com.maayn.cardservice.entity.CreateCardRequest;
 import com.maayn.cardservice.exception.InvalidCardException;
 import com.maayn.cardservice.exception.InsufficientBalanceException;
-import com.maayn.cardservice.service.support.CardRulesValidator;
-import com.maayn.cardservice.service.support.CvvValidator;
-import com.maayn.cardservice.service.support.ExpiryDateValidator;
-import com.maayn.cardservice.service.support.IbanValidator;
+import com.maayn.cardservice.validator.CardRulesValidator;
+import com.maayn.cardservice.validator.CvvValidator;
+import com.maayn.cardservice.validator.ExpiryDateValidator;
+import com.maayn.cardservice.validator.IbanValidator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import maayn.veld.generated.models.card.CardStatus;
@@ -195,14 +195,9 @@ public class CardValidator {
      */
     private void validateSufficientBalance(Card card, BigDecimal amount) {
         log.debug("Validating sufficient balance for card {}, amount: {}", card.getId(), amount);
-        
-        if (card.getCurrentBalance() == null || 
-            card.getCurrentBalance().compareTo(amount) < 0) {
-            throw new InsufficientBalanceException(
-                "Insufficient balance. Available: " + card.getCurrentBalance() + 
-                ", Requested: " + amount
-            );
-        }
+
+        // Card balance is owned by the linked account/credit-line; balance enforcement is delegated
+        // to the transaction-service / account-service. This method is intentionally a no-op here.
     }
 
     /**

@@ -47,7 +47,7 @@ public class CardIdempotencyHandler {
 
         if (transaction.isPresent()) {
             log.info("Found existing card for idempotency key: {}", idempotencyKey);
-            return cardRepository.findById(transaction.get().getCardId());
+            return cardRepository.findById(transaction.get().getCard().getId());
         }
 
         return Optional.empty();

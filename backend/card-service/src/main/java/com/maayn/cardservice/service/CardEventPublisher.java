@@ -129,7 +129,7 @@ public class CardEventPublisher {
         Map<String, Object> event = new HashMap<>();
         event.put("eventType", "TRANSACTION_AUTHORIZED");
         event.put("transactionId", transaction.getId());
-        event.put("cardId", transaction.getCardId());
+        event.put("cardId", transaction.getCard() != null ? transaction.getCard().getId() : null);
         event.put("accountId", card.getAccountId());
         event.put("amount", transaction.getAmount());
         event.put("currency", transaction.getCurrency());
@@ -159,7 +159,7 @@ public class CardEventPublisher {
         Map<String, Object> event = new HashMap<>();
         event.put("eventType", "TRANSACTION_POSTED");
         event.put("transactionId", transaction.getId());
-        event.put("cardId", transaction.getCardId());
+        event.put("cardId", transaction.getCard() != null ? transaction.getCard().getId() : null);
         event.put("accountId", card.getAccountId());
         event.put("amount", transaction.getAmount());
         event.put("currency", transaction.getCurrency());

@@ -5,7 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import maayn.veld.generated.models.certificate.ApplicationStatus;
-import maayn.veld.generated.models.shared.EmploymentStatus;
+import maayn.veld.generated.models.loan.EmploymentStatus;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 

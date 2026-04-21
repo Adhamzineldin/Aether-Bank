@@ -34,7 +34,8 @@
       "input": "services/financial/main.veld",
       "backendConfig": { "target": "java", "framework": "spring", "dir": "../backend/financial-service" },
       "out": "../backend/financial-service/generated",
-      "baseUrl": "http://financial-service:3004"
+      "baseUrl": "http://financial-service:3004",
+      "consumes": ["card", "transaction", "account"]
     },
     {
       "name": "notification",

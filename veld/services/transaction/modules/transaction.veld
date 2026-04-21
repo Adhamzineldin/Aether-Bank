@@ -27,29 +27,29 @@ module Transaction {
     output: PaginatedTransactionResponse
   }
 
-  action deposit {
-    description: "Deposit funds into an account"
-    method: POST
-    path: /deposit
-    input: DepositRequest
-    output: TransactionResponse
-    errors: [
-      InvalidAccount:404,
-      InvalidAmount:400
-    ]
-  }
-
-  action withdraw {
-    description: "Withdraw funds from an account"
-    method: POST
-    path: /withdraw
-    input: WithdrawRequest
-    output: TransactionResponse
-    errors: [
-      InsufficientFunds:403,
-      InvalidAccount:404,
-      InvalidAmount:400
-    ]
-  }
+//  action deposit {
+//    description: "Deposit funds into an account"
+//    method: POST
+//    path: /deposit
+//    input: DepositRequest
+//    output: TransactionResponse
+//    errors: [
+//      InvalidAccount:404,
+//      InvalidAmount:400
+//    ]
+//  }
+//
+//  action withdraw {
+//    description: "Withdraw funds from an account"
+//    method: POST
+//    path: /withdraw
+//    input: WithdrawRequest
+//    output: TransactionResponse
+//    errors: [
+//      InsufficientFunds:403,
+//      InvalidAccount:404,
+//      InvalidAmount:400
+//    ]
+//  }
 
 }

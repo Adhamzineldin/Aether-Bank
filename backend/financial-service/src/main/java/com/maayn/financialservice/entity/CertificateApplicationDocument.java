@@ -68,4 +68,13 @@ public class CertificateApplicationDocument {
     private LocalDateTime createdAt;
 
     private LocalDateTime updatedAt;
+
+    @Builder.Default
+    private String currency = "USD";
+
+    @Field(targetType = FieldType.DECIMAL128)
+    private BigDecimal currentValue;
+
+    @Field(targetType = FieldType.DECIMAL128)
+    private BigDecimal maturedAmount;
 }

@@ -102,4 +102,7 @@ public class LoanApplicationDocument {
     private LocalDateTime createdAt;
 
     private LocalDateTime updatedAt;
+
+    @Builder.Default
+    private String currency = "USD";
 }

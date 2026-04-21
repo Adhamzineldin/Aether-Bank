@@ -1,7 +1,7 @@
 {
   "name": "bank-frontend",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -10,11 +10,17 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@veld/hooks": "file:generated/hooks",
-    "@veld/client": "file:src/generated/client",
-    "@veld/generated": "file:generated",
+    "@aether/payment-gateway": "file:../packages/payment-gateway",
     "react": "^19.2.4",
-    "react-dom": "^19.2.4"
+    "react-dom": "^19.2.4",
+    "react-router-dom": "^6.20.0",
+    "@tanstack/react-query": "^5.0.0",
+    "zustand": "^4.4.0",
+    "axios": "^1.6.0",
+    "date-fns": "^3.0.0",
+    "recharts": "^2.10.0",
+    "lucide-react": "^0.460.0",
+    "clsx": "^2.0.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.4",
@@ -22,10 +28,13 @@
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^6.0.1",
+    "autoprefixer": "^10.4.16",
     "eslint": "^9.39.4",
     "eslint-plugin-react-hooks": "^7.0.1",
     "eslint-plugin-react-refresh": "^0.5.2",
     "globals": "^17.4.0",
+    "postcss": "^8.4.32",
+    "tailwindcss": "^3.4.0",
     "typescript": "~5.9.3",
     "typescript-eslint": "^8.57.0",
     "vite": "^8.0.1"

@@ -11,7 +11,7 @@ import com.maayn.transactionservice.repository.TransactionRepository;
 import com.maayn.transactionservice.validators.TransactionValidator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import maayn.veld.generated.errors.TransactionErrors;
+
 import maayn.veld.generated.models.transaction.*;
 import maayn.veld.generated.services.ITransactionService;
 import org.springframework.data.domain.Page;
@@ -66,6 +66,7 @@ public class TransactionService implements ITransactionService {
         return TransactionMapper.toPaginatedResponse(page);
     }
     
+
     private Transaction prepareTransaction(TransferRequest request) {
         Transaction transaction = TransactionMapper.toEntity(request);
 

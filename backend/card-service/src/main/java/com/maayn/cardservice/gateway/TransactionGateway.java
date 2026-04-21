@@ -34,6 +34,8 @@ public class TransactionGateway {
             return transactionClient.transaction.transfer(request);
         } catch (SdkApiError error) {
             throw mapSdkError(error);
+        } catch (Exception ex) {
+            throw new TransactionGatewayException("Transaction transfer failed: " + ex.getMessage(), ex);
         }
     }
 
