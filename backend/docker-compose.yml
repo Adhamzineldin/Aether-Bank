@@ -22,7 +22,7 @@ services:
       POSTGRES_PASSWORD: mahi234
       POSTGRES_DB: postgres
     ports:
-      - "5432:5432"
+      - "5433:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./init-databases.sql:/docker-entrypoint-initdb.d/init-databases.sql
@@ -217,6 +217,7 @@ services:
       - "8084:8084"
     environment:
       - SPRING_PROFILES_ACTIVE=docker
+      - SERVER_PORT=8084
       - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/card_db
       - SPRING_DATASOURCE_USERNAME=postgres
       - SPRING_DATASOURCE_PASSWORD=mahi234
@@ -298,6 +299,7 @@ services:
       - "8087:8087"
     environment:
       - SPRING_PROFILES_ACTIVE=docker
+      - SERVER_PORT=8087
       - SPRING_DATA_MONGODB_URI=mongodb://mongodb:27017/audit_db
       - SPRING_RABBITMQ_HOST=rabbitmq
       - SPRING_RABBITMQ_PORT=5672
@@ -309,6 +311,22 @@ services:
         condition: service_healthy
       eureka-server:
         condition: service_healthy
+    networks:
+      - bank-network
+
+  # ============== FRONTEND ==============
+  
+  # React Frontend
+  frontend:
+    build:
+      context: ../frontend
+      dockerfile: Dockerfile
+    container_name: bank-frontend
+    restart: always
+    ports:
+      - "3000:80"
+    depends_on:
+      - api-gateway
     networks:
       - bank-network
 
