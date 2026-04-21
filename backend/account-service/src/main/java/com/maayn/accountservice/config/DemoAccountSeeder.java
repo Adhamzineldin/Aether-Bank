@@ -1,6 +1,5 @@
 package com.maayn.accountservice.config;
 
-import com.maayn.accountservice.entity.BankAccount;
 import com.maayn.accountservice.enums.AccountStatus;
 import com.maayn.accountservice.enums.AccountType;
 import com.maayn.accountservice.events.AccountCreatedEvent;
@@ -11,7 +10,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.jdbc.core.JdbcTemplate;
 
+import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -23,6 +24,13 @@ import java.util.UUID;
  *
  * Fixed UUIDs let the transaction-service pre-credit these accounts in its own
  * seeder without any inter-service calls at startup time.
+ *
+ * A direct SQL INSERT is used (rather than the JPA repository) because the
+ * BankAccount entity is mapped with {@code @GeneratedValue(GenerationType.UUID)}.
+ * Under Hibernate 7, passing a pre-assigned ID to {@code persist()} raises
+ * {@code PersistentObjectException}, and routing through {@code merge()} raises
+ * {@code StaleObjectStateException} when the row does not yet exist. Seeding via
+ * JDBC sidesteps the JPA identifier lifecycle entirely.
  */
 @Configuration
 @RequiredArgsConstructor
@@ -46,10 +54,18 @@ public class DemoAccountSeeder {
             new DemoAccount(DEMO_EGP_ID, "DEMO-SAV-EGP-001", AccountType.SAVINGS,    "EGP")
     );
 
+    private static final String INSERT_SQL = """
+            INSERT INTO bank_accounts
+                (id, account_number, customer_id, account_type, status,
+                 currency, opened_date, closed_date, created_at, updated_at)
+            VALUES (?, ?, ?, ?, ?, ?, ?, NULL, ?, ?)
+            """;
+
     @Bean
     public CommandLineRunner seedDemoAccounts(
             BankAccountRepository bankAccountRepository,
-            AccountEventPublisher eventPublisher
+            AccountEventPublisher eventPublisher,
+            JdbcTemplate jdbcTemplate
     ) {
         return args -> {
             for (DemoAccount demo : DEMO_ACCOUNTS) {
@@ -58,17 +74,18 @@ public class DemoAccountSeeder {
                     continue;
                 }
 
-                BankAccount account = BankAccount.builder()
-                        .id(demo.id())
-                        .accountNumber(demo.accountNumber())
-                        .customerId(SUPERADMIN_ID)
-                        .accountType(demo.type())
-                        .status(AccountStatus.ACTIVE)
-                        .currency(demo.currency())
-                        .openedDate(LocalDate.now())
-                        .build();
-
-                bankAccountRepository.save(account);
+                LocalDateTime now = LocalDateTime.now();
+                jdbcTemplate.update(INSERT_SQL,
+                        demo.id(),
+                        demo.accountNumber(),
+                        SUPERADMIN_ID,
+                        AccountType.CHECKING.equals(demo.type()) ? "CHECKING" : demo.type().name(),
+                        AccountStatus.ACTIVE.name(),
+                        demo.currency(),
+                        java.sql.Date.valueOf(LocalDate.now()),
+                        Timestamp.valueOf(now),
+                        Timestamp.valueOf(now)
+                );
 
                 // Publish so the transaction-service initializes a ledger entry.
                 // BankVaultInitializer pre-credits these accounts so if the ledger
@@ -77,7 +94,7 @@ public class DemoAccountSeeder {
                         AccountCreatedEvent.builder()
                                 .accountId(demo.id())
                                 .currency(demo.currency())
-                                .timestamp(LocalDateTime.now())
+                                .timestamp(now)
                                 .build()
                 );
 

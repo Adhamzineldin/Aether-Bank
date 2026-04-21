@@ -10,8 +10,12 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.support.TransactionTemplate;
+
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 /**
@@ -54,19 +58,21 @@ public class DataSeeder {
             UserRepository userRepository,
             PasswordHashService passwordHashService,
             PlatformTransactionManager txManager,
+            JdbcTemplate jdbcTemplate,
             @Value("${iam.superadmin.username:superadmin}") String adminUsername,
             @Value("${iam.superadmin.email:superadmin@aetherbank.local}") String adminEmail,
             @Value("${iam.superadmin.password:Password1!}") String adminPassword
     ) {
         TransactionTemplate tx = new TransactionTemplate(txManager);
         return args -> tx.executeWithoutResult(status -> seed(
-                roleRepository, userRepository, passwordHashService,
+                roleRepository, userRepository, passwordHashService, jdbcTemplate,
                 adminUsername, adminEmail, adminPassword));
     }
 
     private void seed(RoleRepository roleRepository,
                       UserRepository userRepository,
                       PasswordHashService passwordHashService,
+                      JdbcTemplate jdbcTemplate,
                       String adminUsername,
                       String adminEmail,
                       String adminPassword) {
@@ -88,18 +94,14 @@ public class DataSeeder {
                 .orElse(null);
 
         if (admin == null) {
-            admin = User.builder()
-                    .id(SUPERADMIN_ID)
-                    .username(adminUsername)
-                    .email(adminEmail)
-                    .passwordHash(passwordHashService.hash(adminPassword))
-                    .fullName("Super Admin")
-                    .isActive(true)
-                    .isEmailVerified(true)
-                    .mfaEnabled(false)
-                    .build();
-            admin.addRole(superadminRole);
-            userRepository.save(admin);
+            // The User entity is mapped with @GeneratedValue, so passing a pre-assigned
+            // UUID through repository.save() routes to EntityManager.merge() and fails
+            // under Hibernate 7 with StaleObjectStateException (row not found).
+            // Insert via JDBC to bypass the JPA identifier lifecycle for this one row.
+            insertSuperadminViaJdbc(
+                    jdbcTemplate, passwordHashService,
+                    adminUsername, adminEmail, adminPassword,
+                    superadminRole.getId());
             log.warn("Seeded bootstrap SUPERADMIN '{}' id={} ({}). Change the password in production!",
                     adminUsername, SUPERADMIN_ID, adminEmail);
         } else {
@@ -109,5 +111,35 @@ public class DataSeeder {
                 log.info("Granted SUPERADMIN role to existing user {}", admin.getUsername());
             }
         }
+    }
+
+    private static final String INSERT_USER_SQL = """
+            INSERT INTO users
+                (id, username, email, password_hash, full_name,
+                 is_active, is_email_verified, failed_login_attempts,
+                 mfa_enabled, created_at, updated_at)
+            VALUES (?, ?, ?, ?, ?, TRUE, TRUE, 0, FALSE, ?, ?)
+            """;
+
+    private static final String INSERT_USER_ROLE_SQL =
+            "INSERT INTO user_roles (user_id, role_id) VALUES (?, ?)";
+
+    private void insertSuperadminViaJdbc(JdbcTemplate jdbcTemplate,
+                                         PasswordHashService passwordHashService,
+                                         String adminUsername,
+                                         String adminEmail,
+                                         String adminPassword,
+                                         Integer superadminRoleId) {
+        Timestamp now = Timestamp.valueOf(LocalDateTime.now());
+        jdbcTemplate.update(INSERT_USER_SQL,
+                SUPERADMIN_ID,
+                adminUsername,
+                adminEmail,
+                passwordHashService.hash(adminPassword),
+                "Super Admin",
+                now,
+                now
+        );
+        jdbcTemplate.update(INSERT_USER_ROLE_SQL, SUPERADMIN_ID, superadminRoleId);
     }
 }
