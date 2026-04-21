@@ -5,10 +5,6 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;
-
-/**
- * JSON shape published by the transaction service for {@code transaction.transfer.success}.
- */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public record TransferSuccessPayload(
         String referenceNumber,

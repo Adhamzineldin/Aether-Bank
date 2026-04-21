@@ -2,8 +2,8 @@ package com.maayn.notificationservice.consumers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.maayn.notificationservice.config.rabbit.NotificationRabbitConfig;
-import com.maayn.notificationservice.dto.transfer.TransferFailedPayload;
-import com.maayn.notificationservice.dto.transfer.TransferSuccessPayload;
+import com.maayn.notificationservice.dto.TransferFailedPayload;
+import com.maayn.notificationservice.dto.TransferSuccessPayload;
 import com.maayn.notificationservice.services.transfer.TransferAlertService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

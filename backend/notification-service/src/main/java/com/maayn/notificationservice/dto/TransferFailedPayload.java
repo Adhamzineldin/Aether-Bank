@@ -6,8 +6,6 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-//  JSON shape published by the transaction service for transaction.transfer.failed
-
 @JsonIgnoreProperties(ignoreUnknown = true)
 public record TransferFailedPayload(
         String referenceNumber,
