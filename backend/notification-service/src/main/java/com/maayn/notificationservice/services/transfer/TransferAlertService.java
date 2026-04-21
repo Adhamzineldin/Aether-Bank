@@ -1,7 +1,7 @@
 package com.maayn.notificationservice.services.transfer;
 
 import com.maayn.notificationservice.dto.TransferFailedPayload;
-import com.maayn.notificationservice.dto.transfer.TransferSuccessPayload;
+import com.maayn.notificationservice.dto.TransferSuccessPayload;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

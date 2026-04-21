@@ -1,14 +1,14 @@
 package com.maayn.notificationservice.services.transfer;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;
 import java.util.UUID;
 
 @Component
-@ConditionalOnMissingBean(AccountContactResolver.class)
+@Primary
 @Slf4j
 public class NoOpAccountContactResolver implements AccountContactResolver {
 

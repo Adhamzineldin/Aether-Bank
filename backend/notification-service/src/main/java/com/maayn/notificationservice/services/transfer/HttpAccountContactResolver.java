@@ -10,11 +10,6 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.Optional;
 import java.util.UUID;
-
-/**
- * Calls {@code notification.contact-lookup.url-template} with {@code {accountId}} replaced by the UUID.
- * Expected JSON: {@code {"userId":"uuid","email":"user@example.com"}} (extra fields ignored).
- */
 @Component
 @ConditionalOnProperty(prefix = "notification.contact-lookup", name = "url-template", matchIfMissing = false)
 @Slf4j
