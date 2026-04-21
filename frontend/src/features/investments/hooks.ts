@@ -16,7 +16,10 @@ export function useInvestmentAccount(id: string | undefined) {
 }
 
 export function usePortfolio(id: string | undefined) {
-  return useStubQuery<{ holdings: unknown[] }>(investmentKeys.portfolio(id || ''), { holdings: [] });
+  return useStubQuery<{ holdings: any[]; totalValue?: number; totalCost?: number; unrealizedGainLoss?: number; currency?: string }>(
+    investmentKeys.portfolio(id || ''),
+    { holdings: [] },
+  );
 }
 
 export function usePerformance(id: string | undefined) {
@@ -24,7 +27,7 @@ export function usePerformance(id: string | undefined) {
 }
 
 export function useAssets() {
-  return useStubQuery<unknown[]>(investmentKeys.assets(), []);
+  return useStubQuery<any[]>(investmentKeys.assets(), []);
 }
 
 export function useAsset(symbol: string | undefined) {

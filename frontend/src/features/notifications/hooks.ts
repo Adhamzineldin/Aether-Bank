@@ -11,7 +11,7 @@ export const notifKeys = {
 };
 
 export function useNotifications() {
-  return useStubQuery<unknown[]>(notifKeys.list, []);
+  return useStubQuery<any[]>(notifKeys.list, []);
 }
 
 export function useNotification(id: string | undefined) {
@@ -33,7 +33,7 @@ export function useSendNotification() {
 }
 
 export function useTemplates() {
-  return useStubQuery<unknown[]>(notifKeys.templates, []);
+  return useStubQuery<any[]>(notifKeys.templates, []);
 }
 
 export function useCreateTemplate() {

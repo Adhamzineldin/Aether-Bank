@@ -5,7 +5,7 @@ import type { TransferRequest } from '@veld/types';
 
 export function useAccountTransactions(accountId: string, currency: string, _page = 0, _pageSize = 20) {
   // transaction-service has no REST controllers yet; return empty page.
-  return useStubQuery<{ content: unknown[]; pageNumber: number; totalPages: number }>(
+  return useStubQuery<{ content: any[]; pageNumber: number; totalPages: number }>(
     ['txs', accountId, currency, _page],
     { content: [], pageNumber: 0, totalPages: 0 },
   );

@@ -12,7 +12,7 @@ export const mortgageKeys = {
 
 export function useMyMortgages() {
   const customerId = useAuthStore((s) => s.user?.id);
-  return useStubQuery<unknown[]>(mortgageKeys.byCustomer(customerId || ''), []);
+  return useStubQuery<any[]>(mortgageKeys.byCustomer(customerId || ''), []);
 }
 
 export function useMortgage(id: string | undefined) {
@@ -20,7 +20,7 @@ export function useMortgage(id: string | undefined) {
 }
 
 export function useMortgageSchedule(id: string | undefined) {
-  return useStubQuery<unknown[]>(mortgageKeys.schedule(id || ''), []);
+  return useStubQuery<any[]>(mortgageKeys.schedule(id || ''), []);
 }
 
 export function useApplyMortgage() {

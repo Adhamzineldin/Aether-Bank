@@ -11,7 +11,7 @@ export const wfKeys = {
 
 export function useMyTasks() {
   const id = useAuthStore((s) => s.user?.id) || '';
-  return useStubQuery<unknown[]>(wfKeys.myTasks(id), []);
+  return useStubQuery<any[]>(wfKeys.myTasks(id), []);
 }
 
 export function useWorkflow(id: string | undefined) {

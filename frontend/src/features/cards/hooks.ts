@@ -15,12 +15,15 @@ export function useCard(id: string | undefined) {
 }
 
 export function useCardTransactions(id: string | undefined, page = 0, _pageSize = 20) {
-  return useStubQuery<{ content: unknown[] }>(cardKeys.txs(id || '', page), { content: [] });
+  return useStubQuery<{ content: any[]; pageNumber: number; totalPages: number }>(
+    cardKeys.txs(id || '', page),
+    { content: [], pageNumber: 0, totalPages: 0 },
+  );
 }
 
 export function useProcessMerchantPayment() {
   return useMutation({
-    mutationFn: unavailableMutation<MerchantPaymentRequest, void>(),
+    mutationFn: unavailableMutation<MerchantPaymentRequest, any>(),
     onError: (e: Error) => toast.error(e.message),
   });
 }

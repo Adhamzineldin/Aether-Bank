@@ -40,7 +40,7 @@ export default function NotificationsListPage() {
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between gap-2">
                       <Link to={ROUTES.notification(n.id)} className="font-semibold hover:underline truncate">{n.title}</Link>
-                      <Badge tone={tone[n.status]}>{n.status}</Badge>
+                      <Badge tone={tone[n.status as NotificationStatus]}>{n.status}</Badge>
                     </div>
                     <p className="text-sm text-muted-fg line-clamp-2">{n.message}</p>
                     <p className="mt-1 text-xs text-muted-fg">{fromNow(n.createdAt)} · {n.channel}</p>
