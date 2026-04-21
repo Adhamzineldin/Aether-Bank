@@ -10,9 +10,8 @@ COPY pom.xml .
 # Download dependencies
 RUN ./mvnw dependency:go-offline -B
 
-# Copy source code and generated code
+# Copy source code
 COPY src ./src
-COPY generated ./generated
 
 # Build the application
 RUN ./mvnw clean package -DskipTests
