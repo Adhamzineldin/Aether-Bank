@@ -4,8 +4,11 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import maayn.veld.generated.models.StepAction;
-import maayn.veld.generated.models.StepRole;
+import maayn.veld.generated.models.shared.StepAction;
+import maayn.veld.generated.models.workflow.StepRole;
+
+import java.util.UUID;
+
 import org.springframework.data.annotation.Id;
 
 @Data
@@ -14,8 +17,8 @@ import org.springframework.data.annotation.Id;
 @AllArgsConstructor
 public class WorkflowStepDocument {
     @Id
-    private String id;
-    private Long step;
+    private UUID id;
+    private Integer step;
     private StepRole role;
     private StepAction action;
 }

@@ -4,11 +4,12 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import maayn.veld.generated.models.WorkflowStatus;
+import maayn.veld.generated.models.workflow.WorkflowStatus;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.annotation.Version;
+import org.springframework.data.mongodb.core.index.CompoundIndex;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -17,31 +18,30 @@ import java.util.List;
 import java.util.UUID;
 
 @Document(collection = "workflow_instances")
+@CompoundIndex(name = "entity_type_id_unique", def = "{'entityType': 1, 'entityId': 1}", unique = true)
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class WorkflowInstanceDocument {
     @Id
-    private String id;
+    private UUID id;
 
     private UUID templateId;
-    private Long templateVersion;
-//    Both must be unique
+    private Integer templateVersion;
+
     private String entityType;
-    @Indexed
     private UUID entityId;
 
     @Indexed
     private WorkflowStatus status;
     private String statusReason;
 
-    private Long currentStep;
-//    This should be removed i will check it now
+    private Integer currentStep;
     private List<WorkflowStepDocument> steps;
 
     @Version
-    private Long version;
+    private Integer version;
 
     private LocalDateTime completedAt;
     private UUID completedBy;

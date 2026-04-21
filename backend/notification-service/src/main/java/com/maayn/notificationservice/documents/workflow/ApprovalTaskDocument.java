@@ -4,9 +4,9 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import maayn.veld.generated.models.DecisionStatus;
-import maayn.veld.generated.models.StepRole;
-import maayn.veld.generated.models.TaskStatus;
+import maayn.veld.generated.models.workflow.DecisionStatus;
+import maayn.veld.generated.models.workflow.StepRole;
+import maayn.veld.generated.models.workflow.TaskStatus;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
@@ -22,15 +22,12 @@ import java.util.UUID;
 @AllArgsConstructor
 public class ApprovalTaskDocument {
 
-//    optimistic locking OR
-//status check before update
-
     @Id
-    private String id;
+    private UUID id;
 
     @Indexed
     private UUID workflowId;
-    private Long step;
+    private Integer step;
 
     private StepRole role;
     private UUID assignedTo;

@@ -1,19 +1,23 @@
 package com.maayn.notificationservice.documents.workflow;
 
-import com.maayn.notificationservice.dto.Condition;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import maayn.veld.generated.models.shared.Condition;
+
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.mongodb.core.index.CompoundIndex;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 @Document(collection = "workflow_templates")
+@CompoundIndex(name = "entity_type_version_unique", def = "{'entityType': 1, 'version': 1}", unique = true)
 @Data
 @Builder
 @NoArgsConstructor
@@ -21,20 +25,18 @@ import java.util.List;
 public class WorkflowTemplateDocument {
 
     @Id
-    private String id;
+    private UUID id;
 
-//    BOTH SHOULD BE UNIQUE
     private String entityType;
-    private Long version;
+    private Integer version;
 
     private Condition condition;
 
     private List<WorkflowStepDocument> steps;
     private Boolean isActive;
 
-//    Some Metadata
     private String description;
-    private String createdBy;
+    private UUID createdBy;
 
     @CreatedDate
     private LocalDateTime createdAt;
