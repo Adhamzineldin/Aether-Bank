@@ -5,6 +5,22 @@ enum WorkflowStatus {
   REJECTED
 }
 
+enum LogicalOperator {
+AND,
+OR
+}
+
+enum ComparisonOperator {
+    GT,
+    LT,
+    EQ,
+    NEQ,
+    GTE,
+    LTE,
+    IN,
+    NOT
+}
+
 enum TaskStatus {
   PENDING,
   IN_PROGRESS,
@@ -40,8 +56,13 @@ enum StepAction {
 // refernced as templateId in workflowInstance
 model WorkflowTemplate {
   id: uuid
-  entityType: string        // LOAN
+  entityType: string
+  version: int
+  condition: Condition
   steps: WorkflowStep[]
+  isActive: bool
+  description?: string
+  createdBy: uuid
   createdAt: datetime
   updatedAt: datetime
 }
@@ -53,15 +74,28 @@ model WorkflowStep {
   action: StepAction
 }
 
+model Condition {
+    logicalOperator: LogicalOperator 
+    conditions: Condition[]
+    field: string
+    comparison: ComparisonOperator
+    value: any
+    isLeaf: bool
+}
+
 model WorkflowInstance {
   id: uuid
   templateId?: uuid
+  templateVersion?: int
   entityType: string
   entityId: uuid
   status: WorkflowStatus
+  statusReason?: string
   currentStep: int
-  steps: WorkflowStep[]
+  // steps: WorkflowStep[]
   version: int
+  completedAt?: datetime
+  completedBy?: uuid
   createdAt: datetime
   updatedAt: datetime
 }
