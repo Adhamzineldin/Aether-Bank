@@ -3,8 +3,8 @@ package com.maayn.notificationservice.services.notification;
 import com.maayn.notificationservice.documents.notification.NotificationItemDocument;
 import jakarta.mail.internet.MimeMessage;
 import lombok.extern.slf4j.Slf4j;
-import maayn.veld.generated.models.NotificationChannel;
-import maayn.veld.generated.models.NotificationStatus;
+import maayn.veld.generated.models.notification.NotificationChannel;
+import maayn.veld.generated.models.notification.NotificationStatus;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -20,11 +20,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
-/**
- * Attempts delivery for persisted notification rows. EMAIL uses JavaMail when configured;
- * recipient comes from optional HTTP lookup ({userId}) or {@code notification.email.fallback-to}.
- * SMS/PUSH are treated as internally queued (SENT) for audit until channel adapters exist.
- */
 @Service
 @Slf4j
 public class NotificationDispatchService {

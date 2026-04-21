@@ -1,7 +1,7 @@
 package com.maayn.notificationservice.repositories;
 
 import com.maayn.notificationservice.documents.workflow.WorkflowInstanceDocument;
-import maayn.veld.generated.models.WorkflowStatus;
+import maayn.veld.generated.models.workflow.WorkflowStatus;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 

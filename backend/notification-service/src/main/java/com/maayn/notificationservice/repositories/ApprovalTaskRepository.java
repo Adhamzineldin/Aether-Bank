@@ -1,7 +1,7 @@
 package com.maayn.notificationservice.repositories;
 
 import com.maayn.notificationservice.documents.workflow.ApprovalTaskDocument;
-import maayn.veld.generated.models.TaskStatus;
+import maayn.veld.generated.models.workflow.TaskStatus;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
 import java.util.List;
