@@ -267,9 +267,10 @@ services:
     container_name: bank-notification
     restart: always
     ports:
-      - "8086:8086"
+      - "8086:3030"
     environment:
       - SPRING_PROFILES_ACTIVE=docker
+      - SERVER_PORT=3030
       - SPRING_DATA_MONGODB_URI=mongodb://mongodb:27017/notification_db
       - SPRING_RABBITMQ_HOST=rabbitmq
       - SPRING_RABBITMQ_PORT=5672
