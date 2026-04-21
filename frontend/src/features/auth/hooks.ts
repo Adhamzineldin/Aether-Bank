@@ -9,17 +9,34 @@ import type { LoginValues, RegisterValues } from './schemas';
 interface JwtResponse { accessToken: string; tokenType?: string; expiresIn?: number }
 interface UserResponse { id: string; userName: string; email: string; role: string }
 
+function extractAccessToken(payload: unknown): string {
+  if (!payload || typeof payload !== 'object') return '';
+  const data = payload as Record<string, unknown>;
+  const direct =
+    (typeof data.accessToken === 'string' && data.accessToken) ||
+    (typeof data.token === 'string' && data.token) ||
+    (typeof data.jwt === 'string' && data.jwt) ||
+    '';
+  if (!direct) return '';
+  return direct.replace(/^Bearer\s+/i, '').trim();
+}
+
 export function useLogin() {
   const setSession = useAuthStore((s) => s.setSession);
   const navigate = useNavigate();
   const [search] = useSearchParams();
   return useMutation({
-    mutationFn: async (input: LoginValues): Promise<JwtResponse> => {
-      const { data } = await http.post<JwtResponse>('/api/auth/login', input);
+    mutationFn: async (input: LoginValues): Promise<unknown> => {
+      const { data } = await http.post('/api/auth/login', input);
       return data;
     },
     onSuccess: (res, vars) => {
-      setSession(res.accessToken, { userName: vars.userName });
+      const accessToken = extractAccessToken(res);
+      if (!accessToken) {
+        toast.error('Sign in succeeded, but no access token was returned.');
+        return;
+      }
+      setSession(accessToken, { userName: vars.userName });
       toast.success('Welcome back!');
       const next = search.get('next') || ROUTES.dashboard;
       navigate(next, { replace: true });

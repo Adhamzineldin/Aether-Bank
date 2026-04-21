@@ -21,6 +21,10 @@ interface AuthState {
   isAuthenticated: () => boolean;
 }
 
+function normalizeToken(rawToken: string): string {
+  return rawToken.replace(/^Bearer\s+/i, '').trim();
+}
+
 function userFromToken(token: string, fallback?: Partial<SessionUser>): SessionUser {
   const p = decodeJwt(token) ?? {};
 
@@ -59,14 +63,18 @@ export const useAuthStore = create<AuthState>()(
       user: null,
       hydrated: false,
       setSession: (token, fallback) =>
-        set({ accessToken: token, user: userFromToken(token, fallback), hydrated: true }),
+        set({
+          accessToken: normalizeToken(token),
+          user: userFromToken(normalizeToken(token), fallback),
+          hydrated: true,
+        }),
       clear: () => set({ accessToken: null, user: null }),
       hasRole: (...roles) => {
         const u = get().user;
         if (!u) return false;
         return roles.some((r) => u.roles.includes(r));
       },
-      isAuthenticated: () => !!get().accessToken,
+      isAuthenticated: () => !!get().accessToken?.trim(),
     }),
     {
       name: 'aether-auth',

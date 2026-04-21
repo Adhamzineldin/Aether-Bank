@@ -1,7 +1,7 @@
 spring:
   application:
     name: audit-service
-  
+
 server:
   port: 8087
 

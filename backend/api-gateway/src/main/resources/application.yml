@@ -12,7 +12,8 @@ eureka:
 
 security:
   jwt:
-    secret: ${JWT_SECRET:change-this-to-a-long-shared-secret-at-least-32-characters}
+    # Must match iam-service `jwt.secret` (or both must be set via JWT_SECRET env var).
+    secret: ${JWT_SECRET:your-256-bit-secret-key-must-be-at-least-32-characters-long-for-security}
 
 logging:
   level:

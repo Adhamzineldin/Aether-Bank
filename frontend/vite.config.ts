@@ -19,6 +19,9 @@ export default defineConfig({
       // the package lives outside the app's node_modules tree.
       react: path.resolve(__dirname, 'node_modules/react'),
       'react-dom': path.resolve(__dirname, 'node_modules/react-dom'),
+      // Resolve payment gateway from source so Tailwind classes are always live
+      // without needing a separate package build step.
+      '@aether/payment-gateway': path.resolve(__dirname, '../packages/payment-gateway/src/index.ts'),
     },
     dedupe: ['react', 'react-dom'],
   },

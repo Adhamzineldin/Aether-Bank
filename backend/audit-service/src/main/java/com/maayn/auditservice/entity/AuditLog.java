@@ -1,5 +1,6 @@
 package com.maayn.auditservice.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
 import maayn.veld.generated.models.shared.AuditAction;
@@ -22,5 +23,7 @@ public class AuditLog {
     private AuditStatus status; 
     private String details;
     private UUID userIdentifier;
+
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime timestamp;
 }
