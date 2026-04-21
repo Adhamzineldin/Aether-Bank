@@ -14,6 +14,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
 
+/**
+ * User Management Service
+ * Handles user CRUD operations, role assignment, password changes
+ */
 @Service
 public class UserService {
 
@@ -31,6 +35,18 @@ public class UserService {
         this.passwordHashService = passwordHashService;
     }
 
+    /**
+     * Get user by ID
+     */
+    @Transactional(readOnly = true)
+    public UserResponse getUser(UUID userId) {
+        User user = findUserOrThrow(userId);
+        return toResponse(user);
+    }
+
+    /**
+     * Update user profile (name, email)
+     */
     @Transactional
     public UserResponse updateUser(UUID userId, UpdateUserRequest request) {
         User user = findUserOrThrow(userId);
@@ -39,23 +55,87 @@ public class UserService {
         return toResponse(saved);
     }
 
+    /**
+     * Assign role to user
+     * Supports multiple roles through user.addRole()
+     */
     @Transactional
     public UserResponse assignRole(UUID userId, String roleName) {
         User user = findUserOrThrow(userId);
         Role role = roleRepository.findByName(roleName.toUpperCase())
-                .orElseGet(() -> roleRepository.save(Role.builder().name(roleName.toUpperCase()).build()));
-        user.assignRole(role);
+                .orElseThrow(() -> new NotFoundException("Role not found: " + roleName, "ROLE_NOT_FOUND"));
+        
+        user.addRole(role);
         User saved = userRepository.save(user);
         return toResponse(saved);
     }
 
+    /**
+     * Remove role from user
+     */
+    @Transactional
+    public UserResponse removeRole(UUID userId, String roleName) {
+        User user = findUserOrThrow(userId);
+        Role role = roleRepository.findByName(roleName.toUpperCase())
+                .orElseThrow(() -> new NotFoundException("Role not found: " + roleName, "ROLE_NOT_FOUND"));
+        
+        user.removeRole(role);
+        User saved = userRepository.save(user);
+        return toResponse(saved);
+    }
+
+    /**
+     * Change user password
+     */
     @Transactional
     public void changePassword(UUID userId, ChangePasswordRequest request) {
         User user = findUserOrThrow(userId);
-        if (!passwordHashService.matches(request.getOldPassword(), user.getPassword())) {
+        
+        if (!passwordHashService.matches(request.getOldPassword(), user.getPasswordHash())) {
             throw new RuntimeException("Current password is incorrect");
         }
+        
         user.changePassword(passwordHashService.hash(request.getNewPassword()));
+        userRepository.save(user);
+    }
+
+    /**
+     * Lock user account
+     */
+    @Transactional
+    public void lockUser(UUID userId) {
+        User user = findUserOrThrow(userId);
+        user.lockAccount();
+        userRepository.save(user);
+    }
+
+    /**
+     * Unlock user account
+     */
+    @Transactional
+    public void unlockUser(UUID userId) {
+        User user = findUserOrThrow(userId);
+        user.unlockAccount();
+        userRepository.save(user);
+    }
+
+    /**
+     * Deactivate user account
+     */
+    @Transactional
+    public void deactivateUser(UUID userId) {
+        User user = findUserOrThrow(userId);
+        user.deactivate();
+        userRepository.save(user);
+    }
+
+    /**
+     * Activate user account
+     */
+    @Transactional
+    public void activateUser(UUID userId) {
+        User user = findUserOrThrow(userId);
+        user.activate();
         userRepository.save(user);
     }
 
@@ -65,11 +145,31 @@ public class UserService {
     }
 
     private UserResponse toResponse(User user) {
+        // Get primary role
+        String primaryRole = user.getRoles().stream()
+                .map(r -> r.getName())
+                .sorted((a, b) -> {
+                    int orderA = getRoleOrder(a);
+                    int orderB = getRoleOrder(b);
+                    return Integer.compare(orderB, orderA);
+                })
+                .findFirst()
+                .orElse("CUSTOMER");
+
         return new UserResponse(
                 user.getId(),
-                user.getUserName(),
+                user.getUsername(),
                 user.getEmail(),
-                user.getRole().getName()
+                primaryRole
         );
+    }
+
+    private int getRoleOrder(String role) {
+        return switch (role.toUpperCase()) {
+            case "ADMIN" -> 3;
+            case "EMPLOYEE" -> 2;
+            case "CUSTOMER" -> 1;
+            default -> 0;
+        };
     }
 }

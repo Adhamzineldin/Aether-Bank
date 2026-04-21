@@ -13,7 +13,6 @@ import maayn.veld.generated.models.certificate.CertificateApplicationResponse;
 import maayn.veld.generated.models.shared.CertificateStatus;
 import maayn.veld.generated.services.ICertificateService;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 
@@ -27,7 +26,6 @@ public class CertificateService implements ICertificateService {
     private final CertificateValidator certificateValidator;
     private final ReferenceNumberGenerator referenceNumberGenerator;
 
-    @Transactional
     @Override
     public CertificateApplicationResponse certificateSubmit(CertificateApplication request) {
         certificateValidator.validateSubmission(request);

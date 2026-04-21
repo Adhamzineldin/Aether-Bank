@@ -15,9 +15,15 @@ import maayn.veld.generated.models.authentication.RegisterRequest;
 import maayn.veld.generated.models.authentication.UserResponse;
 import maayn.veld.generated.services.IAuthenticationService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.Locale;
 
+/**
+ * Authentication Service
+ * Handles user login, registration, and token generation
+ */
 @Service
 public class AuthService implements IAuthenticationService {
 
@@ -41,27 +47,62 @@ public class AuthService implements IAuthenticationService {
         this.registrationValidator = registrationValidator;
     }
 
+    /**
+     * Authenticate user with username/email and password
+     * Validates credentials, checks account lock status, records failed/successful attempts
+     */
     @Override
+    @Transactional
     public JwtResponse login(LoginRequest request) throws LoginException {
-        User user = userRepository.findByUserName(request.getUserName())
+        User user = userRepository.findByUsername(request.getUserName())
                 .orElseThrow(() -> AuthenticationErrors.LoginErrors.userNotFound("User not found"));
 
-        if (!passwordHashService.matches(request.getPassword(), user.getPassword())) {
+        // Check if account is locked
+        if (user.isAccountLocked()) {
+            throw AuthenticationErrors.LoginErrors.invalidCredentials("Account is temporarily locked");
+        }
+
+        // Check if user is active
+        if (!user.getIsActive()) {
+            throw AuthenticationErrors.LoginErrors.invalidCredentials("Account is inactive");
+        }
+
+        // Verify password
+        if (!passwordHashService.matches(request.getPassword(), user.getPasswordHash())) {
+            user.recordFailedLogin();
+            userRepository.save(user);
             throw AuthenticationErrors.LoginErrors.invalidCredentials("Invalid username or password");
         }
+
+        // Record successful login
+        user.recordSuccessfulLogin();
+        userRepository.save(user);
 
         String token = jwtService.generateToken(user);
         return new JwtResponse(token, "Bearer");
     }
 
+    /**
+     * Register new user account
+     * Validates input, hashes password, assigns default CUSTOMER role
+     */
     @Override
+    @Transactional
     public UserResponse register(RegisterRequest request) {
-        if (userRepository.existsByUserName(request.getUserName())) {
+        // Check if username already exists
+        if (userRepository.existsByUsername(request.getUserName())) {
             throw new RuntimeException("Username already exists");
         }
 
+        // Check if email already exists
+        if (userRepository.existsByEmail(request.getEmail())) {
+            throw new RuntimeException("Email already exists");
+        }
+
+        // Validate input
         registrationValidator.validate(request.getEmail(), request.getPassword());
 
+        // Get or create role
         String requestedRole = request.getRole() == null || request.getRole().isBlank()
                 ? "CUSTOMER"
                 : request.getRole().trim().toUpperCase(Locale.ROOT);
@@ -69,23 +110,33 @@ public class AuthService implements IAuthenticationService {
         Role role = roleRepository.findByName(requestedRole)
                 .orElseGet(() -> roleRepository.save(Role.builder().name(requestedRole).build()));
 
+        // Create user
         User user = User.builder()
-                .userName(request.getUserName())
+                .username(request.getUserName())
                 .email(request.getEmail())
-                .password(passwordHashService.hash(request.getPassword()))
-                .role(role)
+                .passwordHash(passwordHashService.hash(request.getPassword()))
+                .fullName(request.getUserName())
+                .isActive(true)
+                .isEmailVerified(false)
+                .mfaEnabled(false)
                 .build();
+
+        // Add role to user
+        user.addRole(role);
 
         User savedUser = userRepository.save(user);
 
         return new UserResponse(
                 savedUser.getId(),
-                savedUser.getUserName(),
+                savedUser.getUsername(),
                 savedUser.getEmail(),
-                savedUser.getRole().getName()
+                role.getName()
         );
     }
 
+    /**
+     * Logout user (stateless - handled client-side)
+     */
     @Override
     public GenericResponse logout() {
         return new GenericResponse("Logout successful", true);

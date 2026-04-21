@@ -14,7 +14,6 @@ import maayn.veld.generated.models.loan.LoanApplicationResponse;
 import maayn.veld.generated.models.shared.LoanStatus;
 import maayn.veld.generated.services.ILoanService;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -29,7 +28,6 @@ public class LoanService implements ILoanService {
     private final LoanValidator loanValidator;
     private final ReferenceNumberGenerator referenceNumberGenerator;
 
-    @Transactional
     @Override
     public LoanApplicationResponse loanSubmit(LoanApplication request) {
         loanValidator.validateSubmission(request);
