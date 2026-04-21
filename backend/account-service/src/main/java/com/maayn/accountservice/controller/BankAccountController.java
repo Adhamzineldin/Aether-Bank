@@ -57,5 +57,16 @@ public class BankAccountController {
         boolean exists = bankAccountService.doesAccountExist(accountId);
         return ResponseEntity.ok(exists);
     }
+
+    /**
+     * Resolve an account number (or synthetic IBAN — the last 16 alphanumerics
+     * of which match the account number for demo data) to the full account
+     * DTO. Powers the "send to account number" flow on the frontend.
+     */
+    @GetMapping("/by-number/{accountNumber}")
+    public ResponseEntity<AccountResponse> getAccountByNumber(@PathVariable String accountNumber) {
+        AccountResponse response = bankAccountService.getAccountByNumber(accountNumber);
+        return ResponseEntity.ok(response);
+    }
 }
 

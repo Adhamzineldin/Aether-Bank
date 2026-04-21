@@ -13,6 +13,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.support.TransactionTemplate;
 import java.util.List;
+import java.util.UUID;
 /**
  * Seeds the canonical roles and a bootstrap super-admin account on startup.
  *
@@ -32,6 +33,14 @@ public class DataSeeder {
     /** Canonical set of roles recognised by the system. */
     private static final List<String> DEFAULT_ROLES =
             List.of("SUPERADMIN", "ADMIN", "EMPLOYEE", "CUSTOMER");
+    /**
+     * Well-known fixed UUID for the bootstrap superadmin.
+     * Shared with account-service and transaction-service so demo accounts can be
+     * linked to this user without any inter-service calls at startup.
+     */
+    public static final UUID SUPERADMIN_ID =
+            UUID.fromString("00000000-0000-0000-0000-000000000001");
+
     @Bean
     ApplicationRunner iamDataSeeder(
             RoleRepository roleRepository,
@@ -40,13 +49,14 @@ public class DataSeeder {
             PlatformTransactionManager txManager,
             @Value("${iam.superadmin.username:superadmin}") String adminUsername,
             @Value("${iam.superadmin.email:superadmin@aetherbank.local}") String adminEmail,
-            @Value("${iam.superadmin.password:Password}") String adminPassword
+            @Value("${iam.superadmin.password:Password1!}") String adminPassword
     ) {
         TransactionTemplate tx = new TransactionTemplate(txManager);
         return args -> tx.executeWithoutResult(status -> seed(
                 roleRepository, userRepository, passwordHashService,
                 adminUsername, adminEmail, adminPassword));
     }
+
     private void seed(RoleRepository roleRepository,
                       UserRepository userRepository,
                       PasswordHashService passwordHashService,
@@ -62,12 +72,17 @@ public class DataSeeder {
         }
         Role superadminRole = roleRepository.findByName("SUPERADMIN")
                 .orElseThrow(() -> new IllegalStateException("SUPERADMIN role missing after seeding"));
-        // 2) Ensure a bootstrap super-admin user exists.
-        User admin = userRepository.findByUsername(adminUsername)
+
+        // 2) Ensure the bootstrap super-admin exists with the well-known fixed UUID
+        //    so other services can reference it without inter-service calls.
+        User admin = userRepository.findById(SUPERADMIN_ID)
+                .or(() -> userRepository.findByUsername(adminUsername))
                 .or(() -> userRepository.findByEmail(adminEmail))
                 .orElse(null);
+
         if (admin == null) {
             admin = User.builder()
+                    .id(SUPERADMIN_ID)
                     .username(adminUsername)
                     .email(adminEmail)
                     .passwordHash(passwordHashService.hash(adminPassword))
@@ -78,12 +93,14 @@ public class DataSeeder {
                     .build();
             admin.addRole(superadminRole);
             userRepository.save(admin);
-            log.warn("Seeded bootstrap SUPERADMIN account {} ({}). Change the password immediately in production!",
-                    adminUsername, adminEmail);
-        } else if (admin.getRoles().stream().noneMatch(r -> "SUPERADMIN".equalsIgnoreCase(r.getName()))) {
-            admin.addRole(superadminRole);
-            userRepository.save(admin);
-            log.info("Granted SUPERADMIN role to existing user {}", admin.getUsername());
+            log.warn("Seeded bootstrap SUPERADMIN '{}' id={} ({}). Change the password in production!",
+                    adminUsername, SUPERADMIN_ID, adminEmail);
+        } else {
+            if (admin.getRoles().stream().noneMatch(r -> "SUPERADMIN".equalsIgnoreCase(r.getName()))) {
+                admin.addRole(superadminRole);
+                userRepository.save(admin);
+                log.info("Granted SUPERADMIN role to existing user {}", admin.getUsername());
+            }
         }
     }
 }

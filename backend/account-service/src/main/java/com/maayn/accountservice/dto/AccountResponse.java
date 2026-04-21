@@ -19,6 +19,8 @@ import java.util.UUID;
 public class AccountResponse {
     private UUID id;
     private String accountNumber;
+    /** Synthetic IBAN derived from {@link #accountNumber} — stable, demo-only. */
+    private String iban;
     private UUID customerId;
     private AccountType accountType;
     private AccountStatus status;

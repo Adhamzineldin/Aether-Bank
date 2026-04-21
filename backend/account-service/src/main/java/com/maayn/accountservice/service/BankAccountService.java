@@ -167,6 +167,20 @@ public class BankAccountService {
         return bankAccountRepository.existsById(accountId);
     }
 
+    /**
+     * Resolve a human-readable account number to the full account DTO. Used by
+     * the transfer flow so customers can send to an account number / IBAN
+     * rather than a raw UUID.
+     */
+    @Transactional(readOnly = true)
+    public AccountResponse getAccountByNumber(String accountNumber) {
+        BankAccount account = bankAccountRepository.findByAccountNumber(accountNumber)
+                .orElseThrow(() -> new AccountNotFoundException("Account not found: " + accountNumber));
+
+        BigDecimal balance = getBalanceFromTransactionService(account.getId(), account.getCurrency());
+        return mapToResponse(account, balance);
+    }
+
     private BigDecimal getBalanceFromTransactionService(UUID accountId, String currency) {
         try {
             BalanceResponse balanceResponse = transactionServiceClient.getAccountBalance(accountId, currency);
@@ -200,6 +214,7 @@ public class BankAccountService {
         return AccountResponse.builder()
                 .id(account.getId())
                 .accountNumber(account.getAccountNumber())
+                .iban(deriveIban(account.getAccountNumber()))
                 .customerId(account.getCustomerId())
                 .accountType(account.getAccountType())
                 .status(account.getStatus())
@@ -210,6 +225,18 @@ public class BankAccountService {
                 .updatedAt(account.getUpdatedAt())
                 .balance(balance)
                 .build();
+    }
+
+    /**
+     * Synthesise a 24-char demo IBAN ({@code AE} country code + 2 check digits
+     * + 4-char bank code + right-padded account number). Good enough for the
+     * demo — <b>not</b> a real IBAN algorithm.
+     */
+    private String deriveIban(String accountNumber) {
+        if (accountNumber == null || accountNumber.isBlank()) return null;
+        String digitsOnly = accountNumber.replaceAll("[^A-Za-z0-9]", "");
+        String padded = (digitsOnly + "0000000000000000").substring(0, 16);
+        return "AE07AETH" + padded;
     }
 
     private void depositInitialAmount(UUID accountId, BigDecimal amount, String currency) {

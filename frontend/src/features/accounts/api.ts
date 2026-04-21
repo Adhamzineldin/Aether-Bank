@@ -9,6 +9,8 @@ import type { AccountType, AccountStatus } from '@veld/types';
 export interface Account {
   id: string;
   accountNumber: string;
+  /** Synthetic IBAN the backend generates from the account number. */
+  iban?: string | null;
   customerId: string;
   accountType: AccountType;
   status: AccountStatus;
@@ -52,5 +54,12 @@ export const accountsApi = {
     http.put<Account>(`${BASE}/${id}/status`, input).then((r) => r.data),
   exists: (id: string) =>
     http.get<boolean>(`${BASE}/${id}/exists`).then((r) => r.data),
+  /**
+   * Resolve a human-facing account number (or synthetic IBAN tail) to its
+   * {@link Account}. Used by the transfer page to convert user-entered
+   * account numbers into UUIDs before calling the transfer endpoint.
+   */
+  getByNumber: (accountNumber: string) =>
+    http.get<Account>(`${BASE}/by-number/${encodeURIComponent(accountNumber)}`).then((r) => r.data),
 };
 
