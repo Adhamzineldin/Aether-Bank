@@ -6,7 +6,6 @@ import { Input } from '@shared/ui/Input';
 import { PasswordInput } from '@shared/ui/PasswordInput';
 import { FormField } from '@shared/ui/FormField';
 import { Button } from '@shared/ui/Button';
-import { Select } from '@shared/ui/Select';
 import { ROUTES } from '@app/routes';
 import { registerSchema, type RegisterValues } from '../schemas';
 import { useRegister } from '../hooks';
@@ -14,7 +13,6 @@ import { useRegister } from '../hooks';
 export default function RegisterPage() {
   const { register, handleSubmit, formState: { errors } } = useForm<RegisterValues>({
     resolver: zodResolver(registerSchema),
-    defaultValues: { role: 'CUSTOMER' },
   });
   const reg = useRegister();
 
@@ -33,13 +31,6 @@ export default function RegisterPage() {
         </FormField>
         <FormField label="Password" htmlFor="password" error={errors.password?.message} required>
           <PasswordInput id="password" leftIcon={<Lock className="h-4 w-4" />} {...register('password')} />
-        </FormField>
-        <FormField label="Role" htmlFor="role" error={errors.role?.message}>
-          <Select id="role" {...register('role')}>
-            <option value="CUSTOMER">Customer</option>
-            <option value="EMPLOYEE">Employee</option>
-            <option value="ADMIN">Admin</option>
-          </Select>
         </FormField>
         <Button type="submit" fullWidth loading={reg.isPending}>Create account</Button>
       </form>

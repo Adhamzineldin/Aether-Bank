@@ -23,10 +23,26 @@ interface AuthState {
 
 function userFromToken(token: string, fallback?: Partial<SessionUser>): SessionUser {
   const p = decodeJwt(token) ?? {};
+
+  // The backend may emit `roles` either as a JSON array (e.g. ["ADMIN","CUSTOMER"])
+  // or as a single comma/space separated string (e.g. "SUPERADMIN" or
+  // "ROLE_ADMIN,ROLE_USER"). `authorities` follows the same pattern. Normalise
+  // everything into a string[] so consumers (and `.map` below) can rely on it.
+  const toArray = (v: unknown): string[] | undefined => {
+    if (v == null) return undefined;
+    if (Array.isArray(v)) return v.filter((x) => typeof x === 'string') as string[];
+    if (typeof v === 'string') {
+      const parts = v.split(/[\s,]+/).map((s) => s.trim()).filter(Boolean);
+      return parts.length ? parts : undefined;
+    }
+    return undefined;
+  };
+
   const rolesRaw =
-    (p.roles as string[] | undefined) ??
-    (Array.isArray(p.authorities) ? (p.authorities as string[]) : undefined) ??
-    (p.role ? [p.role as string] : []);
+    toArray(p.roles) ??
+    toArray(p.authorities) ??
+    toArray((p as Record<string, unknown>).role) ??
+    [];
   const roles = rolesRaw.map((r) => r.replace(/^ROLE_/, ''));
   return {
     id: (p.userId as string) || (p.sub as string) || fallback?.id || '',
