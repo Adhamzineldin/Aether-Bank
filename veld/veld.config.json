@@ -1,13 +1,16 @@
 {
   "$schema": "https://veld.dev/schemas/veld.config.schema.json",
   "description": "bank system",
-
   "workspace": [
     {
       "name": "iam",
       "description": "",
       "input": "services/iam/main.veld",
-      "backendConfig": { "target": "java", "framework": "spring", "dir": "../backend/iam-service" },
+      "backendConfig": {
+        "target": "java",
+        "framework": "spring",
+        "dir": "../backend/iam-service"
+      },
       "out": "../backend/iam-service/generated",
       "baseUrl": "http://localhost:4333"
     },
@@ -15,16 +18,27 @@
       "name": "card",
       "description": "",
       "input": "services/card/main.veld",
-      "backendConfig": { "target": "java", "framework": "spring", "dir": "../backend/card-service" },
+      "backendConfig": {
+        "target": "java",
+        "framework": "spring",
+        "dir": "../backend/card-service"
+      },
       "out": "../backend/card-service/generated",
       "baseUrl": "http://card-service:3002",
-      "consumes": ["transaction", "account"]
+      "consumes": [
+        "transaction",
+        "account"
+      ]
     },
     {
       "name": "account",
       "description": "",
       "input": "services/account/main.veld",
-      "backendConfig": { "target": "java", "framework": "spring", "dir": "../backend/account-service" },
+      "backendConfig": {
+        "target": "java",
+        "framework": "spring",
+        "dir": "../backend/account-service"
+      },
       "out": "../backend/account-service/generated",
       "baseUrl": "http://account-service:3003"
     },
@@ -32,7 +46,11 @@
       "name": "financial",
       "description": "",
       "input": "services/financial/main.veld",
-      "backendConfig": { "target": "java", "framework": "spring", "dir": "../backend/financial-service" },
+      "backendConfig": {
+        "target": "java",
+        "framework": "spring",
+        "dir": "../backend/financial-service"
+      },
       "out": "../backend/financial-service/generated",
       "baseUrl": "http://financial-service:3004"
     },
@@ -40,15 +58,29 @@
       "name": "notification",
       "description": "",
       "input": "services/notification/main.veld",
-      "backendConfig": { "target": "java", "framework": "spring", "dir": "../backend/notification-service" },
+      "backendConfig": {
+        "target": "java",
+        "framework": "spring",
+        "dir": "../backend/notification-service"
+      },
       "out": "../backend/notification-service/generated",
-      "baseUrl": "http://notification-service:3005"
+      "baseUrl": "http://notification-service:3005",
+      "consumes": [
+        "iam",
+        "account",
+        "financial",
+        "audit"
+      ]
     },
     {
       "name": "audit",
       "description": "",
       "input": "services/audit/main.veld",
-      "backendConfig": { "target": "java", "framework": "spring", "dir": "../backend/audit-service" },
+      "backendConfig": {
+        "target": "java",
+        "framework": "spring",
+        "dir": "../backend/audit-service"
+      },
       "out": "../backend/audit-service/generated",
       "baseUrl": "http://localhost:8084"
     },
@@ -56,28 +88,53 @@
       "name": "transaction",
       "description": "",
       "input": "services/transaction/main.veld",
-      "backendConfig": { "target": "java", "framework": "spring", "dir": "../backend/transaction-service" },
+      "backendConfig": {
+        "target": "java",
+        "framework": "spring",
+        "dir": "../backend/transaction-service"
+      },
       "out": "../backend/transaction-service/generated",
       "baseUrl": "http://localhost:2501",
-      "consumes": ["iam", "audit", "account", "notification", "financial"]
+      "consumes": [
+        "iam",
+        "audit",
+        "account",
+        "notification",
+        "financial"
+      ]
     },
     {
       "name": "gateway",
       "description": "",
       "input": "services/gateway/main.veld",
-      "backendConfig": { "target": "java", "framework": "spring", "dir": "../backend/api-gateway" },
+      "backendConfig": {
+        "target": "java",
+        "framework": "spring",
+        "dir": "../backend/api-gateway"
+      },
       "out": "../backend/api-gateway/generated",
       "baseUrl": "http://localhost:9000",
-      "consumes": ["*"]
+      "consumes": [
+        "*"
+      ]
     },
     {
       "name": "frontend",
       "description": "Frontend SDK — auto-consumes all backend services",
       "input": "app.veld",
-      "frontendConfig": { "target": "react" },
+      "frontendConfig": {
+        "target": "react"
+      },
       "out": "../frontend/src/generated",
       "baseUrl": "http://localhost:3000",
-      "consumes": ["iam", "card", "account", "financial", "notification", "transaction"]
+      "consumes": [
+        "iam",
+        "card",
+        "account",
+        "financial",
+        "notification",
+        "transaction"
+      ]
     }
   ]
 }

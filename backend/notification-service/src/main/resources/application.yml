@@ -5,13 +5,12 @@ spring:
   application:
     name: workflow-notification-service
 
-  data:
-    mongodb:
-#      Will check the deprecated method
-      uri: mongodb://localhost:27030/workflow_notification_service
-      auto-index-creation: true
+  mongodb:
+    uri: mongodb://localhost:27030/workflow_notification_service
 
-#  Will check where to configure rabbitmq
+  rabbitmq:
+    host: localhost
+    port: 5673
 
   mail:
     host: smtp.gmail.com
@@ -20,8 +19,13 @@ spring:
     password: ${MAIL_PASSWORD}
     properties:
       mail.smtp.auth: true
-      mail.smtp.starttls.enabe: true
+      mail.smtp.starttls.enable: true
 
+# Transfer alerts (Rabbit): see NotificationRabbitConfig + TransferEventListener.
+# Optional: notification.contact-lookup.url-template — GET with {accountId} → {"email":"..."} for transfer emails.
+#
+# API notification send (EMAIL): optional notification.user-contact.url-template — GET with {userId} → {"email":"..."}
+# or notification.email.fallback-to for internal/dev delivery when IAM lookup is not wired.
 
 eureka:
   client:
