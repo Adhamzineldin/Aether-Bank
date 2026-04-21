@@ -35,7 +35,7 @@ export default function AccountsListPage() {
         />
       ) : (
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-          {data.map((a) => <AccountCard key={a.account.id} data={a} />)}
+          {data.map((a) => <AccountCard key={a.id} data={a} />)}
         </div>
       )}
     </div>

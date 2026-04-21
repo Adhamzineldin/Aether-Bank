@@ -1,7 +1,7 @@
-import { veld } from '@lib/veld';
-
-/** Hook returning the singleton Veld API client (proxies all sub-clients). */
-export function useVeld() {
-  return veld;
+/**
+ * Deprecated. See `@lib/veld` for context. Prefer per-feature api wrappers.
+ */
+export function useVeld(): never {
+  throw new Error('useVeld() is deprecated — use the feature-specific api module (e.g. @features/accounts/api).');
 }
 

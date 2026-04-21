@@ -1,6 +1,6 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation } from '@tanstack/react-query';
 import { toast } from 'sonner';
-import { useVeld } from '@shared/hooks/useVeld';
+import { useStubQuery, unavailableMutation } from '@lib/stub';
 import { useAuthStore } from '@stores/authStore';
 import type { TaskActionInput } from '@veld/types';
 
@@ -10,34 +10,17 @@ export const wfKeys = {
 };
 
 export function useMyTasks() {
-  const veld = useVeld();
   const id = useAuthStore((s) => s.user?.id) || '';
-  return useQuery({
-    queryKey: wfKeys.myTasks(id),
-    enabled: !!id,
-    queryFn: () => veld.workflow.getTasks(id),
-  });
+  return useStubQuery<unknown[]>(wfKeys.myTasks(id), []);
 }
 
 export function useWorkflow(id: string | undefined) {
-  const veld = useVeld();
-  return useQuery({
-    queryKey: wfKeys.one(id || ''),
-    enabled: !!id,
-    queryFn: () => veld.workflow.getWorkflow(id as string),
-  });
+  return useStubQuery(wfKeys.one(id || ''));
 }
 
-export function useTaskAction(taskId: string) {
-  const veld = useVeld();
-  const qc = useQueryClient();
+export function useTaskAction(_taskId: string) {
   return useMutation({
-    mutationFn: (input: TaskActionInput) => veld.workflow.decideTask(taskId, input),
-    onSuccess: () => {
-      toast.success('Decision recorded');
-      qc.invalidateQueries({ queryKey: ['workflow'] });
-    },
+    mutationFn: unavailableMutation<TaskActionInput, void>(),
+    onError: (e: Error) => toast.error(e.message),
   });
 }
-
-

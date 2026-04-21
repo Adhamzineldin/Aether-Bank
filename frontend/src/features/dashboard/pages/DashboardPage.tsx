@@ -1,6 +1,5 @@
 import { Link } from 'react-router-dom';
-import { ArrowUpRight, ArrowDownRight, Plus, Send, CreditCard, ScrollText, Wallet } from 'lucide-react';
-import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip, CartesianGrid } from 'recharts';
+import { Plus, Send, CreditCard, ScrollText, Wallet } from 'lucide-react';
 import { PageHeader } from '@shared/ui/PageHeader';
 import { Stat } from '@shared/ui/Stat';
 import { Card, CardContent } from '@shared/ui/Card';
@@ -12,18 +11,14 @@ import { useAuthStore } from '@stores/authStore';
 import { useMyAccounts } from '@features/accounts/hooks';
 import { AccountCard } from '@features/accounts/components/AccountCard';
 
-const chartData = Array.from({ length: 14 }).map((_, i) => ({
-  day: `D${i + 1}`,
-  inflow: 1500 + Math.round(Math.random() * 800),
-  outflow: 800 + Math.round(Math.random() * 700),
-}));
-
 export default function DashboardPage() {
   const user = useAuthStore((s) => s.user);
   const accounts = useMyAccounts();
 
-  const total = accounts.data?.reduce((sum, a) => sum + Number(a.balance || 0), 0) ?? 0;
-  const currency = accounts.data?.[0]?.account.currency || 'USD';
+  const list = accounts.data ?? [];
+  const total = list.reduce((sum, a) => sum + Number(a.balance || 0), 0);
+  const currency = list[0]?.currency || 'USD';
+  const activeCount = list.filter((a) => a.status === 'ACTIVE').length;
 
   return (
     <div className="space-y-6">
@@ -38,44 +33,44 @@ export default function DashboardPage() {
         }
       />
 
-      <div className="grid gap-4 md:grid-cols-4">
+      <div className="grid gap-4 md:grid-cols-3">
         <Stat
           label="Total balance"
           value={<CurrencyDisplay amount={total} currency={currency} />}
           icon={<Wallet className="h-4 w-4" />}
-          hint="across all accounts"
+          hint={`across ${list.length} account${list.length === 1 ? '' : 's'}`}
         />
-        <Stat label="Inflow (14d)" value={<CurrencyDisplay amount={chartData.reduce((s, d) => s + d.inflow, 0)} />} icon={<ArrowDownRight className="h-4 w-4 text-success-600" />} trend="up" hint="+8.2% vs prev" />
-        <Stat label="Outflow (14d)" value={<CurrencyDisplay amount={chartData.reduce((s, d) => s + d.outflow, 0)} />} icon={<ArrowUpRight className="h-4 w-4 text-danger-600" />} trend="down" hint="−2.1% vs prev" />
-        <Stat label="Active cards" value={1} icon={<CreditCard className="h-4 w-4" />} />
+        <Stat
+          label="Active accounts"
+          value={activeCount}
+          icon={<Wallet className="h-4 w-4" />}
+        />
+        <Stat
+          label="Primary currency"
+          value={currency}
+          icon={<CreditCard className="h-4 w-4" />}
+        />
       </div>
 
       <div className="grid gap-6 lg:grid-cols-3">
         <Card className="lg:col-span-2">
           <CardContent>
-            <h3 className="mb-3 text-sm font-semibold">Cash flow (last 14 days)</h3>
-            <div className="h-64">
-              <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={chartData}>
-                  <defs>
-                    <linearGradient id="cIn" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor="rgb(16,185,129)" stopOpacity={0.4} />
-                      <stop offset="100%" stopColor="rgb(16,185,129)" stopOpacity={0} />
-                    </linearGradient>
-                    <linearGradient id="cOut" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor="rgb(239,68,68)" stopOpacity={0.4} />
-                      <stop offset="100%" stopColor="rgb(239,68,68)" stopOpacity={0} />
-                    </linearGradient>
-                  </defs>
-                  <CartesianGrid strokeOpacity={0.2} vertical={false} />
-                  <XAxis dataKey="day" tickLine={false} axisLine={false} fontSize={11} />
-                  <YAxis tickLine={false} axisLine={false} fontSize={11} />
-                  <Tooltip />
-                  <Area type="monotone" dataKey="inflow" stroke="rgb(16,185,129)" fill="url(#cIn)" strokeWidth={2} />
-                  <Area type="monotone" dataKey="outflow" stroke="rgb(239,68,68)" fill="url(#cOut)" strokeWidth={2} />
-                </AreaChart>
-              </ResponsiveContainer>
-            </div>
+            <h3 className="mb-3 text-sm font-semibold">Your accounts</h3>
+            {accounts.isLoading ? (
+              <div className="grid gap-4 md:grid-cols-2">
+                {Array.from({ length: 2 }).map((_, i) => <Skeleton key={i} className="h-40" />)}
+              </div>
+            ) : list.length === 0 ? (
+              <Link to={ROUTES.newAccount}>
+                <Card className="grid h-40 place-items-center border-dashed text-muted-fg hover:border-primary/50 hover:text-primary">
+                  <span className="flex items-center gap-2"><Plus className="h-4 w-4" /> Open your first account</span>
+                </Card>
+              </Link>
+            ) : (
+              <div className="grid gap-4 md:grid-cols-2">
+                {list.slice(0, 4).map((a) => <AccountCard key={a.id} data={a} />)}
+              </div>
+            )}
           </CardContent>
         </Card>
         <Card>
@@ -90,24 +85,6 @@ export default function DashboardPage() {
           </CardContent>
         </Card>
       </div>
-
-      <div>
-        <h3 className="mb-3 text-sm font-semibold">Your accounts</h3>
-        {accounts.isLoading ? (
-          <div className="grid gap-4 md:grid-cols-3">{Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="h-40" />)}</div>
-        ) : (
-          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-            {accounts.data?.slice(0, 3).map((a) => <AccountCard key={a.account.id} data={a} />)}
-            {(!accounts.data || accounts.data.length === 0) && (
-              <Link to={ROUTES.newAccount}>
-                <Card className="grid h-40 place-items-center border-dashed text-muted-fg hover:border-primary/50 hover:text-primary">
-                  <span className="flex items-center gap-2"><Plus className="h-4 w-4" /> Open your first account</span>
-                </Card>
-              </Link>
-            )}
-          </div>
-        )}
-      </div>
     </div>
   );
 }
@@ -120,4 +97,3 @@ function QuickAction({ to, icon, label }: { to: string; icon: React.ReactNode; l
     </Link>
   );
 }
-

@@ -35,7 +35,7 @@ export default function TransferPage() {
   const { register, handleSubmit, formState: { errors } } = useForm<Values>({
     resolver: zodResolver(schema),
     defaultValues: {
-      sourceAccountId: search.get('source') || accounts.data?.[0]?.account.id || '',
+      sourceAccountId: search.get('source') || accounts.data?.[0]?.id || '',
       currency: 'USD',
       type: 'TRANSFER',
     },
@@ -67,7 +67,7 @@ export default function TransferPage() {
                 <Select {...register('sourceAccountId')}>
                   <option value="">Select…</option>
                   {accounts.data?.map((a) => (
-                    <option key={a.account.id} value={a.account.id}>{a.account.accountType} · {a.account.accountNumber}</option>
+                    <option key={a.id} value={a.id}>{a.accountType} · {a.accountNumber}</option>
                   ))}
                 </Select>
               </FormField>

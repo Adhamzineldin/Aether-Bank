@@ -1,6 +1,6 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation } from '@tanstack/react-query';
 import { toast } from 'sonner';
-import { useVeld } from '@shared/hooks/useVeld';
+import { useStubQuery, unavailableMutation } from '@lib/stub';
 import { useAuthStore } from '@stores/authStore';
 import type { MortgageApplication } from '@veld/types';
 
@@ -11,42 +11,21 @@ export const mortgageKeys = {
 };
 
 export function useMyMortgages() {
-  const veld = useVeld();
   const customerId = useAuthStore((s) => s.user?.id);
-  return useQuery({
-    queryKey: mortgageKeys.byCustomer(customerId || ''),
-    enabled: !!customerId,
-    queryFn: () => veld.mortgage.listCustomerMortgages(customerId as string),
-  });
+  return useStubQuery<unknown[]>(mortgageKeys.byCustomer(customerId || ''), []);
 }
 
 export function useMortgage(id: string | undefined) {
-  const veld = useVeld();
-  return useQuery({
-    queryKey: mortgageKeys.one(id || ''),
-    enabled: !!id,
-    queryFn: () => veld.mortgage.getMortgage(id as string),
-  });
+  return useStubQuery(mortgageKeys.one(id || ''));
 }
 
 export function useMortgageSchedule(id: string | undefined) {
-  const veld = useVeld();
-  return useQuery({
-    queryKey: mortgageKeys.schedule(id || ''),
-    enabled: !!id,
-    queryFn: () => veld.mortgage.getMortgageSchedule(id as string),
-  });
+  return useStubQuery<unknown[]>(mortgageKeys.schedule(id || ''), []);
 }
 
 export function useApplyMortgage() {
-  const veld = useVeld();
-  const qc = useQueryClient();
   return useMutation({
-    mutationFn: (input: MortgageApplication) => veld.mortgage.submitMortgageApplication(input),
-    onSuccess: () => {
-      toast.success('Mortgage application submitted');
-      qc.invalidateQueries({ queryKey: ['mortgages'] });
-    },
+    mutationFn: unavailableMutation<MortgageApplication, void>(),
+    onError: (e: Error) => toast.error(e.message),
   });
 }
-

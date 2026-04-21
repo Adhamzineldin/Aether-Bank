@@ -142,14 +142,14 @@ export const router = createBrowserRouter([
 
       // Employee + admin
       {
-        element: <GuardedOutlet roles={['EMPLOYEE', 'ADMIN']} />,
+        element: <GuardedOutlet roles={['EMPLOYEE', 'ADMIN', 'SUPERADMIN']} />,
         children: [
           { path: ROUTES.workflow, element: <WorkflowInboxPage /> },
           { path: ROUTES.workflowDetail(), element: <WorkflowDetailPage /> },
         ],
       },
       {
-        element: <GuardedOutlet roles={['ADMIN']} />,
+        element: <GuardedOutlet roles={['ADMIN', 'SUPERADMIN']} />,
         children: [
           { path: ROUTES.admin, element: <AdminHomePage /> },
           { path: ROUTES.adminUsers, element: <UsersListPage /> },

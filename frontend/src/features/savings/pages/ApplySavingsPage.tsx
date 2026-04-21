@@ -60,8 +60,8 @@ export default function ApplySavingsPage() {
               <Select {...register('accountId')}>
                 <option value="">Select…</option>
                 {accounts.data?.map((a) => (
-                  <option key={a.account.id} value={a.account.id}>
-                    {a.account.accountType} · {a.account.accountNumber}
+                  <option key={a.id} value={a.id}>
+                    {a.accountType} · {a.accountNumber}
                   </option>
                 ))}
               </Select>

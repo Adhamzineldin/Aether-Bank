@@ -10,20 +10,18 @@ import { Stat } from '@shared/ui/Stat';
 import { PageHeader } from '@shared/ui/PageHeader';
 import { ROUTES } from '@app/routes';
 import { formatDate } from '@shared/utils/date';
-import { useAccount, useAccountBalance, useUpdateAccountStatus } from '../hooks';
+import { useAccount, useUpdateAccountStatus } from '../hooks';
 
 export default function AccountDetailPage() {
   const { accountId = '' } = useParams();
-  const { data, isLoading } = useAccount(accountId);
-  const balance = useAccountBalance(accountId, data?.account.currency || '');
+  const { data: a, isLoading } = useAccount(accountId);
   const updateStatus = useUpdateAccountStatus(accountId);
 
-  if (isLoading || !data) return <Skeleton className="h-64" />;
-  const a = data.account;
+  if (isLoading || !a) return <Skeleton className="h-64" />;
 
   const toggleFreeze = () => {
     const next = a.status === 'FROZEN' ? 'ACTIVE' : 'FROZEN';
-    updateStatus.mutate({ status: next, reason: `User toggled to ${next}` } as any);
+    updateStatus.mutate({ status: next, reason: `User toggled to ${next}` });
   };
 
   return (
@@ -53,11 +51,8 @@ export default function AccountDetailPage() {
       />
 
       <div className="grid gap-4 md:grid-cols-3">
-        <Stat label="Available balance" value={<CurrencyDisplay amount={data.balance} currency={a.currency} />} />
-        <Stat
-          label="Pending holds"
-          value={<CurrencyDisplay amount={balance.data?.pendingHolds ?? 0} currency={a.currency} />}
-        />
+        <Stat label="Available balance" value={<CurrencyDisplay amount={a.balance} currency={a.currency} />} />
+        <Stat label="Currency" value={a.currency} />
         <Stat label="Status" value={<Badge tone={a.status === 'ACTIVE' ? 'success' : 'neutral'}>{a.status}</Badge>} />
       </div>
 
@@ -87,4 +82,3 @@ function Detail({ label, children }: { label: string; children: React.ReactNode 
     </div>
   );
 }
-

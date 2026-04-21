@@ -1,6 +1,6 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation } from '@tanstack/react-query';
 import { toast } from 'sonner';
-import { useVeld } from '@shared/hooks/useVeld';
+import { useStubQuery, unavailableMutation } from '@lib/stub';
 import type { BuyAssetRequest, OpenInvestmentAccountRequest, SellAssetRequest } from '@veld/types';
 
 export const investmentKeys = {
@@ -12,75 +12,42 @@ export const investmentKeys = {
 };
 
 export function useInvestmentAccount(id: string | undefined) {
-  const veld = useVeld();
-  return useQuery({
-    queryKey: investmentKeys.account(id || ''),
-    enabled: !!id,
-    queryFn: () => veld.investment.getInvestmentAccount(id as string),
-  });
+  return useStubQuery(investmentKeys.account(id || ''));
 }
 
 export function usePortfolio(id: string | undefined) {
-  const veld = useVeld();
-  return useQuery({
-    queryKey: investmentKeys.portfolio(id || ''),
-    enabled: !!id,
-    queryFn: () => veld.investment.getPortfolio(id as string, {} as any),
-  });
+  return useStubQuery<{ holdings: unknown[] }>(investmentKeys.portfolio(id || ''), { holdings: [] });
 }
 
 export function usePerformance(id: string | undefined) {
-  const veld = useVeld();
-  return useQuery({
-    queryKey: investmentKeys.performance(id || ''),
-    enabled: !!id,
-    queryFn: () => veld.investment.getPerformance(id as string, {} as any),
-  });
+  return useStubQuery(investmentKeys.performance(id || ''));
 }
 
 export function useAssets() {
-  const veld = useVeld();
-  return useQuery({ queryKey: investmentKeys.assets(), queryFn: () => veld.investment.listAssets() });
+  return useStubQuery<unknown[]>(investmentKeys.assets(), []);
 }
 
 export function useAsset(symbol: string | undefined) {
-  const veld = useVeld();
-  return useQuery({
-    queryKey: investmentKeys.asset(symbol || ''),
-    enabled: !!symbol,
-    queryFn: () => veld.investment.getAsset(symbol as string),
-  });
+  return useStubQuery(investmentKeys.asset(symbol || ''));
 }
 
 export function useOpenInvestmentAccount() {
-  const veld = useVeld();
   return useMutation({
-    mutationFn: (input: OpenInvestmentAccountRequest) => veld.investment.openInvestmentAccount(input),
-    onSuccess: () => toast.success('Investment account opened'),
+    mutationFn: unavailableMutation<OpenInvestmentAccountRequest, void>(),
+    onError: (e: Error) => toast.error(e.message),
   });
 }
 
-export function useBuyAsset(accountId: string) {
-  const veld = useVeld();
-  const qc = useQueryClient();
+export function useBuyAsset(_accountId: string) {
   return useMutation({
-    mutationFn: (input: BuyAssetRequest) => veld.investment.buyAsset(accountId, input),
-    onSuccess: () => {
-      toast.success('Buy order placed');
-      qc.invalidateQueries({ queryKey: investmentKeys.portfolio(accountId) });
-    },
+    mutationFn: unavailableMutation<BuyAssetRequest, void>(),
+    onError: (e: Error) => toast.error(e.message),
   });
 }
 
-export function useSellAsset(accountId: string) {
-  const veld = useVeld();
-  const qc = useQueryClient();
+export function useSellAsset(_accountId: string) {
   return useMutation({
-    mutationFn: (input: SellAssetRequest) => veld.investment.sellAsset(accountId, input),
-    onSuccess: () => {
-      toast.success('Sell order placed');
-      qc.invalidateQueries({ queryKey: investmentKeys.portfolio(accountId) });
-    },
+    mutationFn: unavailableMutation<SellAssetRequest, void>(),
+    onError: (e: Error) => toast.error(e.message),
   });
 }
-

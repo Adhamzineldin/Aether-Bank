@@ -1,13 +1,11 @@
 import { useMutation } from '@tanstack/react-query';
 import { toast } from 'sonner';
-import { useVeld } from '@shared/hooks/useVeld';
+import { unavailableMutation } from '@lib/stub';
 import type { LoanApplication } from '@veld/types';
 
 export function useApplyLoan() {
-  const veld = useVeld();
   return useMutation({
-    mutationFn: (input: LoanApplication) => veld.loan.loanSubmit(input),
-    onSuccess: () => toast.success('Application submitted'),
+    mutationFn: unavailableMutation<LoanApplication, void>(),
+    onError: (e: Error) => toast.error(e.message),
   });
 }
-

@@ -1,9 +1,8 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation } from '@tanstack/react-query';
 import { toast } from 'sonner';
-import { useVeld } from '@shared/hooks/useVeld';
+import { useStubQuery, unavailableMutation } from '@lib/stub';
 import type {
   MerchantPaymentRequest, RefundCardTransactionRequest, VoidCardTransactionRequest,
-  GetCardTransactionsRequest,
 } from '@veld/types';
 
 export const cardKeys = {
@@ -12,49 +11,30 @@ export const cardKeys = {
 };
 
 export function useCard(id: string | undefined) {
-  const veld = useVeld();
-  return useQuery({
-    queryKey: cardKeys.one(id || ''),
-    enabled: !!id,
-    queryFn: () => veld.card.getCardDetails(id as string),
-  });
+  return useStubQuery(cardKeys.one(id || ''));
 }
 
-export function useCardTransactions(id: string | undefined, page = 0, pageSize = 20) {
-  const veld = useVeld();
-  return useQuery({
-    queryKey: cardKeys.txs(id || '', page),
-    enabled: !!id,
-    queryFn: () =>
-      veld.card.getCardTransactions(id as string, { page, pageSize } as GetCardTransactionsRequest),
-  });
+export function useCardTransactions(id: string | undefined, page = 0, _pageSize = 20) {
+  return useStubQuery<{ content: unknown[] }>(cardKeys.txs(id || '', page), { content: [] });
 }
 
 export function useProcessMerchantPayment() {
-  const veld = useVeld();
-  const qc = useQueryClient();
   return useMutation({
-    mutationFn: (input: MerchantPaymentRequest) => veld.card.processMerchantPayment(input),
-    onSuccess: () => {
-      toast.success('Payment processed');
-      qc.invalidateQueries({ queryKey: ['cards'] });
-    },
+    mutationFn: unavailableMutation<MerchantPaymentRequest, void>(),
+    onError: (e: Error) => toast.error(e.message),
   });
 }
 
 export function useRefundTransaction() {
-  const veld = useVeld();
   return useMutation({
-    mutationFn: (input: RefundCardTransactionRequest) => veld.card.refundTransaction(input),
-    onSuccess: () => toast.success('Refund issued'),
+    mutationFn: unavailableMutation<RefundCardTransactionRequest, void>(),
+    onError: (e: Error) => toast.error(e.message),
   });
 }
 
 export function useVoidTransaction() {
-  const veld = useVeld();
   return useMutation({
-    mutationFn: (input: VoidCardTransactionRequest) => veld.card.voidTransaction(input),
-    onSuccess: () => toast.success('Transaction voided'),
+    mutationFn: unavailableMutation<VoidCardTransactionRequest, void>(),
+    onError: (e: Error) => toast.error(e.message),
   });
 }
-

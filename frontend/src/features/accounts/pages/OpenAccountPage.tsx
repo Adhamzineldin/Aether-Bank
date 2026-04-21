@@ -12,7 +12,8 @@ import { ACCOUNT_TYPES, CURRENCIES } from '@shared/constants/enums';
 import { ROUTES } from '@app/routes';
 import { useAuthStore } from '@stores/authStore';
 import { useOpenAccount } from '../hooks';
-import type { OpenAccountRequest, AccountType, Decimal, UUID } from '@veld/types';
+import type { OpenAccountInput } from '../api';
+import type { AccountType } from '@veld/types';
 
 const schema = z.object({
   accountType: z.enum(ACCOUNT_TYPES),
@@ -31,13 +32,13 @@ export default function OpenAccountPage() {
   });
 
   const submit = (v: Values) => {
-    const payload: OpenAccountRequest = {
-      customerId: userId as UUID,
+    const payload: OpenAccountInput = {
+      customerId: userId,
       accountType: v.accountType as AccountType,
       currency: v.currency,
-      initialDeposit: v.initialDeposit ? (v.initialDeposit as Decimal) : undefined,
-    } as OpenAccountRequest;
-    open.mutate(payload, { onSuccess: (res) => navigate(ROUTES.account(res.account.id)) });
+      initialDeposit: v.initialDeposit || undefined,
+    };
+    open.mutate(payload, { onSuccess: (res) => navigate(ROUTES.account(res.id)) });
   };
 
   return (
@@ -66,4 +67,3 @@ export default function OpenAccountPage() {
     </div>
   );
 }
-

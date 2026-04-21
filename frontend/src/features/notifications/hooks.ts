@@ -1,6 +1,6 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation } from '@tanstack/react-query';
 import { toast } from 'sonner';
-import { useVeld } from '@shared/hooks/useVeld';
+import { useStubQuery, unavailableMutation } from '@lib/stub';
 import type { CreateTemplateInput, SendNotificationInput, UpdateTemplateInput } from '@veld/types';
 
 export const notifKeys = {
@@ -11,65 +11,48 @@ export const notifKeys = {
 };
 
 export function useNotifications() {
-  const veld = useVeld();
-  return useQuery({ queryKey: notifKeys.list, queryFn: () => veld.notification.listNotifications() });
+  return useStubQuery<unknown[]>(notifKeys.list, []);
 }
 
 export function useNotification(id: string | undefined) {
-  const veld = useVeld();
-  return useQuery({
-    queryKey: notifKeys.one(id || ''),
-    enabled: !!id,
-    queryFn: () => veld.notification.getNotification(id as string),
-  });
+  return useStubQuery(notifKeys.one(id || ''));
 }
 
 export function useRetryNotification() {
-  const veld = useVeld();
-  const qc = useQueryClient();
   return useMutation({
-    mutationFn: (id: string) => veld.notification.retryNotification(id),
-    onSuccess: () => { toast.success('Notification re-queued'); qc.invalidateQueries({ queryKey: notifKeys.list }); },
+    mutationFn: unavailableMutation<string, void>(),
+    onError: (e: Error) => toast.error(e.message),
   });
 }
 
 export function useSendNotification() {
-  const veld = useVeld();
   return useMutation({
-    mutationFn: (input: SendNotificationInput) => veld.notification.sendNotification(input),
-    onSuccess: () => toast.success('Notification sent'),
+    mutationFn: unavailableMutation<SendNotificationInput, void>(),
+    onError: (e: Error) => toast.error(e.message),
   });
 }
 
 export function useTemplates() {
-  const veld = useVeld();
-  return useQuery({ queryKey: notifKeys.templates, queryFn: () => veld.notification.listTemplates() });
+  return useStubQuery<unknown[]>(notifKeys.templates, []);
 }
 
 export function useCreateTemplate() {
-  const veld = useVeld();
-  const qc = useQueryClient();
   return useMutation({
-    mutationFn: (input: CreateTemplateInput) => veld.notification.createTemplate(input),
-    onSuccess: () => { toast.success('Template created'); qc.invalidateQueries({ queryKey: notifKeys.templates }); },
+    mutationFn: unavailableMutation<CreateTemplateInput, void>(),
+    onError: (e: Error) => toast.error(e.message),
   });
 }
 
-export function useUpdateTemplate(id: string) {
-  const veld = useVeld();
-  const qc = useQueryClient();
+export function useUpdateTemplate(_id: string) {
   return useMutation({
-    mutationFn: (input: UpdateTemplateInput) => veld.notification.updateTemplate(id, input),
-    onSuccess: () => { toast.success('Template updated'); qc.invalidateQueries({ queryKey: notifKeys.templates }); },
+    mutationFn: unavailableMutation<UpdateTemplateInput, void>(),
+    onError: (e: Error) => toast.error(e.message),
   });
 }
 
 export function useDeactivateTemplate() {
-  const veld = useVeld();
-  const qc = useQueryClient();
   return useMutation({
-    mutationFn: (id: string) => veld.notification.deactivateTemplate(id),
-    onSuccess: () => { toast.success('Template deactivated'); qc.invalidateQueries({ queryKey: notifKeys.templates }); },
+    mutationFn: unavailableMutation<string, void>(),
+    onError: (e: Error) => toast.error(e.message),
   });
 }
-

@@ -20,9 +20,9 @@ export default function TransactionsListPage() {
   const accounts = useMyAccounts();
   const [accountId, setAccountId] = useState<string>('');
   const [page, setPage] = useState(0);
-  const selected = accounts.data?.find((a) => a.account.id === accountId) || accounts.data?.[0];
-  const id = selected?.account.id || '';
-  const tx = useAccountTransactions(id, selected?.account.currency || 'USD', page);
+  const selected = accounts.data?.find((a) => a.id === accountId) || accounts.data?.[0];
+  const id = selected?.id || '';
+  const tx = useAccountTransactions(id, selected?.currency || 'USD', page);
 
   return (
     <div>
@@ -41,12 +41,12 @@ export default function TransactionsListPage() {
             <span className="text-sm font-medium">Account:</span>
             <Select
               className="max-w-xs"
-              value={accountId || selected?.account.id}
+              value={accountId || selected?.id}
               onChange={(e) => { setAccountId(e.target.value); setPage(0); }}
             >
               {accounts.data?.map((a) => (
-                <option key={a.account.id} value={a.account.id}>
-                  {a.account.accountType} · {a.account.accountNumber}
+                <option key={a.id} value={a.id}>
+                  {a.accountType} · {a.accountNumber}
                 </option>
               ))}
             </Select>
@@ -77,7 +77,7 @@ export default function TransactionsListPage() {
                       <TD>{formatDateTime(t.executedAt || t.createdAt)}</TD>
                       <TD className="font-medium">{t.transactionType || '—'}</TD>
                       <TD><Badge tone={t.status === 'COMPLETED' ? 'success' : 'warning'}>{t.status}</Badge></TD>
-                      <TD className="text-right"><CurrencyDisplay amount={t.totalAmount} currency={selected?.account.currency} /></TD>
+                      <TD className="text-right"><CurrencyDisplay amount={t.totalAmount} currency={selected?.currency} /></TD>
                     </TR>
                   ))}
                 </TBody>

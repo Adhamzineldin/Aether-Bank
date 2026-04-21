@@ -26,13 +26,13 @@ const items: Item[] = [
 ];
 
 const employeeItems: Item[] = [
-  { to: ROUTES.workflow, label: 'Workflow', icon: <ListChecks className="h-4 w-4" />, roles: ['EMPLOYEE', 'ADMIN'] },
-  { to: ROUTES.audit, label: 'Audit Logs', icon: <ShieldCheck className="h-4 w-4" />, roles: ['EMPLOYEE', 'ADMIN'] },
+  { to: ROUTES.workflow, label: 'Workflow', icon: <ListChecks className="h-4 w-4" />, roles: ['EMPLOYEE', 'ADMIN', 'SUPERADMIN'] },
+  { to: ROUTES.audit, label: 'Audit Logs', icon: <ShieldCheck className="h-4 w-4" />, roles: ['EMPLOYEE', 'ADMIN', 'SUPERADMIN'] },
 ];
 
 const adminItems: Item[] = [
-  { to: ROUTES.adminUsers, label: 'Users', icon: <Users className="h-4 w-4" />, roles: ['ADMIN'] },
-  { to: ROUTES.templates, label: 'Templates', icon: <Bell className="h-4 w-4" />, roles: ['ADMIN'] },
+  { to: ROUTES.adminUsers, label: 'Users', icon: <Users className="h-4 w-4" />, roles: ['ADMIN', 'SUPERADMIN'] },
+  { to: ROUTES.templates, label: 'Templates', icon: <Bell className="h-4 w-4" />, roles: ['ADMIN', 'SUPERADMIN'] },
 ];
 
 export function Sidebar() {
@@ -56,13 +56,13 @@ export function Sidebar() {
         {items.map((it) => (
           <SidebarItem key={it.to} item={it} collapsed={collapsed} />
         ))}
-        {hasRole('EMPLOYEE', 'ADMIN') && (
+        {hasRole('EMPLOYEE', 'ADMIN', 'SUPERADMIN') && (
           <>
             <Section collapsed={collapsed} label="Operations" />
             {employeeItems.map((it) => <SidebarItem key={it.to} item={it} collapsed={collapsed} />)}
           </>
         )}
-        {hasRole('ADMIN') && (
+        {hasRole('ADMIN', 'SUPERADMIN') && (
           <>
             <Section collapsed={collapsed} label="Administration" />
             {adminItems.map((it) => <SidebarItem key={it.to} item={it} collapsed={collapsed} />)}
