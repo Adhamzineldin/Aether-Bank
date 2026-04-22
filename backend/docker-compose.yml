@@ -282,6 +282,11 @@ services:
       - SPRING_MAIL_PORT=587
       - SPRING_MAIL_USERNAME=Adhams.Botmail@gmail.com
       - SPRING_MAIL_PASSWORD=tkfp vsuh kybi jwbh
+      # Resolves account → user email for transfer alerts. Hits account-service
+      # which joins to iam-service internally.
+      - NOTIFICATION_CONTACT_LOOKUP_URL_TEMPLATE=http://account-service:8081/api/accounts/{accountId}/contact
+      # Same idea but keyed by userId for the generic NotificationDispatchService path.
+      - NOTIFICATION_USER_CONTACT_URL_TEMPLATE=http://iam-service:8085/api/internal/users/{userId}/email
     depends_on:
       mongodb:
         condition: service_healthy

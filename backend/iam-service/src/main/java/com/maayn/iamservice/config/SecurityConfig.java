@@ -38,6 +38,11 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/api/auth/refresh").permitAll()
                         // Health/actuator
                         .requestMatchers("/actuator/**").permitAll()
+                        // Internal service-to-service lookups (notification-service
+                        // resolves user email by id). Exposed only inside the
+                        // docker network — the api-gateway must not route
+                        // external traffic to /api/internal/**.
+                        .requestMatchers("/api/internal/**").permitAll()
                         // Everything else (incl. /api/auth/users/**, /api/auth/roles)
                         // requires a valid JWT; method-level @PreAuthorize enforces roles.
                         .anyRequest().authenticated()
