@@ -87,14 +87,15 @@ public class CardIssueController {
 
     /**
      * Browser-friendly transaction history. The auto-generated CardController
-     * declares this as {@code GET} with a {@code @RequestBody} which browsers
-     * (and CORS preflights) handle inconsistently — the frontend hook was
-     * stubbed because of it. This variant accepts the same filters as
+     * declares its variant as {@code GET} with a {@code @RequestBody} which
+     * browsers (and CORS preflights) handle inconsistently — the frontend hook
+     * was stubbed because of it. This endpoint accepts the same filters as
      * conventional query string parameters so the frontend can issue a plain
-     * {@code GET /api/card/{cardId}/transactions?page=0&pageSize=20} and get
-     * real data back.
+     * {@code GET /api/card/{cardId}/history?page=0&pageSize=20} and get real
+     * data back. We use {@code /history} (rather than {@code /transactions})
+     * to avoid clashing with the generated controller's mapping.
      */
-    @GetMapping("/{cardId}/transactions")
+    @GetMapping("/{cardId}/history")
     public ResponseEntity<PaginatedCardTransactionResponse> getCardTransactions(
             @PathVariable String cardId,
             @RequestParam(required = false) CardTransactionStatus status,

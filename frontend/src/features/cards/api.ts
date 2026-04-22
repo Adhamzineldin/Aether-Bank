@@ -53,14 +53,14 @@ export const cardsApi = {
 
   /**
    * Card transaction history. The veld spec models this as GET-with-body
-   * which browsers can't reliably send, so card-service exposes a
-   * query-string variant on the same path that we hit here.
+   * which browsers can't reliably send, so card-service exposes a sibling
+   * query-string variant at /history that we hit here.
    */
   listTransactions: (
     cardId: string,
     params: { page?: number; pageSize?: number; status?: string; type?: string } = {},
   ) =>
     http
-      .get<PaginatedCardTransactionResponse>(`${BASE}/${cardId}/transactions`, { params })
+      .get<PaginatedCardTransactionResponse>(`${BASE}/${cardId}/history`, { params })
       .then((r) => r.data),
 };
