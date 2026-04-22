@@ -12,6 +12,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * Bridges Mongo document models (strings) with the generated SDK models
+ * (enums + trimmed field set). The document side keeps extra persistence-only
+ * fields like {@code statusReason}, {@code completedAt}, {@code completedBy}
+ * and {@code templateVersion}; those are intentionally dropped when exposing
+ * a workflow through the SDK contract.
+ */
 @Component
 public class WorkflowMapper {
 
@@ -19,17 +26,14 @@ public class WorkflowMapper {
         if (doc == null)
             return null;
         return new WorkflowInstance(
-                doc.getId() != null ? doc.getId() : null,
+                doc.getId(),
                 doc.getTemplateId(),
-                doc.getTemplateVersion(),
                 doc.getEntityType(),
                 doc.getEntityId(),
                 doc.getStatus(),
-                doc.getStatusReason(),
                 doc.getCurrentStep(),
+                toModelSteps(doc.getSteps()),
                 doc.getVersion(),
-                doc.getCompletedAt(),
-                doc.getCompletedBy(),
                 doc.getCreatedAt(),
                 doc.getUpdatedAt());
     }
@@ -57,7 +61,9 @@ public class WorkflowMapper {
         return WorkflowInstanceDocument.builder()
                 .id(UUID.randomUUID())
                 .templateId(input.getTemplateId())
-                .templateVersion(input.getTemplateVersion())
+                // The SDK input does not carry a template version yet; pin to 1
+                // until the contract is extended.
+                .templateVersion(1)
                 .entityType(input.getEntityType())
                 .entityId(input.getEntityId())
                 .status(status)
@@ -108,11 +114,44 @@ public class WorkflowMapper {
                 .id(UUID.randomUUID())
                 .workflowId(workflow.getId())
                 .step(step.getStep())
-                .role(step.getRole())
+                .role(parseRole(step.getRole()))
                 .assignedTo(assignedUser)
                 .taskStatus(TaskStatus.PENDING)
                 .decisionStatus(DecisionStatus.PENDING)
                 .createdAt(LocalDateTime.now())
                 .build();
+    }
+
+    private List<WorkflowStep> toModelSteps(List<WorkflowStepDocument> docs) {
+        if (docs == null || docs.isEmpty()) {
+            return List.of();
+        }
+        List<WorkflowStep> out = new ArrayList<>(docs.size());
+        for (WorkflowStepDocument d : docs) {
+            out.add(new WorkflowStep(d.getId(), d.getStep(), parseRole(d.getRole()), parseAction(d.getAction())));
+        }
+        return out;
+    }
+
+    private static StepRole parseRole(String value) {
+        if (value == null || value.isBlank()) {
+            return null;
+        }
+        try {
+            return StepRole.fromValue(value);
+        } catch (IllegalArgumentException ex) {
+            return null;
+        }
+    }
+
+    private static StepAction parseAction(String value) {
+        if (value == null || value.isBlank()) {
+            return null;
+        }
+        try {
+            return StepAction.fromValue(value);
+        } catch (IllegalArgumentException ex) {
+            return null;
+        }
     }
 }

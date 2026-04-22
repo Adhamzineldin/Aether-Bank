@@ -5,6 +5,14 @@ spring:
   application:
     name: notification-service
 
+  # Legacy repositories in `com.maayn.notificationservice.repository` and the
+  # document-backed repositories in `com.maayn.notificationservice.repositories`
+  # share interface names (WorkflowInstanceRepository, etc.). Both are still
+  # wired into different code paths so we enable override until the two layers
+  # are unified behind a single repository package.
+  main:
+    allow-bean-definition-overriding: true
+
   data:
     mongodb:
       auto-index-creation: true

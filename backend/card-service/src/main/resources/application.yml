@@ -1,19 +1,24 @@
 server:
-  port: 8084
+  port: ${SERVER_PORT:8084}
 
 spring:
   application:
     name: card-service
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:5432/card_db
-    username: postgres
-    password: mahi234
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/card_db}
+    username: ${SPRING_DATASOURCE_USERNAME:postgres}
+    password: ${SPRING_DATASOURCE_PASSWORD:mahi234}
+  rabbitmq:
+    host: ${SPRING_RABBITMQ_HOST:localhost}
+    port: ${SPRING_RABBITMQ_PORT:5672}
+    username: ${SPRING_RABBITMQ_USERNAME:guest}
+    password: ${SPRING_RABBITMQ_PASSWORD:guest}
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
       ddl-auto: update
-    show-sql: true
+    show-sql: false
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
@@ -21,9 +26,13 @@ spring:
 veld:
   sdk:
     transaction:
-      base-url: http://localhost:2501
+      base-url: ${VELD_SDK_TRANSACTION_BASE_URL:http://localhost:2501}
 
-#eureka:
-#  client:
-#    service-url:
-#      defaultZone: http://localhost:8761/eureka/
+eureka:
+  client:
+    service-url:
+      defaultZone: ${EUREKA_CLIENT_SERVICEURL_DEFAULTZONE:http://localhost:8761/eureka/}
+    register-with-eureka: true
+    fetch-registry: true
+  instance:
+    prefer-ip-address: true

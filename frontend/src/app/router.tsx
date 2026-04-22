@@ -141,9 +141,9 @@ export const router = createBrowserRouter([
       { path: ROUTES.security, element: <SecurityPage /> },
       { path: ROUTES.preferences, element: <PreferencesPage /> },
 
-      // Employee + admin
+      // Approvers — any assignment-only workflow role can also reach the inbox
       {
-        element: <GuardedOutlet roles={['EMPLOYEE', 'ADMIN', 'SUPERADMIN']} />,
+        element: <GuardedOutlet roles={['EMPLOYEE', 'ADMIN', 'SUPERADMIN', 'RISK', 'MANAGER', 'DIRECTOR']} />,
         children: [
           { path: ROUTES.workflow, element: <WorkflowInboxPage /> },
           { path: ROUTES.workflowDetail(), element: <WorkflowDetailPage /> },

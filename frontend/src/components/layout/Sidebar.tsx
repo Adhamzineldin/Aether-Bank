@@ -25,8 +25,16 @@ const items: Item[] = [
   { to: ROUTES.notifications, label: 'Notifications', icon: <Bell className="h-4 w-4" /> },
 ];
 
-const employeeItems: Item[] = [
-  { to: ROUTES.workflow, label: 'Workflow', icon: <ListChecks className="h-4 w-4" />, roles: ['EMPLOYEE', 'ADMIN', 'SUPERADMIN'] },
+/**
+ * Roles that can open the approval inbox. `RISK`, `MANAGER` and `DIRECTOR` are
+ * assignment-only workflow roles — any user holding one is a potential approver
+ * on some workflow step and must be able to see and action their inbox, even if
+ * they are not an `EMPLOYEE`.
+ */
+const WORKFLOW_ROLES = ['EMPLOYEE', 'ADMIN', 'SUPERADMIN', 'RISK', 'MANAGER', 'DIRECTOR'] as const;
+
+const operationsItems: Item[] = [
+  { to: ROUTES.workflow, label: 'Workflow', icon: <ListChecks className="h-4 w-4" />, roles: [...WORKFLOW_ROLES] },
   { to: ROUTES.audit, label: 'Audit Logs', icon: <ShieldCheck className="h-4 w-4" />, roles: ['EMPLOYEE', 'ADMIN', 'SUPERADMIN'] },
 ];
 
@@ -39,6 +47,8 @@ const adminItems: Item[] = [
 export function Sidebar() {
   const collapsed = useUIStore((s) => s.sidebarCollapsed);
   const hasRole = useAuthStore((s) => s.hasRole);
+
+  const visibleOperationsItems = operationsItems.filter((it) => !it.roles || hasRole(...it.roles));
 
   return (
     <aside
@@ -57,10 +67,10 @@ export function Sidebar() {
         {items.map((it) => (
           <SidebarItem key={it.to} item={it} collapsed={collapsed} />
         ))}
-        {hasRole('EMPLOYEE', 'ADMIN', 'SUPERADMIN') && (
+        {visibleOperationsItems.length > 0 && (
           <>
             <Section collapsed={collapsed} label="Operations" />
-            {employeeItems.map((it) => <SidebarItem key={it.to} item={it} collapsed={collapsed} />)}
+            {visibleOperationsItems.map((it) => <SidebarItem key={it.to} item={it} collapsed={collapsed} />)}
           </>
         )}
         {hasRole('ADMIN', 'SUPERADMIN') && (
