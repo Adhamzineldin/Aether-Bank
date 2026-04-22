@@ -1,5 +1,6 @@
 package com.maayn.notificationservice.services.notification;
 
+import com.maayn.notificationservice.audit.AuditPublisher;
 import com.maayn.notificationservice.documents.notification.NotificationItemDocument;
 import jakarta.mail.internet.MimeMessage;
 import lombok.extern.slf4j.Slf4j;
@@ -28,6 +29,7 @@ public class NotificationDispatchService {
 
     private final ObjectProvider<JavaMailSender> mailSenderProvider;
     private final RestClient restClient;
+    private final AuditPublisher auditPublisher;
 
     @Value("${notification.user-contact.url-template:}")
     private String userContactUrlTemplate;
@@ -38,8 +40,9 @@ public class NotificationDispatchService {
     @Value("${notification.email.fallback-to:}")
     private String fallbackEmail;
 
-    public NotificationDispatchService(ObjectProvider<JavaMailSender> mailSenderProvider) {
+    public NotificationDispatchService(ObjectProvider<JavaMailSender> mailSenderProvider, AuditPublisher auditPublisher) {
         this.mailSenderProvider = mailSenderProvider;
+        this.auditPublisher = auditPublisher;
         this.restClient = RestClient.builder().build();
     }
 
@@ -86,6 +89,8 @@ public class NotificationDispatchService {
             doc.setSentAt(now);
             doc.setFailedReason(null);
             log.info("Sent email notification {}", doc.getId());
+            auditPublisher.publishSuccess("NOTIFICATION_EMAIL_SENT", doc.getUserId(),
+                    "id=" + doc.getId() + " to=" + to.get() + " subject=" + (doc.getTitle() != null ? doc.getTitle() : ""));
         } catch (Exception e) {
             log.error("Email send failed for {}: {}", doc.getId(), e.getMessage());
             fail(doc, now, e.getMessage() != null ? e.getMessage() : "Email send failed");
@@ -97,6 +102,8 @@ public class NotificationDispatchService {
         doc.setProcessedAt(now);
         doc.setSentAt(null);
         doc.setFailedReason(reason);
+        auditPublisher.publishFailure("NOTIFICATION_DISPATCH_FAILED", doc.getUserId(),
+                "id=" + doc.getId() + " channel=" + doc.getChannel() + " reason=" + reason);
     }
 
     private Optional<String> resolveRecipientEmail(UUID userId) {

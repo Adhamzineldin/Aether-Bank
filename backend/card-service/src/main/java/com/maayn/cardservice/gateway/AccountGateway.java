@@ -1,7 +1,8 @@
 package com.maayn.cardservice.gateway;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.maayn.cardservice.exception.TransactionGatewayException;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import maayn.veld.generated.sdk.account.AccountClient;
 import maayn.veld.generated.sdk.account.models.shared.AccountCreatedEvent;
@@ -9,14 +10,18 @@ import maayn.veld.generated.sdk.account.constants.SystemAccounts;
 import maayn.veld.generated.sdk.transaction.constants.TransactionRabbitConfig;
 import maayn.veld.generated.sdk.transaction.models.transaction.TransactionType;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Component
-@RequiredArgsConstructor
 @Slf4j
 public class AccountGateway {
 
@@ -26,6 +31,21 @@ public class AccountGateway {
     private final AccountClient accountClient;
     private final TransactionGateway transactionGateway;
     private final RabbitTemplate rabbitTemplate;
+    private final String accountServiceBaseUrl;
+    private final HttpClient http = HttpClient.newHttpClient();
+    private final ObjectMapper mapper = new ObjectMapper();
+
+    public AccountGateway(
+            AccountClient accountClient,
+            TransactionGateway transactionGateway,
+            RabbitTemplate rabbitTemplate,
+            @Value("${veld.sdk.account.base-url:${VELD_ACCOUNT_URL:http://account-service:3003}}") String accountServiceBaseUrl
+    ) {
+        this.accountClient = accountClient;
+        this.transactionGateway = transactionGateway;
+        this.rabbitTemplate = rabbitTemplate;
+        this.accountServiceBaseUrl = accountServiceBaseUrl;
+    }
 
     public void verifyDebitAccountExists(UUID accountId) {
         try {
@@ -43,17 +63,45 @@ public class AccountGateway {
      * {@code (accountId, currency)} ledger key.
      */
     public String fetchAccountCurrency(UUID accountId) {
+        // The Veld-generated SDK's AccountResponse expects a nested
+        // {account: {currency, ...}} envelope, but account-service's
+        // BankAccountController returns a *flat* DTO ({id, currency, ...}),
+        // so the SDK call always yields a null `account` and we'd report
+        // "Account currency unavailable". Read the raw JSON instead and
+        // pull `currency` straight off the root, with a SDK fallback for
+        // forward compatibility if the controller ever migrates to the
+        // wrapped shape.
         try {
-            var resp = accountClient.account.getAccount(accountId.toString());
-            if (resp == null || resp.getAccount() == null || resp.getAccount().getCurrency() == null) {
+            String url = accountServiceBaseUrl + "/api/accounts_service/account/" + accountId;
+            HttpRequest req = HttpRequest.newBuilder(URI.create(url))
+                    .header("Accept", "application/json")
+                    .GET()
+                    .build();
+            HttpResponse<String> res = http.send(req, HttpResponse.BodyHandlers.ofString());
+            if (res.statusCode() >= 400) {
+                throw new IllegalArgumentException("Account lookup failed (" + res.statusCode() + ") for: " + accountId);
+            }
+            JsonNode root = mapper.readTree(res.body());
+            String currency = textAt(root, "currency");
+            if (currency == null) {
+                // legacy / future wrapped shape: { account: { currency } }
+                currency = textAt(root.path("account"), "currency");
+            }
+            if (currency == null || currency.isBlank()) {
                 throw new IllegalArgumentException("Account currency unavailable for: " + accountId);
             }
-            return resp.getAccount().getCurrency();
+            return currency;
         } catch (RuntimeException ex) {
             throw ex;
         } catch (Exception ex) {
             throw new IllegalArgumentException("Failed to fetch account currency: " + accountId, ex);
         }
+    }
+
+    private static String textAt(JsonNode node, String field) {
+        if (node == null || node.isMissingNode() || node.isNull()) return null;
+        JsonNode v = node.get(field);
+        return (v == null || v.isNull()) ? null : v.asText(null);
     }
 
     public UUID provisionCreditAccount(BigDecimal creditLimit, String currency) {

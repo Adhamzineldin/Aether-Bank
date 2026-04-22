@@ -1,5 +1,6 @@
 package com.maayn.iamservice.service;
 
+import com.maayn.iamservice.audit.AuditPublisher;
 import com.maayn.iamservice.domain.entity.AuditLog;
 import com.maayn.iamservice.repository.AuditLogRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -13,16 +14,27 @@ import java.util.UUID;
 
 /**
  * Audit Service
- * Logs all security-relevant events for compliance and debugging
+ * Logs all security-relevant events for compliance and debugging.
+ *
+ * <p>Dual-writes:
+ * <ul>
+ *   <li>Local PostgreSQL {@code audit_log} table — kept for IAM-internal
+ *       compliance (IP / user-agent / request-path forensics).</li>
+ *   <li>Central {@code security_audit_exchange} on RabbitMQ via
+ *       {@link AuditPublisher} — feeds the audit-service so the admin
+ *       dashboard sees the same event stream as every other microservice.</li>
+ * </ul>
  */
 @Slf4j
 @Service
 public class AuditService {
 
     private final AuditLogRepository auditLogRepository;
+    private final AuditPublisher auditPublisher;
 
-    public AuditService(AuditLogRepository auditLogRepository) {
+    public AuditService(AuditLogRepository auditLogRepository, AuditPublisher auditPublisher) {
         this.auditLogRepository = auditLogRepository;
+        this.auditPublisher = auditPublisher;
     }
 
     /**
@@ -52,6 +64,10 @@ public class AuditService {
         } catch (Exception e) {
             log.error("Failed to log audit event: {}", action, e);
         }
+        // Mirror to central audit-service (best-effort, non-fatal).
+        auditPublisher.publishSuccess(action,
+                null,
+                buildDetails(entityType, entityId, oldValue, newValue, details));
     }
 
     /**
@@ -80,6 +96,22 @@ public class AuditService {
         } catch (Exception e) {
             log.error("Failed to log login attempt", e);
         }
+        // Mirror to central audit-service.
+        if (success) {
+            auditPublisher.publishSuccess("LOGIN_SUCCESS", userId, details);
+        } else {
+            auditPublisher.publishFailure("LOGIN_FAILURE", userId, details);
+        }
+    }
+
+    private String buildDetails(String entityType, String entityId, String oldValue, String newValue, String details) {
+        StringBuilder sb = new StringBuilder();
+        if (entityType != null) sb.append("entityType=").append(entityType).append(' ');
+        if (entityId != null) sb.append("entityId=").append(entityId).append(' ');
+        if (oldValue != null) sb.append("oldValue=").append(oldValue).append(' ');
+        if (newValue != null) sb.append("newValue=").append(newValue).append(' ');
+        if (details != null) sb.append(details);
+        return sb.toString().trim();
     }
 
     /**

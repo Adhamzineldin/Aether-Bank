@@ -7,6 +7,7 @@ import com.maayn.cardservice.repository.CardRepository;
 import com.maayn.cardservice.repository.CreditCardDetailsRepository;
 import com.maayn.cardservice.util.DemoPanGenerator;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import maayn.veld.generated.models.card.CardNetwork;
 import maayn.veld.generated.models.card.CardStatus;
 import maayn.veld.generated.models.card.CardType;
@@ -20,6 +21,7 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class CardCreationService {
 
     private static final BigDecimal MINIMUM_PAYMENT_RATE = new BigDecimal("0.02");
@@ -39,7 +41,17 @@ public class CardCreationService {
         Objects.requireNonNull(customerId, "Customer ID is required");
         Objects.requireNonNull(network, "Card network is required");
         accountGateway.verifyDebitAccountExists(accountId);
-        String accountCurrency = accountGateway.fetchAccountCurrency(accountId);
+        // Best-effort: persist the linked account's currency so merchant
+        // payments hit the right ledger row from the get-go. If the lookup
+        // fails (network blip, controller schema drift, etc.) we don't fail
+        // card issuance — CardPaymentService.resolveSettlementCurrency()
+        // back-fills lazily on first payment.
+        String accountCurrency = null;
+        try {
+            accountCurrency = accountGateway.fetchAccountCurrency(accountId);
+        } catch (RuntimeException ex) {
+            log.warn("Could not pre-fetch account currency for {}: {} — will back-fill on first payment", accountId, ex.getMessage());
+        }
         Card card = buildBaseCard(accountId, customerId, CardType.DEBIT, network);
         card.setCurrency(accountCurrency);
         return cardRepository.save(card);

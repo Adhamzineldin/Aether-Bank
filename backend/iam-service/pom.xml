@@ -103,6 +103,12 @@
             <artifactId>spring-boot-starter-mail</artifactId>
         </dependency>
 
+        <!-- AMQP / RabbitMQ for cross-service security audit events -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-amqp</artifactId>
+        </dependency>
+
         <!-- Rate Limiting (Bucket4j) -->
         <dependency>
             <groupId>com.github.vladimir-bukhtoyarov</groupId>
