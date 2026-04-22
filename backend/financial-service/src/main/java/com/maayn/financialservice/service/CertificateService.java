@@ -1,5 +1,6 @@
 package com.maayn.financialservice.service;
 
+import com.maayn.financialservice.audit.AuditPublisher;
 import com.maayn.financialservice.entity.CertificateApplicationDocument;
 import com.maayn.financialservice.events.FinancialEventPublisher;
 import com.maayn.financialservice.mappers.CertificateMapper;
@@ -27,23 +28,38 @@ public class CertificateService implements ICertificateService {
     private final CertificateValidator certificateValidator;
     private final ReferenceNumberGenerator referenceNumberGenerator;
     private final FinancialEventPublisher eventPublisher;
+    private final AuditPublisher auditPublisher;
 
     @Override
     public CertificateApplicationResponse certificateSubmit(CertificateApplication request) {
-        certificateValidator.validateSubmission(request);
+        try {
+            certificateValidator.validateSubmission(request);
 
-        CertificateApplicationDocument certificate = certificateMapper.toEntity(request);
-        enrichCertificate(certificate);
+            CertificateApplicationDocument certificate = certificateMapper.toEntity(request);
+            enrichCertificate(certificate);
 
-        CertificateApplicationDocument savedCertificate = certificateRepository.save(certificate);
-        log.info("Certificate application {} submitted successfully.", savedCertificate.getId());
+            CertificateApplicationDocument savedCertificate = certificateRepository.save(certificate);
+            log.info("Certificate application {} submitted successfully.", savedCertificate.getId());
 
-        eventPublisher.publishCertificateSubmitted(
-                savedCertificate.getId(),
-                savedCertificate.getCustomerId(),
-                savedCertificate.getPrincipal());
+            eventPublisher.publishCertificateSubmitted(
+                    savedCertificate.getId(),
+                    savedCertificate.getCustomerId(),
+                    savedCertificate.getPrincipal());
 
-        return certificateMapper.toResponse(savedCertificate);
+            auditPublisher.publishSuccess(
+                    "SUBMIT_CERTIFICATE_APPLICATION",
+                    savedCertificate.getCustomerId(),
+                    String.format("Certificate %s submitted: principal=%s",
+                            savedCertificate.getCertificateNumber(), savedCertificate.getPrincipal()));
+
+            return certificateMapper.toResponse(savedCertificate);
+        } catch (RuntimeException ex) {
+            auditPublisher.publishFailure(
+                    "SUBMIT_CERTIFICATE_APPLICATION",
+                    request.getCustomerId(),
+                    String.format("Certificate submission failed: %s", ex.getMessage()));
+            throw ex;
+        }
     }
 
     private void enrichCertificate(CertificateApplicationDocument certificate) {

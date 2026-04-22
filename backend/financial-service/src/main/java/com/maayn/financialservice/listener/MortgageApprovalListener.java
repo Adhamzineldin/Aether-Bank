@@ -1,5 +1,6 @@
 package com.maayn.financialservice.listener;
 
+import com.maayn.financialservice.audit.AuditPublisher;
 import com.maayn.financialservice.entity.MortgageApplicationDocument;
 import com.maayn.financialservice.gateway.TransactionGateway;
 import com.maayn.financialservice.repo.MortgageRepo;
@@ -61,8 +62,18 @@ public class MortgageApprovalListener {
             mortgageRepository.save(mortgage);
 
             log.info("Mortgage {} disbursed to account {}", mortgageId, mortgage.getAccountId());
+            auditPublisher.publishSuccess(
+                    "DISBURSE_MORTGAGE",
+                    mortgage.getCustomerId(),
+                    String.format("Mortgage %s disbursed: amount=%s %s to account %s",
+                            mortgageId, mortgage.getDisbursedAmount(),
+                            mortgage.getCurrency(), mortgage.getAccountId()));
         } catch (Exception e) {
             log.error("Failed to process mortgage approval event", e);
+            auditPublisher.publishFailure(
+                    "DISBURSE_MORTGAGE",
+                    null,
+                    String.format("Mortgage disbursement failed for event %s: %s", event, e.getMessage()));
         }
     }
 }

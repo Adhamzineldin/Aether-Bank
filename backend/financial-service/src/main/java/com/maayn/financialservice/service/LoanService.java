@@ -1,5 +1,6 @@
 package com.maayn.financialservice.service;
 
+import com.maayn.financialservice.audit.AuditPublisher;
 import com.maayn.financialservice.entity.LoanApplicationDocument;
 import com.maayn.financialservice.events.FinancialEventPublisher;
 import com.maayn.financialservice.mappers.LoanMapper;
@@ -29,26 +30,42 @@ public class LoanService implements ILoanService {
     private final LoanValidator loanValidator;
     private final ReferenceNumberGenerator referenceNumberGenerator;
     private final FinancialEventPublisher eventPublisher;
+    private final AuditPublisher auditPublisher;
 
     @Override
     public LoanApplicationResponse loanSubmit(LoanApplication request) {
-        loanValidator.validateSubmission(request);
-        validateBusinessRules(request);
+        try {
+            loanValidator.validateSubmission(request);
+            validateBusinessRules(request);
 
-        LoanApplicationDocument loan = loanMapper.toEntity(request);
-        enrichLoan(loan);
+            LoanApplicationDocument loan = loanMapper.toEntity(request);
+            enrichLoan(loan);
 
-        LoanApplicationDocument savedLoan = loanRepository.save(loan);
-        log.info("Loan application {} submitted successfully.", savedLoan.getId());
-        
-        // Publish event to trigger workflow
-        eventPublisher.publishLoanSubmitted(
-            savedLoan.getId(), 
-            savedLoan.getCustomerId(), 
-            savedLoan.getRequestedAmount()
-        );
-        
-        return loanMapper.toResponse(savedLoan);
+            LoanApplicationDocument savedLoan = loanRepository.save(loan);
+            log.info("Loan application {} submitted successfully.", savedLoan.getId());
+
+            // Publish event to trigger workflow
+            eventPublisher.publishLoanSubmitted(
+                savedLoan.getId(),
+                savedLoan.getCustomerId(),
+                savedLoan.getRequestedAmount()
+            );
+
+            auditPublisher.publishSuccess(
+                    "SUBMIT_LOAN_APPLICATION",
+                    savedLoan.getCustomerId(),
+                    String.format("Loan %s submitted: amount=%s %s, tenure=%s months",
+                            savedLoan.getLoanNumber(), savedLoan.getRequestedAmount(),
+                            savedLoan.getCurrency(), savedLoan.getRequestedTenure()));
+
+            return loanMapper.toResponse(savedLoan);
+        } catch (RuntimeException ex) {
+            auditPublisher.publishFailure(
+                    "SUBMIT_LOAN_APPLICATION",
+                    request.getCustomerId(),
+                    String.format("Loan submission failed: %s", ex.getMessage()));
+            throw ex;
+        }
     }
 
     private void validateBusinessRules(LoanApplication request) {

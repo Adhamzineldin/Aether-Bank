@@ -83,8 +83,19 @@ public class LoanApprovalListener {
                 loan.getDisbursedAmount()
             );
 
+            auditPublisher.publishSuccess(
+                    "DISBURSE_LOAN",
+                    loan.getCustomerId(),
+                    String.format("Loan %s disbursed: amount=%s %s to account %s",
+                            loan.getId(), loan.getDisbursedAmount(),
+                            loan.getCurrency(), loan.getAccountId()));
+
         } catch (Exception e) {
             log.error("Failed to process loan approval event: {}", event, e);
+            auditPublisher.publishFailure(
+                    "DISBURSE_LOAN",
+                    null,
+                    String.format("Loan disbursement failed for event %s: %s", event, e.getMessage()));
             throw new RuntimeException("Loan approval handling failed", e);
         }
     }

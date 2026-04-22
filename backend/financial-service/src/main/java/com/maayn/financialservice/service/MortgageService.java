@@ -1,5 +1,6 @@
 package com.maayn.financialservice.service;
 
+import com.maayn.financialservice.audit.AuditPublisher;
 import com.maayn.financialservice.entity.MortgageApplicationDocument;
 import com.maayn.financialservice.events.FinancialEventPublisher;
 import com.maayn.financialservice.mappers.MortgageMapper;
@@ -34,24 +35,41 @@ public class MortgageService implements IMortgageService {
     private final MortgageValidator mortgageValidator;
     private final ReferenceNumberGenerator referenceNumberGenerator;
     private final FinancialEventPublisher eventPublisher;
+    private final AuditPublisher auditPublisher;
 
     @Override
     public MortgageApplicationResponse submitMortgageApplication(MortgageApplication request) throws Exception {
         log.info("Submitting mortgage application for customer: {}", request.getCustomerId());
-        
-        mortgageValidator.validateSubmission(request);
-        validateBusinessRules(request);
 
-        MortgageApplicationDocument mortgage = mortgageMapper.toEntity(request);
-        enrichMortgage(mortgage);
+        try {
+            mortgageValidator.validateSubmission(request);
+            validateBusinessRules(request);
 
-        MortgageApplicationDocument savedMortgage = mortgageRepository.save(mortgage);
-        log.info("Mortgage application {} submitted successfully.", savedMortgage.getId());
-        
-        // Publish event to trigger workflow
-        publishMortgageSubmittedEvent(savedMortgage);
-        
-        return mortgageMapper.toResponse(savedMortgage);
+            MortgageApplicationDocument mortgage = mortgageMapper.toEntity(request);
+            enrichMortgage(mortgage);
+
+            MortgageApplicationDocument savedMortgage = mortgageRepository.save(mortgage);
+            log.info("Mortgage application {} submitted successfully.", savedMortgage.getId());
+
+            // Publish event to trigger workflow
+            publishMortgageSubmittedEvent(savedMortgage);
+
+            auditPublisher.publishSuccess(
+                    "SUBMIT_MORTGAGE_APPLICATION",
+                    savedMortgage.getCustomerId(),
+                    String.format("Mortgage %s submitted: amount=%s %s, term=%s months, property=%s",
+                            savedMortgage.getMortgageNumber(), savedMortgage.getPrincipalAmount(),
+                            savedMortgage.getCurrency(), savedMortgage.getTermMonths(),
+                            request.getPropertyAddress()));
+
+            return mortgageMapper.toResponse(savedMortgage);
+        } catch (RuntimeException ex) {
+            auditPublisher.publishFailure(
+                    "SUBMIT_MORTGAGE_APPLICATION",
+                    request.getCustomerId(),
+                    String.format("Mortgage submission failed: %s", ex.getMessage()));
+            throw ex;
+        }
     }
 
     @Override

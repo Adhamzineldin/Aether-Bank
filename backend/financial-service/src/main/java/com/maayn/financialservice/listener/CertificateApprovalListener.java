@@ -1,5 +1,6 @@
 package com.maayn.financialservice.listener;
 
+import com.maayn.financialservice.audit.AuditPublisher;
 import com.maayn.financialservice.entity.CertificateApplicationDocument;
 import com.maayn.financialservice.gateway.TransactionGateway;
 import com.maayn.financialservice.repo.CertificateRepo;
@@ -21,6 +22,7 @@ public class CertificateApprovalListener {
 
     private final CertificateRepo certificateRepository;
     private final TransactionGateway transactionGateway;
+    private final AuditPublisher auditPublisher;
 
     @RabbitListener(queues = "certificate.approved.queue")
     public void onCertificateApproved(Map<String, Object> event) {
@@ -60,8 +62,17 @@ public class CertificateApprovalListener {
             certificateRepository.save(cert);
 
             log.info("Certificate {} funded and activated; matures {}", certificateId, cert.getMaturityDate());
+            auditPublisher.publishSuccess(
+                    "ACTIVATE_CERTIFICATE",
+                    cert.getCustomerId(),
+                    String.format("Certificate %s activated: principal=%s %s, matures=%s",
+                            certificateId, cert.getPrincipal(), currency, cert.getMaturityDate()));
         } catch (Exception e) {
             log.error("Failed to process certificate approval event", e);
+            auditPublisher.publishFailure(
+                    "ACTIVATE_CERTIFICATE",
+                    null,
+                    String.format("Certificate activation failed for event %s: %s", event, e.getMessage()));
         }
     }
 }

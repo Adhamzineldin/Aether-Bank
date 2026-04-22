@@ -1,5 +1,6 @@
 package com.maayn.cardservice.controller;
 
+import com.maayn.cardservice.audit.AuditPublisher;
 import com.maayn.cardservice.entity.Card;
 import com.maayn.cardservice.mapper.CardMapper;
 import com.maayn.cardservice.repository.CardRepository;
@@ -34,25 +35,40 @@ public class CardIssueController {
 
     private final CardCreationService cardCreationService;
     private final CardRepository cardRepository;
+    private final AuditPublisher auditPublisher;
 
     @PostMapping
     public ResponseEntity<CardSummary> issueCard(@RequestBody IssueCardRequest request) {
-        Card card;
-        if (request.cardType() == CardType.CREDIT) {
-            card = cardCreationService.createCreditCard(
-                    request.customerId(),
-                    request.cardNetwork(),
-                    request.creditLimit() != null ? request.creditLimit() : DEFAULT_CREDIT_LIMIT,
-                    request.annualInterestRate() != null ? request.annualInterestRate() : DEFAULT_CREDIT_APR,
-                    request.currency() != null ? request.currency() : "USD"
-            );
-        } else {
-            if (request.accountId() == null) {
-                throw new IllegalArgumentException("accountId is required for DEBIT cards");
+        try {
+            Card card;
+            if (request.cardType() == CardType.CREDIT) {
+                card = cardCreationService.createCreditCard(
+                        request.customerId(),
+                        request.cardNetwork(),
+                        request.creditLimit() != null ? request.creditLimit() : DEFAULT_CREDIT_LIMIT,
+                        request.annualInterestRate() != null ? request.annualInterestRate() : DEFAULT_CREDIT_APR,
+                        request.currency() != null ? request.currency() : "USD"
+                );
+            } else {
+                if (request.accountId() == null) {
+                    throw new IllegalArgumentException("accountId is required for DEBIT cards");
+                }
+                card = cardCreationService.createDebitCard(request.accountId(), request.customerId(), request.cardNetwork());
             }
-            card = cardCreationService.createDebitCard(request.accountId(), request.customerId(), request.cardNetwork());
+            auditPublisher.publishSuccess(
+                    "ISSUE_CARD",
+                    request.customerId(),
+                    String.format("Issued %s %s card %s linked to account %s",
+                            request.cardType(), request.cardNetwork(), card.getId(), card.getAccountId()));
+            return ResponseEntity.status(HttpStatus.CREATED).body(CardMapper.toCardSummary(card));
+        } catch (RuntimeException ex) {
+            auditPublisher.publishFailure(
+                    "ISSUE_CARD",
+                    request.customerId(),
+                    String.format("Failed to issue %s %s card: %s",
+                            request.cardType(), request.cardNetwork(), ex.getMessage()));
+            throw ex;
         }
-        return ResponseEntity.status(HttpStatus.CREATED).body(CardMapper.toCardSummary(card));
     }
 
     @GetMapping("/customer/{customerId}")

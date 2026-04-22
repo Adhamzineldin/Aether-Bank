@@ -113,4 +113,10 @@ public class CardPaymentService {
         }
         return "card-payment-" + input.getCardToken() + "-" + cardRulesValidator.normalizeCurrency(input.getCurrency()) + "-" + input.getAmount();
     }
+
+    /** Audit-friendly preview of a card token / PAN: only the trailing 4 chars. */
+    private static String tokenSuffix(String token) {
+        if (token == null || token.length() <= 4) return "****";
+        return "****" + token.substring(token.length() - 4);
+    }
 }

@@ -1,6 +1,8 @@
 package com.maayn.auditservice.config;
 
 import org.springframework.amqp.core.*;
+import org.springframework.amqp.support.converter.DefaultJacksonJavaTypeMapper;
+import org.springframework.amqp.support.converter.JacksonJavaTypeMapper;
 import org.springframework.amqp.support.converter.JacksonJsonMessageConverter;
 import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.context.annotation.Bean;
@@ -28,8 +30,19 @@ public class RabbitMQConfig {
         return BindingBuilder.bind(auditQueue).to(auditExchange).with(AUDIT_ROUTING_KEY);
     }
 
+    /**
+     * Use the listener's parameter type for deserialization instead of the
+     * publisher-set {@code __TypeId__} header. Audit events arrive from many
+     * services (transaction, account, card, financial, iam) which each carry
+     * their own {@code AuditEvent} FQCN — without INFERRED precedence the
+     * default mapper would throw {@code ClassNotFoundException} on consume.
+     */
     @Bean
     public MessageConverter converter() {
-        return new JacksonJsonMessageConverter();
+        JacksonJsonMessageConverter c = new JacksonJsonMessageConverter();
+        DefaultJacksonJavaTypeMapper typeMapper = new DefaultJacksonJavaTypeMapper();
+        typeMapper.setTypePrecedence(JacksonJavaTypeMapper.TypePrecedence.INFERRED);
+        c.setJavaTypeMapper(typeMapper);
+        return c;
     }
 }
