@@ -31,9 +31,38 @@ public class CardAccessService {
         return parsedId;
     }
 
+    /**
+     * Resolves the {@link Card} a merchant payment is targeting.
+     *
+     * <p>Real PSPs require a server-issued tokenized handle, but for the demo
+     * checkout flow the public {@code <PaymentGateway/>} form lets the user
+     * type a raw card number. We therefore accept either:</p>
+     * <ul>
+     *   <li>the stored {@code card_token} (e.g. {@code card_abc123...}), or</li>
+     *   <li>a raw PAN — digits and spaces are tolerated and stripped.</li>
+     * </ul>
+     *
+     * <p>The token lookup is tried first so production-shaped payloads keep
+     * their fast path; the PAN fallback only runs when the literal value
+     * doesn't match any token.</p>
+     */
     public Card getCardByToken(String cardToken) throws ProcessMerchantPaymentException {
-        return cardRepository.findByCardToken(cardToken)
-                .orElseThrow(() -> CardErrors.processMerchantPayment.invalidCardToken("Card token is invalid"));
+        if (cardToken == null || cardToken.isBlank()) {
+            throw CardErrors.processMerchantPayment.invalidCardToken("Card token is invalid");
+        }
+        Optional<Card> byToken = cardRepository.findByCardToken(cardToken);
+        if (byToken.isPresent()) {
+            return byToken.get();
+        }
+        // Fallback: treat the value as a raw PAN (strip spaces / dashes).
+        String normalisedPan = cardToken.replaceAll("[\\s-]", "");
+        if (!normalisedPan.isEmpty() && normalisedPan.chars().allMatch(Character::isDigit)) {
+            Optional<Card> byPan = cardRepository.findByPan(normalisedPan);
+            if (byPan.isPresent()) {
+                return byPan.get();
+            }
+        }
+        throw CardErrors.processMerchantPayment.invalidCardToken("Card token is invalid");
     }
 
     public CardTransaction getRefundableTransaction(UUID transactionId) throws RefundTransactionException {
