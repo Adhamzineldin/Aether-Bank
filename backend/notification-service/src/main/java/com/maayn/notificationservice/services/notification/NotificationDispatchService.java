@@ -82,7 +82,14 @@ public class NotificationDispatchService {
             }
             helper.setTo(to.get());
             helper.setSubject(doc.getTitle() != null ? doc.getTitle() : "Notification");
-            helper.setText(doc.getMessage() != null ? doc.getMessage() : "", false);
+            // Wrap the plain message in the same branded card layout the
+            // transfer alerts use so every email out of notification-service
+            // looks like it came from the same product, not a unix mailx
+            // dump.
+            String htmlBody = com.maayn.notificationservice.templates.GenericEmailTemplate.wrap(
+                    doc.getTitle() != null ? doc.getTitle() : "Notification",
+                    doc.getMessage() != null ? doc.getMessage() : "");
+            helper.setText(htmlBody, true);
             sender.send(message);
             doc.setStatus(NotificationStatus.SENT);
             doc.setProcessedAt(now);

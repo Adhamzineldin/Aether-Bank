@@ -42,7 +42,7 @@ public class TransferEmailNotifier {
             }
             helper.setTo(toEmail);
             helper.setSubject(EmailTemplate.transferSuccessSubject(event.referenceNumber()));
-            helper.setText(EmailTemplate.transferSuccessBody(event), false);
+            helper.setText(EmailTemplate.transferSuccessBody(event), true);
             sender.send(message);
             log.info("Sent transfer success email for ref {} to {}", event.referenceNumber(), toEmail);
         } catch (Exception e) {
@@ -64,7 +64,7 @@ public class TransferEmailNotifier {
             }
             helper.setTo(toEmail);
             helper.setSubject(EmailTemplate.transferFailedSubject(event.referenceNumber()));
-            helper.setText(EmailTemplate.transferFailedBody(event), false);
+            helper.setText(EmailTemplate.transferFailedBody(event), true);
             sender.send(message);
             log.info("Sent transfer failed email for ref {} to {}", event.referenceNumber(), toEmail);
         } catch (Exception e) {
