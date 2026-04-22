@@ -1,6 +1,7 @@
 package com.maayn.accountservice.service;
 
 import com.maayn.accountservice.audit.AuditPublisher;
+import com.maayn.accountservice.audit.Auditable;
 import com.maayn.accountservice.client.TransactionServiceClient;
 import com.maayn.accountservice.dto.*;
 import com.maayn.accountservice.entity.BankAccount;
