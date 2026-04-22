@@ -36,19 +36,24 @@ public class SecurityAuditListener {
      */
     @RabbitListener(queues = RabbitMQConfig.AUDIT_QUEUE)
     public void receiveAuditLog(Map<String, Object> event) {
-        AuditLog logEntry = new AuditLog();
-        logEntry.setServiceName(asString(event.get("serviceName")));
-        logEntry.setAction(asString(event.get("action")));
-        logEntry.setStatus(asString(event.get("status")));
-        logEntry.setDetails(asString(event.get("details")));
-        logEntry.setUserIdentifier(asUuid(event.get("userIdentifier")));
-        logEntry.setTimestamp(asTimestamp(event.get("timestamp")));
+        log.info("SECURITY AUDIT RECEIVED raw event: {}", event);
+        try {
+            AuditLog logEntry = new AuditLog();
+            logEntry.setServiceName(asString(event.get("serviceName")));
+            logEntry.setAction(asString(event.get("action")));
+            logEntry.setStatus(asString(event.get("status")));
+            logEntry.setDetails(asString(event.get("details")));
+            logEntry.setUserIdentifier(asUuid(event.get("userIdentifier")));
+            logEntry.setTimestamp(asTimestamp(event.get("timestamp")));
 
-        log.info("SECURITY AUDIT CAUGHT: [{}] action '{}' from {}",
-                logEntry.getStatus(), logEntry.getAction(), logEntry.getServiceName());
-
-        repository.save(logEntry);
-        log.debug("Audit event persisted: {}", logEntry.getId());
+            AuditLog saved = repository.save(logEntry);
+            log.info("SECURITY AUDIT PERSISTED id={} [{}] action='{}' from='{}'",
+                    saved.getId(), saved.getStatus(), saved.getAction(), saved.getServiceName());
+        } catch (Exception ex) {
+            // Never NACK — we don't want a malformed event to dead-letter
+            // the queue and silently swallow legitimate downstream events.
+            log.error("Failed to persist audit event {}: {}", event, ex.toString(), ex);
+        }
     }
 
     private static String asString(Object v) {
