@@ -37,6 +37,7 @@ public class BankAccountService {
     private final AccountEventPublisher eventPublisher;
     private final TransactionServiceClient transactionServiceClient;
     private final CustomerRepository customerRepository;
+    private final AuditPublisher auditPublisher;
 
     @Transactional
     public AccountResponse openAccount(OpenAccountRequest request) {

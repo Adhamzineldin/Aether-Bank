@@ -71,14 +71,15 @@ public class AccountGateway {
         // pull `currency` straight off the root, with a SDK fallback for
         // forward compatibility if the controller ever migrates to the
         // wrapped shape.
+        String url = accountServiceBaseUrl + "/api/accounts_service/account/" + accountId;
         try {
-            String url = accountServiceBaseUrl + "/api/accounts_service/account/" + accountId;
             HttpRequest req = HttpRequest.newBuilder(URI.create(url))
                     .header("Accept", "application/json")
                     .GET()
                     .build();
             HttpResponse<String> res = http.send(req, HttpResponse.BodyHandlers.ofString());
             if (res.statusCode() >= 400) {
+                log.warn("Account lookup HTTP {} from {} body={}", res.statusCode(), url, truncate(res.body()));
                 throw new IllegalArgumentException("Account lookup failed (" + res.statusCode() + ") for: " + accountId);
             }
             JsonNode root = mapper.readTree(res.body());
@@ -88,14 +89,30 @@ public class AccountGateway {
                 currency = textAt(root.path("account"), "currency");
             }
             if (currency == null || currency.isBlank()) {
+                // Surface the raw payload so we can tell whether the controller
+                // actually returned the account row (and currency was just null)
+                // versus an unexpected shape (HTML error page, different schema,
+                // wrong base URL hitting some other service, etc.). Most common
+                // cause in dev is VELD_ACCOUNT_URL pointing at the docker
+                // hostname `account-service` while running outside docker —
+                // that would actually throw IOException above, so a 200 with
+                // missing currency typically means the row was created without
+                // a currency column populated.
+                log.warn("Account currency missing in response from {} body={}", url, truncate(res.body()));
                 throw new IllegalArgumentException("Account currency unavailable for: " + accountId);
             }
             return currency;
         } catch (RuntimeException ex) {
             throw ex;
         } catch (Exception ex) {
+            log.warn("Account currency lookup failed for {} url={} err={}", accountId, url, ex.toString());
             throw new IllegalArgumentException("Failed to fetch account currency: " + accountId, ex);
         }
+    }
+
+    private static String truncate(String s) {
+        if (s == null) return "<null>";
+        return s.length() > 500 ? s.substring(0, 500) + "…" : s;
     }
 
     private static String textAt(JsonNode node, String field) {

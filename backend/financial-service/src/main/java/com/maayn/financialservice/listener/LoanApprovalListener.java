@@ -1,5 +1,6 @@
 package com.maayn.financialservice.listener;
 
+import com.maayn.financialservice.audit.AuditPublisher;
 import com.maayn.financialservice.entity.LoanApplicationDocument;
 import com.maayn.financialservice.events.FinancialEventPublisher;
 import com.maayn.financialservice.gateway.TransactionGateway;
@@ -23,6 +24,7 @@ public class LoanApprovalListener {
     private final LoanRepo loanRepository;
     private final TransactionGateway transactionGateway;
     private final FinancialEventPublisher eventPublisher;
+    private final AuditPublisher auditPublisher;
 
     @RabbitListener(queues = "loan.approved.queue")
     public void onLoanApproved(Map<String, Object> event) {

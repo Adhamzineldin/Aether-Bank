@@ -22,6 +22,7 @@ public class MortgageApprovalListener {
 
     private final MortgageRepo mortgageRepository;
     private final TransactionGateway transactionGateway;
+    private final AuditPublisher auditPublisher;
 
     @RabbitListener(queues = "mortgage.approved.queue")
     public void onMortgageApproved(Map<String, Object> event) {
