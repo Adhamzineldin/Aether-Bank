@@ -66,20 +66,33 @@ export default function TransactionsListPage() {
                 <THead>
                   <tr>
                     <TH>Date</TH>
-                    <TH>Type</TH>
+                    <TH>Reference</TH>
                     <TH>Status</TH>
                     <TH className="text-right">Amount</TH>
                   </tr>
                 </THead>
                 <TBody>
-                  {tx.data.content.map((t: any, i: number) => (
-                    <TR key={i}>
-                      <TD>{formatDateTime(t.executedAt || t.createdAt)}</TD>
-                      <TD className="font-medium">{t.transactionType || '—'}</TD>
-                      <TD><Badge tone={t.status === 'COMPLETED' ? 'success' : 'warning'}>{t.status}</Badge></TD>
-                      <TD className="text-right"><CurrencyDisplay amount={t.totalAmount} currency={selected?.currency} /></TD>
-                    </TR>
-                  ))}
+                  {tx.data.content.map((t) => {
+                    const signedAmount = t.direction === 'DEBIT' ? `-${t.amount}` : t.amount;
+                    const isFx = !!t.counterpartyCurrency && t.counterpartyCurrency !== t.currency;
+                    return (
+                      <TR key={t.referenceNumber}>
+                        <TD>{formatDateTime(t.timestamp)}</TD>
+                        <TD className="font-mono text-xs">{t.referenceNumber}</TD>
+                        <TD>
+                          <Badge tone={t.status === 'SUCCESS' || t.status === 'COMPLETED' ? 'success' : 'warning'}>{t.status}</Badge>
+                        </TD>
+                        <TD className="text-right">
+                          <CurrencyDisplay amount={signedAmount} currency={t.currency} signed />
+                          {isFx && t.counterpartyAmount && t.counterpartyCurrency && (
+                            <div className="text-xs text-muted-foreground">
+                              FX · <CurrencyDisplay amount={t.counterpartyAmount} currency={t.counterpartyCurrency} />
+                            </div>
+                          )}
+                        </TD>
+                      </TR>
+                    );
+                  })}
                 </TBody>
               </Table>
               <Pagination page={tx.data.pageNumber} totalPages={tx.data.totalPages} onChange={setPage} />

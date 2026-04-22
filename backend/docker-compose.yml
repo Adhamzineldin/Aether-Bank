@@ -224,6 +224,9 @@ services:
       - SPRING_RABBITMQ_HOST=rabbitmq
       - SPRING_RABBITMQ_PORT=5672
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8761/eureka/
+      # Veld SDK base URLs — generated clients default to wrong hosts/ports.
+      - VELD_ACCOUNT_URL=http://account-service:8081
+      - VELD_SDK_TRANSACTION_BASE_URL=http://transaction-service:2501
     depends_on:
       postgres:
         condition: service_healthy
