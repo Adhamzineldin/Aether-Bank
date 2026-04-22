@@ -1,5 +1,6 @@
 package com.maayn.iamservice.service;
 
+import com.maayn.iamservice.audit.AuditPublisher;
 import com.maayn.iamservice.domain.entity.Role;
 import com.maayn.iamservice.domain.entity.User;
 import com.maayn.iamservice.repository.RoleRepository;
@@ -31,19 +32,22 @@ public class AuthService implements IAuthenticationService {
     private final RoleRepository roleRepository;
     private final PasswordHashService passwordHashService;
     private final RegistrationValidator registrationValidator;
+    private final AuditPublisher auditPublisher;
 
     public AuthService(
             JwtService jwtService,
             UserRepository userRepository,
             RoleRepository roleRepository,
             PasswordHashService passwordHashService,
-            RegistrationValidator registrationValidator
+            RegistrationValidator registrationValidator,
+            AuditPublisher auditPublisher
     ) {
         this.jwtService = jwtService;
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
         this.passwordHashService = passwordHashService;
         this.registrationValidator = registrationValidator;
+        this.auditPublisher = auditPublisher;
     }
 
     /**
@@ -53,31 +57,42 @@ public class AuthService implements IAuthenticationService {
     @Override
     @Transactional
     public JwtResponse login(LoginRequest request) throws LoginException {
-        User user = userRepository.findByUsername(request.getUserName())
-                .orElseThrow(() -> AuthenticationErrors.LoginErrors.userNotFound("User not found"));
+        User user;
+        try {
+            user = userRepository.findByUsername(request.getUserName())
+                    .orElseThrow(() -> AuthenticationErrors.LoginErrors.userNotFound("User not found"));
+        } catch (LoginException ex) {
+            auditPublisher.publishFailure("LOGIN_ATTEMPT", null,
+                    "Unknown user: " + request.getUserName());
+            throw ex;
+        }
 
-        // Check if account is locked
         if (user.isAccountLocked()) {
+            auditPublisher.publishFailure("LOGIN_ATTEMPT", user.getId(),
+                    "Account locked: " + user.getUsername());
             throw AuthenticationErrors.LoginErrors.invalidCredentials("Account is temporarily locked");
         }
 
-        // Check if user is active
         if (!user.getIsActive()) {
+            auditPublisher.publishFailure("LOGIN_ATTEMPT", user.getId(),
+                    "Account inactive: " + user.getUsername());
             throw AuthenticationErrors.LoginErrors.invalidCredentials("Account is inactive");
         }
 
-        // Verify password
         if (!passwordHashService.matches(request.getPassword(), user.getPasswordHash())) {
             user.recordFailedLogin();
             userRepository.save(user);
+            auditPublisher.publishFailure("LOGIN_ATTEMPT", user.getId(),
+                    "Invalid password for: " + user.getUsername());
             throw AuthenticationErrors.LoginErrors.invalidCredentials("Invalid username or password");
         }
 
-        // Record successful login
         user.recordSuccessfulLogin();
         userRepository.save(user);
 
         String token = jwtService.generateToken(user);
+        auditPublisher.publishSuccess("LOGIN_ATTEMPT", user.getId(),
+                "Logged in: " + user.getUsername());
         return new JwtResponse(token, "Bearer");
     }
 
@@ -88,49 +103,48 @@ public class AuthService implements IAuthenticationService {
     @Override
     @Transactional
     public UserResponse register(RegisterRequest request) {
-        // Check if username already exists
-        if (userRepository.existsByUsername(request.getUserName())) {
-            throw new RuntimeException("Username already exists");
+        try {
+            if (userRepository.existsByUsername(request.getUserName())) {
+                throw new RuntimeException("Username already exists");
+            }
+            if (userRepository.existsByEmail(request.getEmail())) {
+                throw new RuntimeException("Email already exists");
+            }
+            registrationValidator.validate(request.getEmail(), request.getPassword());
+
+            final String DEFAULT_ROLE = "CUSTOMER";
+            Role role = roleRepository.findByName(DEFAULT_ROLE)
+                    .orElseGet(() -> roleRepository.save(Role.builder().name(DEFAULT_ROLE).build()));
+
+            User user = User.builder()
+                    .username(request.getUserName())
+                    .email(request.getEmail())
+                    .passwordHash(passwordHashService.hash(request.getPassword()))
+                    .fullName(request.getUserName())
+                    .isActive(true)
+                    .isEmailVerified(false)
+                    .mfaEnabled(false)
+                    .build();
+            user.addRole(role);
+
+            User savedUser = userRepository.save(user);
+
+            auditPublisher.publishSuccess("REGISTER_USER", savedUser.getId(),
+                    String.format("Registered user %s (%s) role=%s",
+                            savedUser.getUsername(), savedUser.getEmail(), role.getName()));
+
+            return new UserResponse(
+                    savedUser.getId(),
+                    savedUser.getUsername(),
+                    savedUser.getEmail(),
+                    role.getName()
+            );
+        } catch (RuntimeException ex) {
+            auditPublisher.publishFailure("REGISTER_USER", null,
+                    String.format("Registration failed for %s: %s",
+                            request.getUserName(), ex.getMessage()));
+            throw ex;
         }
-
-        // Check if email already exists
-        if (userRepository.existsByEmail(request.getEmail())) {
-            throw new RuntimeException("Email already exists");
-        }
-
-        // Validate input
-        registrationValidator.validate(request.getEmail(), request.getPassword());
-
-        // SECURITY: public self-registration always lands the user in the CUSTOMER
-        // role regardless of what the client sends. Elevated roles (ADMIN,
-        // SUPERADMIN, EMPLOYEE, ...) can only be granted afterwards by a superadmin
-        // via the user-management endpoints.
-        final String DEFAULT_ROLE = "CUSTOMER";
-        Role role = roleRepository.findByName(DEFAULT_ROLE)
-                .orElseGet(() -> roleRepository.save(Role.builder().name(DEFAULT_ROLE).build()));
-
-        // Create user
-        User user = User.builder()
-                .username(request.getUserName())
-                .email(request.getEmail())
-                .passwordHash(passwordHashService.hash(request.getPassword()))
-                .fullName(request.getUserName())
-                .isActive(true)
-                .isEmailVerified(false)
-                .mfaEnabled(false)
-                .build();
-
-        // Add role to user
-        user.addRole(role);
-
-        User savedUser = userRepository.save(user);
-
-        return new UserResponse(
-                savedUser.getId(),
-                savedUser.getUsername(),
-                savedUser.getEmail(),
-                role.getName()
-        );
     }
 
     /**
@@ -138,6 +152,7 @@ public class AuthService implements IAuthenticationService {
      */
     @Override
     public GenericResponse logout() {
+        auditPublisher.publishSuccess("LOGOUT", null, "User logout");
         return new GenericResponse("Logout successful", true);
     }
 }

@@ -43,34 +43,45 @@ public class BankAccountService {
     public AccountResponse openAccount(OpenAccountRequest request) {
         log.info("Opening new account for customer: {}", request.getCustomerId());
 
-        // Verify customer exists (legacy Customer entity uses Long PK; UUID lookup is delegated to IAM service)
-        // Skipping local customer existence check — customer identity is owned by IAM service.
+        try {
+            // Skipping local customer existence check — customer identity is owned by IAM service.
+            BankAccount account = BankAccount.builder()
+                    .accountNumber(accountNumberGenerator.generate())
+                    .customerId(request.getCustomerId())
+                    .accountType(request.getAccountType())
+                    .status(AccountStatus.ACTIVE)
+                    .currency(request.getCurrency())
+                    .openedDate(LocalDate.now())
+                    .build();
 
-        // Create bank account
-        BankAccount account = BankAccount.builder()
-                .accountNumber(accountNumberGenerator.generate())
-                .customerId(request.getCustomerId())
-                .accountType(request.getAccountType())
-                .status(AccountStatus.ACTIVE)
-                .currency(request.getCurrency())
-                .openedDate(LocalDate.now())
-                .build();
+            BankAccount savedAccount = bankAccountRepository.save(account);
 
-        BankAccount savedAccount = bankAccountRepository.save(account);
+            // Publish event to initialize ledger in Transaction Service
+            AccountCreatedEvent event = AccountCreatedEvent.builder()
+                    .accountId(savedAccount.getId())
+                    .currency(savedAccount.getCurrency())
+                    .timestamp(LocalDateTime.now())
+                    .build();
+            eventPublisher.publishAccountCreated(event);
 
-        // Publish event to initialize ledger in Transaction Service
-        AccountCreatedEvent event = AccountCreatedEvent.builder()
-                .accountId(savedAccount.getId())
-                .currency(savedAccount.getCurrency())
-                .timestamp(LocalDateTime.now())
-                .build();
-        eventPublisher.publishAccountCreated(event);
+            log.info("Account created successfully: {}", savedAccount.getAccountNumber());
 
-        log.info("Account created successfully: {}", savedAccount.getAccountNumber());
+            auditPublisher.publishSuccess(
+                    "OPEN_ACCOUNT",
+                    savedAccount.getCustomerId(),
+                    String.format("Opened %s account %s (%s) for customer %s in %s",
+                            savedAccount.getAccountType(), savedAccount.getAccountNumber(),
+                            savedAccount.getId(), savedAccount.getCustomerId(), savedAccount.getCurrency()));
 
-        // TODO: If initialDeposit is provided, call Transaction Service to deposit
-        // For now, just return account with zero balance
-        return mapToResponse(savedAccount, BigDecimal.ZERO);
+            return mapToResponse(savedAccount, BigDecimal.ZERO);
+        } catch (RuntimeException ex) {
+            auditPublisher.publishFailure(
+                    "OPEN_ACCOUNT",
+                    request.getCustomerId(),
+                    String.format("Failed to open %s account for customer %s: %s",
+                            request.getAccountType(), request.getCustomerId(), ex.getMessage()));
+            throw ex;
+        }
     }
 
     @Transactional(readOnly = true)
