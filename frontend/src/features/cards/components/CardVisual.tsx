@@ -1,5 +1,5 @@
 import { cn } from '@shared/utils/cn';
-import { maskCard } from '@shared/utils/mask';
+import { formatPanGroups, maskCard } from '@shared/utils/mask';
 import type { CardSummary } from '@veld/types';
 
 const networkGradient: Record<string, string> = {
@@ -8,8 +8,20 @@ const networkGradient: Record<string, string> = {
   AMEX: 'from-emerald-700 via-teal-600 to-cyan-700',
 };
 
-export function CardVisual({ card, className }: { card: CardSummary; className?: string }) {
+export function CardVisual({
+  card,
+  /** When set, show this full number (already formatted); otherwise masked last four. */
+  revealedPanDigits,
+  className,
+}: {
+  card: CardSummary;
+  revealedPanDigits?: string | null;
+  className?: string;
+}) {
   const gradient = networkGradient[card.cardNetwork] || 'from-slate-800 to-slate-600';
+  const numberLine = revealedPanDigits
+    ? formatPanGroups(revealedPanDigits)
+    : maskCard(card.lastFourDigits);
   return (
     <div
       className={cn(
@@ -26,7 +38,7 @@ export function CardVisual({ card, className }: { card: CardSummary; className?:
           <span className="text-sm font-bold tracking-wider">{card.cardNetwork}</span>
         </div>
         <div className="space-y-3">
-          <p className="font-mono text-lg tracking-[0.3em]">{maskCard(card.lastFourDigits)}</p>
+          <p className="font-mono text-lg tracking-wide">{numberLine}</p>
           <div className="flex items-end justify-between text-xs">
             <div>
               <p className="opacity-70">VALID THRU</p>

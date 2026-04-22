@@ -14,6 +14,12 @@ export interface IssueCardRequest {
   annualInterestRate?: string | number;
 }
 
+export interface PanRevealResponse {
+  pan: string;
+  /** 3 digits (Visa/MC) or 4 (AmEx). */
+  cvv: string;
+}
+
 export const cardsApi = {
   issue: (payload: IssueCardRequest) =>
     http.post<CardSummary>(BASE, payload).then((r) => r.data),
@@ -23,4 +29,8 @@ export const cardsApi = {
 
   get: (cardId: string) =>
     http.get<CardDetailsResponse>(`${BASE}/${cardId}`).then((r) => r.data),
+
+  /** Full PAN (digits only). Intentionally separate from {@link get} so the number stays hidden until the user reveals it. */
+  revealPan: (cardId: string) =>
+    http.get<PanRevealResponse>(`${BASE}/${cardId}/pan`).then((r) => r.data),
 };

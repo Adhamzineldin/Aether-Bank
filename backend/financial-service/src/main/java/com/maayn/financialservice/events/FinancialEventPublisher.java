@@ -32,6 +32,21 @@ public class FinancialEventPublisher {
         }
     }
 
+    public void publishMortgageSubmitted(UUID mortgageId, UUID customerId, java.math.BigDecimal amount) {
+        try {
+            Map<String, Object> event = new HashMap<>();
+            event.put("mortgageId", mortgageId.toString());
+            event.put("customerId", customerId.toString());
+            event.put("amount", amount.toString());
+            event.put("timestamp", java.time.LocalDateTime.now().toString());
+
+            rabbitTemplate.convertAndSend(EXCHANGE, "mortgage.submitted", event);
+            log.info("Published MortgageSubmittedEvent for mortgage: {}", mortgageId);
+        } catch (Exception e) {
+            log.error("Failed to publish MortgageSubmittedEvent", e);
+        }
+    }
+
     public void publishCertificateSubmitted(UUID certificateId, UUID customerId, java.math.BigDecimal amount) {
         try {
             Map<String, Object> event = new HashMap<>();

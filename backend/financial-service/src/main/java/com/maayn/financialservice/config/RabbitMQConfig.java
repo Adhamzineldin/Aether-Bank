@@ -15,6 +15,12 @@ public class RabbitMQConfig {
     public static final String LOAN_APPROVED_QUEUE = "loan.approved.queue";
     public static final String LOAN_APPROVED_KEY = "loan.approved";
 
+    public static final String MORTGAGE_APPROVED_QUEUE = "mortgage.approved.queue";
+    public static final String MORTGAGE_APPROVED_KEY = "mortgage.approved";
+
+    public static final String CERTIFICATE_APPROVED_QUEUE = "certificate.approved.queue";
+    public static final String CERTIFICATE_APPROVED_KEY = "certificate.approved";
+
     @Bean
     public TopicExchange exchange() {
         return new TopicExchange(EXCHANGE);
@@ -31,6 +37,26 @@ public class RabbitMQConfig {
                 .bind(loanApprovedQueue())
                 .to(exchange())
                 .with(LOAN_APPROVED_KEY);
+    }
+
+    @Bean
+    public Queue mortgageApprovedQueue() {
+        return QueueBuilder.durable(MORTGAGE_APPROVED_QUEUE).build();
+    }
+
+    @Bean
+    public Binding mortgageApprovedBinding() {
+        return BindingBuilder.bind(mortgageApprovedQueue()).to(exchange()).with(MORTGAGE_APPROVED_KEY);
+    }
+
+    @Bean
+    public Queue certificateApprovedQueue() {
+        return QueueBuilder.durable(CERTIFICATE_APPROVED_QUEUE).build();
+    }
+
+    @Bean
+    public Binding certificateApprovedBinding() {
+        return BindingBuilder.bind(certificateApprovedQueue()).to(exchange()).with(CERTIFICATE_APPROVED_KEY);
     }
 
     @Bean

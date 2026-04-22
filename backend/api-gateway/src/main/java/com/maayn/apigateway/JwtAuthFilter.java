@@ -29,7 +29,8 @@ public class JwtAuthFilter {
                 if (userId == null || userId.isBlank()) {
                     return ServerResponse.status(HttpStatus.UNAUTHORIZED).build();
                 }
-                return next.handle(injectUserId(stripSpoofableHeaders(request), userId));
+                String roles = claims.get("roles", String.class);
+                return next.handle(injectUserContext(stripSpoofableHeaders(request), userId, roles));
             } catch (JwtException e) {
                 return ServerResponse.status(HttpStatus.UNAUTHORIZED).build();
             }
@@ -38,7 +39,10 @@ public class JwtAuthFilter {
 
     private static ServerRequest stripSpoofableHeaders(ServerRequest request) {
         return ServerRequest.from(request)
-                .headers(h -> h.remove("X-User-Id"))
+                .headers(h -> {
+                    h.remove("X-User-Id");
+                    h.remove("X-User-Roles");
+                })
                 .build();
     }
 
@@ -56,9 +60,18 @@ public class JwtAuthFilter {
                 .getPayload();
     }
 
-    private static ServerRequest injectUserId(ServerRequest request, String userId) {
+    /**
+     * Forwards trusted identity to downstream services. Values come only from the
+     * verified JWT — never trust client-supplied {@code X-User-Id} / {@code X-User-Roles}.
+     */
+    private static ServerRequest injectUserContext(ServerRequest request, String userId, String roles) {
         return ServerRequest.from(request)
-                .headers(h -> h.set("X-User-Id", userId))
+                .headers(h -> {
+                    h.set("X-User-Id", userId);
+                    if (roles != null && !roles.isBlank()) {
+                        h.set("X-User-Roles", roles);
+                    }
+                })
                 .build();
     }
 }

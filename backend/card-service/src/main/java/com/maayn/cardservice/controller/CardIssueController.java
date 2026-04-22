@@ -4,6 +4,7 @@ import com.maayn.cardservice.entity.Card;
 import com.maayn.cardservice.mapper.CardMapper;
 import com.maayn.cardservice.repository.CardRepository;
 import com.maayn.cardservice.service.CardCreationService;
+import com.maayn.cardservice.util.DemoPanGenerator;
 import lombok.RequiredArgsConstructor;
 import maayn.veld.generated.models.card.CardNetwork;
 import maayn.veld.generated.models.card.CardSummary;
@@ -60,6 +61,25 @@ public class CardIssueController {
                 .toList();
         return ResponseEntity.ok(cards);
     }
+
+    /**
+     * Returns demo PAN + CVV for display (digits only). Omitted from the public
+     * card summary until the user explicitly reveals them in the UI.
+     */
+    @GetMapping("/{cardId}/pan")
+    public ResponseEntity<PanRevealResponse> revealPan(@PathVariable("cardId") UUID cardId) {
+        Card card = cardRepository.findById(cardId)
+                .orElseThrow(() -> new IllegalArgumentException("Card not found: " + cardId));
+        String digits = card.getPan() != null
+                ? card.getPan()
+                : DemoPanGenerator.syntheticLegacyPan(card.getId(), card.getCardNetwork(), card.getLastFourDigits());
+        String cvv = card.getCvv() != null && !card.getCvv().isBlank()
+                ? card.getCvv()
+                : DemoPanGenerator.syntheticLegacyCvv(card.getId(), card.getCardNetwork());
+        return ResponseEntity.ok(new PanRevealResponse(digits, cvv));
+    }
+
+    public record PanRevealResponse(String pan, String cvv) {}
 
     public record IssueCardRequest(
             UUID customerId,

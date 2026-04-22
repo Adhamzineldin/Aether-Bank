@@ -1,6 +1,7 @@
 package com.maayn.financialservice.service;
 
 import com.maayn.financialservice.entity.CertificateApplicationDocument;
+import com.maayn.financialservice.events.FinancialEventPublisher;
 import com.maayn.financialservice.mappers.CertificateMapper;
 import com.maayn.financialservice.repo.CertificateRepo;
 import com.maayn.financialservice.support.ReferenceNumberGenerator;
@@ -25,6 +26,7 @@ public class CertificateService implements ICertificateService {
     private final CertificateMapper certificateMapper;
     private final CertificateValidator certificateValidator;
     private final ReferenceNumberGenerator referenceNumberGenerator;
+    private final FinancialEventPublisher eventPublisher;
 
     @Override
     public CertificateApplicationResponse certificateSubmit(CertificateApplication request) {
@@ -35,6 +37,12 @@ public class CertificateService implements ICertificateService {
 
         CertificateApplicationDocument savedCertificate = certificateRepository.save(certificate);
         log.info("Certificate application {} submitted successfully.", savedCertificate.getId());
+
+        eventPublisher.publishCertificateSubmitted(
+                savedCertificate.getId(),
+                savedCertificate.getCustomerId(),
+                savedCertificate.getPrincipal());
+
         return certificateMapper.toResponse(savedCertificate);
     }
 

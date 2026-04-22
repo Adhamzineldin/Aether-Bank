@@ -5,6 +5,7 @@ import com.maayn.financialservice.repo.CertificateRepo;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import maayn.veld.generated.models.shared.CertificateStatus;
+import maayn.veld.generated.sdk.account.constants.SystemAccounts;
 import maayn.veld.generated.sdk.transaction.TransactionClient;
 import maayn.veld.generated.sdk.transaction.models.transaction.TransactionType;
 import maayn.veld.generated.sdk.transaction.models.transaction.TransferRequest;
@@ -14,8 +15,9 @@ import org.springframework.stereotype.Component;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
-import java.util.UUID;
 
 @Component
 @RequiredArgsConstructor
@@ -25,70 +27,53 @@ public class CertificateInterestScheduler {
     private final CertificateRepo certificateRepository;
     private final TransactionClient transactionClient;
 
-    // Bank's certificate deposit account
-    private static final UUID CERTIFICATE_VAULT_ACCOUNT = UUID.fromString("33333333-3333-3333-3333-333333333333");
-
     /**
-     * Runs every day at 3 AM to check for mature certificates and credit interest
+     * Runs every day at 3 AM: updates accrued value for still-active certificates using
+     * <strong>daily</strong> compounding (365-day year), and settles any certificate whose
+     * maturity date is today or in the past. Short-term / “daily-style” products therefore
+     * see correct growth between open and maturity, not only on month boundaries.
      */
     @Scheduled(cron = "0 0 3 * * *")
-    public void processCertificateMaturity() {
-        log.info("Starting certificate maturity processing...");
+    public void dailyCertificateProcessing() {
+        log.info("Starting daily certificate accrual and maturity processing...");
 
         LocalDate today = LocalDate.now();
-        
-        // Find all active certificates
-        List<CertificateApplicationDocument> activeCertificates = 
-            certificateRepository.findByCertificateStatus(CertificateStatus.ACTIVE);
 
-        log.info("Found {} active certificates to check", activeCertificates.size());
+        List<CertificateApplicationDocument> activeCertificates =
+                certificateRepository.findByCertificateStatus(CertificateStatus.ACTIVE);
+
+        log.info("Found {} active certificates", activeCertificates.size());
 
         for (CertificateApplicationDocument certificate : activeCertificates) {
             try {
-                if (certificate.getMaturityDate() != null && 
-                    !today.isBefore(certificate.getMaturityDate().toLocalDate())) {
+                if (certificate.getMaturityDate() != null
+                        && !today.isBefore(certificate.getMaturityDate().toLocalDate())) {
                     processCertificateMaturity(certificate);
+                } else {
+                    refreshCurrentValueDailyCompound(certificate, today);
                 }
             } catch (Exception e) {
-                log.error("Failed to process certificate maturity: {}", certificate.getId(), e);
+                log.error("Failed daily certificate processing for {}", certificate.getId(), e);
             }
         }
 
-        log.info("Certificate maturity processing completed");
-    }
-
-    /**
-     * Runs monthly on 1st day at 4 AM to add compound interest for active certificates
-     */
-    @Scheduled(cron = "0 0 4 1 * *")
-    public void addMonthlyCompoundInterest() {
-        log.info("Starting monthly compound interest calculation for certificates...");
-
-        List<CertificateApplicationDocument> activeCertificates = 
-            certificateRepository.findByCertificateStatus(CertificateStatus.ACTIVE);
-
-        for (CertificateApplicationDocument certificate : activeCertificates) {
-            try {
-                addCompoundInterest(certificate);
-            } catch (Exception e) {
-                log.error("Failed to add interest to certificate: {}", certificate.getId(), e);
-            }
-        }
-
-        log.info("Monthly compound interest calculation completed");
+        log.info("Daily certificate processing completed");
     }
 
     private void processCertificateMaturity(CertificateApplicationDocument certificate) {
         log.info("Processing maturity for certificate: {}", certificate.getCertificateNumber());
 
-        // Calculate final amount with compound interest
-        BigDecimal finalAmount = calculateMaturityAmount(certificate);
+        int termDays = resolveFullTermDays(certificate);
+        BigDecimal finalAmount = compoundDaily(
+                certificate.getPrincipal(),
+                certificate.getInterestRate(),
+                termDays);
 
         // Transfer principal + interest back to customer account
         try {
             TransferRequest transferRequest = new TransferRequest();
             transferRequest.setIdempotencyKey("cert-mature-" + certificate.getId());
-            transferRequest.setSourceAccountId(CERTIFICATE_VAULT_ACCOUNT);
+            transferRequest.setSourceAccountId(SystemAccounts.CASH_VAULT_ID);
             transferRequest.setDestinationAccountId(certificate.getAccountId());
             transferRequest.setAmount(finalAmount);
             transferRequest.setCurrency(certificate.getCurrency());
@@ -101,6 +86,7 @@ public class CertificateInterestScheduler {
             // Update certificate status
             certificate.setCertificateStatus(CertificateStatus.MATURED);
             certificate.setMaturedAmount(finalAmount);
+            certificate.setCurrentValue(finalAmount);
             certificateRepository.save(certificate);
 
             log.info("Certificate {} matured. Amount {} credited to account", 
@@ -112,50 +98,56 @@ public class CertificateInterestScheduler {
         }
     }
 
-    private void addCompoundInterest(CertificateApplicationDocument certificate) {
-        if (certificate.getCurrentValue() == null) {
-            certificate.setCurrentValue(certificate.getPrincipal());
+    /**
+     * Sets {@code currentValue} to principal grown by daily compounding for the number of
+     * full calendar days since {@code openDate} (0 days = principal only).
+     */
+    private void refreshCurrentValueDailyCompound(CertificateApplicationDocument certificate, LocalDate today) {
+        if (certificate.getOpenDate() == null) {
+            return;
         }
-
-        // Calculate monthly interest (compound)
-        BigDecimal monthlyRate = certificate.getInterestRate()
-                .divide(new BigDecimal("100"), 6, RoundingMode.HALF_UP)
-                .divide(new BigDecimal("12"), 6, RoundingMode.HALF_UP);
-
-        BigDecimal interest = certificate.getCurrentValue()
-                .multiply(monthlyRate)
-                .setScale(2, RoundingMode.HALF_UP);
-
-        // Add interest to current value (compound)
-        BigDecimal newValue = certificate.getCurrentValue().add(interest);
-        certificate.setCurrentValue(newValue);
-        
+        LocalDate open = certificate.getOpenDate().toLocalDate();
+        long elapsed = ChronoUnit.DAYS.between(open, today);
+        if (elapsed < 0) {
+            elapsed = 0;
+        }
+        int days = (int) Math.min(elapsed, Integer.MAX_VALUE - 2);
+        BigDecimal value = compoundDaily(
+                certificate.getPrincipal(),
+                certificate.getInterestRate(),
+                days);
+        certificate.setCurrentValue(value);
+        certificate.setUpdatedAt(LocalDateTime.now());
         certificateRepository.save(certificate);
-
-        log.info("Added compound interest {} to certificate: {}. New value: {}", 
-                interest, certificate.getCertificateNumber(), newValue);
+        log.debug("Certificate {} accrued value {} after {} day(s)", certificate.getCertificateNumber(), value, days);
     }
 
-    private BigDecimal calculateMaturityAmount(CertificateApplicationDocument certificate) {
-        // Calculate compound interest over entire tenure
-        // A = P(1 + r/n)^(nt)
-        // Where: P = principal, r = annual rate, n = 12 (monthly compounding), t = years
+    /**
+     * Maturity / mark-to-market: {@code A = P (1 + r/365)^d} with {@code r} as nominal APR percent.
+     */
+    private static BigDecimal compoundDaily(BigDecimal principal, BigDecimal annualPercent, int days) {
+        if (principal == null || annualPercent == null || days <= 0) {
+            return principal != null ? principal.setScale(2, RoundingMode.HALF_UP) : BigDecimal.ZERO;
+        }
+        BigDecimal dailyRate = annualPercent
+                .divide(new BigDecimal("100"), 12, RoundingMode.HALF_UP)
+                .divide(new BigDecimal("365"), 12, RoundingMode.HALF_UP);
+        BigDecimal factor = BigDecimal.ONE.add(dailyRate).pow(days);
+        return principal.multiply(factor).setScale(2, RoundingMode.HALF_UP);
+    }
 
-        BigDecimal principal = certificate.getPrincipal();
-        BigDecimal annualRate = certificate.getInterestRate().divide(new BigDecimal("100"), 6, RoundingMode.HALF_UP);
-        int months = Math.max(1, certificate.getTermDays() / 30);
-        
-        // Monthly rate
-        BigDecimal monthlyRate = annualRate.divide(new BigDecimal("12"), 6, RoundingMode.HALF_UP);
-        
-        // Calculate compound interest
-        BigDecimal onePlusRate = BigDecimal.ONE.add(monthlyRate);
-        BigDecimal compoundFactor = onePlusRate.pow(months);
-        
-        BigDecimal maturityAmount = principal.multiply(compoundFactor)
-                .setScale(2, RoundingMode.HALF_UP);
-
-        return maturityAmount;
+    /** Full term in days: calendar open→maturity when both set, else {@code termDays}, else 365. */
+    private static int resolveFullTermDays(CertificateApplicationDocument c) {
+        if (c.getOpenDate() != null && c.getMaturityDate() != null) {
+            long d = ChronoUnit.DAYS.between(c.getOpenDate().toLocalDate(), c.getMaturityDate().toLocalDate());
+            if (d > 0) {
+                return (int) Math.min(d, Integer.MAX_VALUE - 2);
+            }
+        }
+        if (c.getTermDays() != null && c.getTermDays() > 0) {
+            return c.getTermDays();
+        }
+        return 365;
     }
 }
 

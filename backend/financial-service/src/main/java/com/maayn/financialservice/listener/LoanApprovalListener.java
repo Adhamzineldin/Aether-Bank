@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import maayn.veld.generated.models.certificate.ApplicationStatus;
 import maayn.veld.generated.models.shared.LoanStatus;
+import maayn.veld.generated.sdk.account.constants.SystemAccounts;
 import maayn.veld.generated.sdk.transaction.TransactionClient;
 import maayn.veld.generated.sdk.transaction.models.transaction.TransactionType;
 import maayn.veld.generated.sdk.transaction.models.transaction.TransferRequest;
@@ -25,9 +26,6 @@ public class LoanApprovalListener {
     private final LoanRepo loanRepository;
     private final TransactionClient transactionClient;
     private final FinancialEventPublisher eventPublisher;
-
-    // Bank's loan disbursement account
-    private static final UUID LOAN_VAULT_ID = UUID.fromString("11111111-1111-1111-1111-111111111111");
 
     @RabbitListener(queues = "loan.approved.queue")
     public void onLoanApproved(Map<String, Object> event) {
@@ -77,10 +75,10 @@ public class LoanApprovalListener {
 
     private void disburseLoan(LoanApplicationDocument loan) {
         try {
-            // Transfer funds from LOAN_VAULT to customer's account
+            // Transfer from the seeded system liquidity account (see BankVaultInitializer).
             TransferRequest transferRequest = new TransferRequest();
             transferRequest.setIdempotencyKey("loan-disburse-" + loan.getId());
-            transferRequest.setSourceAccountId(LOAN_VAULT_ID);
+            transferRequest.setSourceAccountId(SystemAccounts.CASH_VAULT_ID);
             transferRequest.setDestinationAccountId(loan.getAccountId());
             transferRequest.setAmount(loan.getPrincipalAmount());
             transferRequest.setCurrency(loan.getCurrency());

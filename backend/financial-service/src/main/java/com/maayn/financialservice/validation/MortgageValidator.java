@@ -13,6 +13,10 @@ public class MortgageValidator {
             throw new IllegalArgumentException("Customer ID is required");
         }
 
+        if (application.getAccountId() == null) {
+            throw new IllegalArgumentException("Settlement account ID is required to disburse mortgage funds");
+        }
+
         if (application.getPropertyAddress() == null || application.getPropertyAddress().isBlank()) {
             throw new IllegalArgumentException("Property address is required");
         }

@@ -11,6 +11,7 @@ public class MortgageMapper {
 
     public MortgageApplicationDocument toEntity(MortgageApplication application) {
         return MortgageApplicationDocument.builder()
+                .accountId(application.getAccountId())
                 .customerId(application.getCustomerId())
                 .propertyAddress(application.getPropertyAddress())
                 .propertyValue(application.getPropertyValue())

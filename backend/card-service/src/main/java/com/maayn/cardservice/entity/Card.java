@@ -35,6 +35,20 @@ public class Card {
     @Column(name = "last_four_digits", nullable = false, length = 4)
     private String lastFourDigits;
 
+    /**
+     * Full demo PAN (digits only). Real systems tokenize this; we persist it so
+     * the customer can reveal it in the UI for testing. Legacy rows may be null
+     * — see {@link com.maayn.cardservice.util.DemoPanGenerator#syntheticLegacyPan}.
+     */
+    @Column(name = "pan", length = 19)
+    private String pan;
+
+    /**
+     * Demo CVV / AmEx CID (never stored for real cards). Null on legacy rows.
+     */
+    @Column(name = "cvv", length = 4)
+    private String cvv;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "card_type", nullable = false, length = 32)
     private CardType cardType;

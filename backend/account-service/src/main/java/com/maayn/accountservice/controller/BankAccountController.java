@@ -11,8 +11,18 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * Hand-written account controller. The Veld-generated {@code AccountController}
+ * lives under {@code maayn.veld.generated.controllers} which isn't component
+ * scanned by {@code AccountServiceApplication}, so this controller serves both
+ * the legacy {@code /api/accounts/**} path (used by the frontend + gateway) and
+ * the SDK path {@code /api/accounts_service/account/**} that generated clients
+ * (e.g. card-service's {@code AccountClient}) target. Keeping them aliased
+ * avoids having to wire an {@code IAccountService} bean just to satisfy the
+ * generated controller.
+ */
 @RestController
-@RequestMapping("/api/accounts")
+@RequestMapping({"/api/accounts", "/api/accounts_service/account"})
 @RequiredArgsConstructor
 public class BankAccountController {
 

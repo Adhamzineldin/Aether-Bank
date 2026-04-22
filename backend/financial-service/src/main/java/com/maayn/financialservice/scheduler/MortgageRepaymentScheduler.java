@@ -4,6 +4,7 @@ import com.maayn.financialservice.entity.MortgageApplicationDocument;
 import com.maayn.financialservice.repo.MortgageRepo;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import maayn.veld.generated.sdk.account.constants.SystemAccounts;
 import maayn.veld.generated.sdk.transaction.TransactionClient;
 import maayn.veld.generated.sdk.transaction.models.transaction.TransactionType;
 import maayn.veld.generated.sdk.transaction.models.transaction.TransferRequest;
@@ -11,9 +12,9 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.UUID;
 
 @Component
 @RequiredArgsConstructor
@@ -22,9 +23,6 @@ public class MortgageRepaymentScheduler {
 
     private final MortgageRepo mortgageRepository;
     private final TransactionClient transactionClient;
-
-    // Bank's mortgage repayment collection account
-    private static final UUID MORTGAGE_REPAYMENT_ACCOUNT = UUID.fromString("44444444-4444-4444-4444-444444444444");
 
     /**
      * Runs every day at 2:30 AM to process mortgage monthly payments
@@ -102,7 +100,7 @@ public class MortgageRepaymentScheduler {
             TransferRequest transferRequest = new TransferRequest();
             transferRequest.setIdempotencyKey("mortgage-" + mortgage.getId() + "-" + LocalDate.now());
             transferRequest.setSourceAccountId(mortgage.getAccountId());
-            transferRequest.setDestinationAccountId(MORTGAGE_REPAYMENT_ACCOUNT);
+            transferRequest.setDestinationAccountId(SystemAccounts.CASH_VAULT_ID);
             transferRequest.setAmount(monthlyPayment);
             transferRequest.setCurrency(mortgage.getCurrency());
             transferRequest.setSourceCurrency(mortgage.getCurrency());
@@ -136,12 +134,12 @@ public class MortgageRepaymentScheduler {
         log.info("Calculating monthly interest for mortgage: {}", mortgage.getMortgageNumber());
 
         BigDecimal monthlyInterestRate = mortgage.getInterestRate()
-                .divide(new BigDecimal("100"), 6, BigDecimal.ROUND_HALF_UP)
-                .divide(new BigDecimal("12"), 6, BigDecimal.ROUND_HALF_UP);
+                .divide(new BigDecimal("100"), 6, RoundingMode.HALF_UP)
+                .divide(new BigDecimal("12"), 6, RoundingMode.HALF_UP);
 
         BigDecimal interestAmount = mortgage.getOutstandingBalance()
                 .multiply(monthlyInterestRate)
-                .setScale(2, BigDecimal.ROUND_HALF_UP);
+                .setScale(2, RoundingMode.HALF_UP);
 
         // Add interest to outstanding balance
         mortgage.setOutstandingBalance(mortgage.getOutstandingBalance().add(interestAmount));
@@ -153,12 +151,12 @@ public class MortgageRepaymentScheduler {
     private BigDecimal calculatePrincipalComponent(MortgageApplicationDocument mortgage, BigDecimal monthlyPayment) {
         // Calculate interest portion
         BigDecimal monthlyInterestRate = mortgage.getInterestRate()
-                .divide(new BigDecimal("100"), 6, BigDecimal.ROUND_HALF_UP)
-                .divide(new BigDecimal("12"), 6, BigDecimal.ROUND_HALF_UP);
+                .divide(new BigDecimal("100"), 6, RoundingMode.HALF_UP)
+                .divide(new BigDecimal("12"), 6, RoundingMode.HALF_UP);
 
         BigDecimal interestPortion = mortgage.getOutstandingBalance()
                 .multiply(monthlyInterestRate)
-                .setScale(2, BigDecimal.ROUND_HALF_UP);
+                .setScale(2, RoundingMode.HALF_UP);
 
         // Principal = Monthly Payment - Interest
         return monthlyPayment.subtract(interestPortion);

@@ -138,12 +138,10 @@ public class MortgageService implements IMortgageService {
     }
 
     private void publishMortgageSubmittedEvent(MortgageApplicationDocument mortgage) {
-        try {
-            // TODO: Create MortgageSubmittedEvent
-            log.info("Published MortgageSubmittedEvent for mortgage: {}", mortgage.getId());
-        } catch (Exception e) {
-            log.error("Failed to publish MortgageSubmittedEvent", e);
-        }
+        eventPublisher.publishMortgageSubmitted(
+                mortgage.getId(),
+                mortgage.getCustomerId(),
+                mortgage.getPrincipalAmount() != null ? mortgage.getPrincipalAmount() : mortgage.getRequestedAmount());
     }
 
     private List<MortgageRepaymentSchedule> generateAmortizationSchedule(MortgageApplicationDocument mortgage) {
