@@ -63,22 +63,6 @@ public class CardIssueController {
         return ResponseEntity.ok(cards);
     }
 
-    /**
-     * Returns demo PAN + CVV for display (digits only). Omitted from the public
-     * card summary until the user explicitly reveals them in the UI.
-     */
-    @GetMapping("/{cardId}/pan")
-    public ResponseEntity<PanRevealResponse> revealPan(@PathVariable("cardId") UUID cardId) {
-        Card card = cardRepository.findById(cardId)
-                .orElseThrow(() -> new IllegalArgumentException("Card not found: " + cardId));
-        String digits = card.getPan() != null
-                ? card.getPan()
-                : DemoPanGenerator.syntheticLegacyPan(card.getId(), card.getCardNetwork(), card.getLastFourDigits());
-        String cvv = card.getCvv() != null && !card.getCvv().isBlank()
-                ? card.getCvv()
-                : DemoPanGenerator.syntheticLegacyCvv(card.getId(), card.getCardNetwork());
-        return ResponseEntity.ok(new PanRevealResponse(digits, cvv));
-    }
 
 
     public record IssueCardRequest(

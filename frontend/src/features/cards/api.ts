@@ -1,5 +1,12 @@
 import { http } from '@lib/axios';
-import type { CardDetailsResponse, CardSummary } from '@veld/types';
+import type {
+  CardDetailsResponse,
+  CardSummary,
+  CardTransactionResponse,
+  MerchantPaymentRequest,
+  RefundCardTransactionRequest,
+  VoidCardTransactionRequest,
+} from '@veld/types';
 
 const BASE = '/api/card';
 
@@ -33,4 +40,13 @@ export const cardsApi = {
   /** Full PAN (digits only). Intentionally separate from {@link get} so the number stays hidden until the user reveals it. */
   revealPan: (cardId: string) =>
     http.get<PanRevealResponse>(`${BASE}/${cardId}/pan`).then((r) => r.data),
+
+  processMerchantPayment: (payload: MerchantPaymentRequest) =>
+    http.post<CardTransactionResponse>(`${BASE}/payments`, payload).then((r) => r.data),
+
+  refundTransaction: (payload: RefundCardTransactionRequest) =>
+    http.post<CardTransactionResponse>(`${BASE}/refunds`, payload).then((r) => r.data),
+
+  voidTransaction: (payload: VoidCardTransactionRequest) =>
+    http.post<CardTransactionResponse>(`${BASE}/voids`, payload).then((r) => r.data),
 };

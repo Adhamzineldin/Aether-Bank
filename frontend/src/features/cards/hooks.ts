@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
-import { useStubQuery, unavailableMutation } from '@lib/stub';
+import { useStubQuery } from '@lib/stub';
 import { useAuthStore } from '@stores/authStore';
 import type {
   MerchantPaymentRequest,
@@ -58,22 +58,36 @@ export function useCardTransactions(id: string | undefined, page = 0, _pageSize 
 }
 
 export function useProcessMerchantPayment() {
+  const qc = useQueryClient();
   return useMutation({
-    mutationFn: unavailableMutation<MerchantPaymentRequest, any>(),
+    mutationFn: (payload: MerchantPaymentRequest) => cardsApi.processMerchantPayment(payload),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: cardKeys.all });
+    },
     onError: (e: Error) => toast.error(e.message),
   });
 }
 
 export function useRefundTransaction() {
+  const qc = useQueryClient();
   return useMutation({
-    mutationFn: unavailableMutation<RefundCardTransactionRequest, void>(),
+    mutationFn: (payload: RefundCardTransactionRequest) => cardsApi.refundTransaction(payload),
+    onSuccess: () => {
+      toast.success('Refund processed');
+      qc.invalidateQueries({ queryKey: cardKeys.all });
+    },
     onError: (e: Error) => toast.error(e.message),
   });
 }
 
 export function useVoidTransaction() {
+  const qc = useQueryClient();
   return useMutation({
-    mutationFn: unavailableMutation<VoidCardTransactionRequest, void>(),
+    mutationFn: (payload: VoidCardTransactionRequest) => cardsApi.voidTransaction(payload),
+    onSuccess: () => {
+      toast.success('Transaction voided');
+      qc.invalidateQueries({ queryKey: cardKeys.all });
+    },
     onError: (e: Error) => toast.error(e.message),
   });
 }
