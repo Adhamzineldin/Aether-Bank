@@ -115,93 +115,66 @@ public class BankAccountService {
     }
 
     @Transactional
+    @Auditable(action = "CLOSE_ACCOUNT", value = "Close bank account")
     public AccountResponse closeAccount(UUID accountId, CloseAccountRequest request) {
         log.info("Closing account: {}", accountId);
 
         BankAccount account = bankAccountRepository.findById(accountId)
                 .orElseThrow(() -> new AccountNotFoundException("Account not found: " + accountId));
 
-        try {
-            if (account.getStatus() == AccountStatus.CLOSED) {
-                throw new InvalidAccountStatusException("Account is already closed");
-            }
-
-            // Check balance
-            BigDecimal balance = getBalanceFromTransactionService(accountId, account.getCurrency());
-            if (balance.compareTo(BigDecimal.ZERO) > 0) {
-                if (request.getTransferToAccountId() == null) {
-                    throw new AccountHasBalanceException(
-                            "Account has balance. Please transfer funds or provide transferToAccountId");
-                }
-                // Transfer remaining balance to specified account
-                // This should be done via Transaction Service transfer endpoint
-                log.info("Remaining balance {} should be transferred to account {} via Transaction Service",
-                        balance, request.getTransferToAccountId());
-            }
-
-            account.setStatus(AccountStatus.CLOSED);
-            account.setClosedDate(LocalDate.now());
-            BankAccount closedAccount = bankAccountRepository.save(account);
-
-            // Publish event
-            AccountClosedEvent event = AccountClosedEvent.builder()
-                    .accountId(closedAccount.getId())
-                    .customerId(closedAccount.getCustomerId())
-                    .timestamp(LocalDateTime.now())
-                    .build();
-            eventPublisher.publishAccountClosed(event);
-
-            log.info("Account closed successfully: {}", accountId);
-
-            auditPublisher.publishSuccess(
-                    "CLOSE_ACCOUNT",
-                    closedAccount.getCustomerId(),
-                    String.format("Closed account %s (%s)", closedAccount.getAccountNumber(), accountId));
-
-            return mapToResponse(closedAccount, BigDecimal.ZERO);
-        } catch (RuntimeException ex) {
-            auditPublisher.publishFailure(
-                    "CLOSE_ACCOUNT",
-                    account.getCustomerId(),
-                    String.format("Failed to close account %s: %s", accountId, ex.getMessage()));
-            throw ex;
+        if (account.getStatus() == AccountStatus.CLOSED) {
+            throw new InvalidAccountStatusException("Account is already closed");
         }
+
+        // Check balance
+        BigDecimal balance = getBalanceFromTransactionService(accountId, account.getCurrency());
+        if (balance.compareTo(BigDecimal.ZERO) > 0) {
+            if (request.getTransferToAccountId() == null) {
+                throw new AccountHasBalanceException(
+                        "Account has balance. Please transfer funds or provide transferToAccountId");
+            }
+            // Transfer remaining balance to specified account
+            // This should be done via Transaction Service transfer endpoint
+            log.info("Remaining balance {} should be transferred to account {} via Transaction Service",
+                    balance, request.getTransferToAccountId());
+        }
+
+        account.setStatus(AccountStatus.CLOSED);
+        account.setClosedDate(LocalDate.now());
+        BankAccount closedAccount = bankAccountRepository.save(account);
+
+        // Publish event
+        AccountClosedEvent event = AccountClosedEvent.builder()
+                .accountId(closedAccount.getId())
+                .customerId(closedAccount.getCustomerId())
+                .timestamp(LocalDateTime.now())
+                .build();
+        eventPublisher.publishAccountClosed(event);
+
+        log.info("Account closed successfully: {}", accountId);
+
+        return mapToResponse(closedAccount, BigDecimal.ZERO);
     }
 
     @Transactional
+    @Auditable(action = "UPDATE_ACCOUNT_STATUS", value = "Update account status")
     public AccountResponse updateAccountStatus(UUID accountId, UpdateAccountStatusRequest request) {
         log.info("Updating status for account: {} to {}", accountId, request.getStatus());
 
         BankAccount account = bankAccountRepository.findById(accountId)
                 .orElseThrow(() -> new AccountNotFoundException("Account not found: " + accountId));
 
-        try {
-            // Validate status transition
-            validateStatusTransition(account.getStatus(), request.getStatus());
+        // Validate status transition
+        validateStatusTransition(account.getStatus(), request.getStatus());
 
-            AccountStatus previous = account.getStatus();
-            account.setStatus(request.getStatus());
-            BankAccount updatedAccount = bankAccountRepository.save(account);
+        account.setStatus(request.getStatus());
+        BankAccount updatedAccount = bankAccountRepository.save(account);
 
-            BigDecimal balance = getBalanceFromTransactionService(accountId, account.getCurrency());
+        BigDecimal balance = getBalanceFromTransactionService(accountId, account.getCurrency());
 
-            log.info("Account status updated: {} -> {}", accountId, request.getStatus());
+        log.info("Account status updated: {} -> {}", accountId, request.getStatus());
 
-            auditPublisher.publishSuccess(
-                    "UPDATE_ACCOUNT_STATUS",
-                    updatedAccount.getCustomerId(),
-                    String.format("Account %s status %s -> %s",
-                            accountId, previous, request.getStatus()));
-
-            return mapToResponse(updatedAccount, balance);
-        } catch (RuntimeException ex) {
-            auditPublisher.publishFailure(
-                    "UPDATE_ACCOUNT_STATUS",
-                    account.getCustomerId(),
-                    String.format("Failed to update account %s status to %s: %s",
-                            accountId, request.getStatus(), ex.getMessage()));
-            throw ex;
-        }
+        return mapToResponse(updatedAccount, balance);
     }
 
     @Transactional(readOnly = true)

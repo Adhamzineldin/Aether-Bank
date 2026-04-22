@@ -109,6 +109,12 @@
             <artifactId>spring-boot-starter-amqp</artifactId>
         </dependency>
 
+        <!-- AOP for @Auditable annotation-driven audit publishing -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-aop</artifactId>
+        </dependency>
+
         <!-- Rate Limiting (Bucket4j) -->
         <dependency>
             <groupId>com.github.vladimir-bukhtoyarov</groupId>

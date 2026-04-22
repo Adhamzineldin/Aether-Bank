@@ -102,57 +102,47 @@ public class AuthService implements IAuthenticationService {
      */
     @Override
     @Transactional
+    @Auditable(action = "REGISTER_USER", value = "User registration")
     public UserResponse register(RegisterRequest request) {
-        try {
-            if (userRepository.existsByUsername(request.getUserName())) {
-                throw new RuntimeException("Username already exists");
-            }
-            if (userRepository.existsByEmail(request.getEmail())) {
-                throw new RuntimeException("Email already exists");
-            }
-            registrationValidator.validate(request.getEmail(), request.getPassword());
-
-            final String DEFAULT_ROLE = "CUSTOMER";
-            Role role = roleRepository.findByName(DEFAULT_ROLE)
-                    .orElseGet(() -> roleRepository.save(Role.builder().name(DEFAULT_ROLE).build()));
-
-            User user = User.builder()
-                    .username(request.getUserName())
-                    .email(request.getEmail())
-                    .passwordHash(passwordHashService.hash(request.getPassword()))
-                    .fullName(request.getUserName())
-                    .isActive(true)
-                    .isEmailVerified(false)
-                    .mfaEnabled(false)
-                    .build();
-            user.addRole(role);
-
-            User savedUser = userRepository.save(user);
-
-            auditPublisher.publishSuccess("REGISTER_USER", savedUser.getId(),
-                    String.format("Registered user %s (%s) role=%s",
-                            savedUser.getUsername(), savedUser.getEmail(), role.getName()));
-
-            return new UserResponse(
-                    savedUser.getId(),
-                    savedUser.getUsername(),
-                    savedUser.getEmail(),
-                    role.getName()
-            );
-        } catch (RuntimeException ex) {
-            auditPublisher.publishFailure("REGISTER_USER", null,
-                    String.format("Registration failed for %s: %s",
-                            request.getUserName(), ex.getMessage()));
-            throw ex;
+        if (userRepository.existsByUsername(request.getUserName())) {
+            throw new RuntimeException("Username already exists");
         }
+        if (userRepository.existsByEmail(request.getEmail())) {
+            throw new RuntimeException("Email already exists");
+        }
+        registrationValidator.validate(request.getEmail(), request.getPassword());
+
+        final String DEFAULT_ROLE = "CUSTOMER";
+        Role role = roleRepository.findByName(DEFAULT_ROLE)
+                .orElseGet(() -> roleRepository.save(Role.builder().name(DEFAULT_ROLE).build()));
+
+        User user = User.builder()
+                .username(request.getUserName())
+                .email(request.getEmail())
+                .passwordHash(passwordHashService.hash(request.getPassword()))
+                .fullName(request.getUserName())
+                .isActive(true)
+                .isEmailVerified(false)
+                .mfaEnabled(false)
+                .build();
+        user.addRole(role);
+
+        User savedUser = userRepository.save(user);
+
+        return new UserResponse(
+                savedUser.getId(),
+                savedUser.getUsername(),
+                savedUser.getEmail(),
+                role.getName()
+        );
     }
 
     /**
      * Logout user (stateless - handled client-side)
      */
     @Override
+    @Auditable(action = "LOGOUT", value = "User logout")
     public GenericResponse logout() {
-        auditPublisher.publishSuccess("LOGOUT", null, "User logout");
         return new GenericResponse("Logout successful", true);
     }
 }

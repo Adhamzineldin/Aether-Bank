@@ -37,29 +37,15 @@ public class CardPaymentService {
     private final AuditPublisher auditPublisher;
 
     @Transactional
+    @Auditable(action = "PROCESS_MERCHANT_PAYMENT", value = "Card merchant payment")
     public CardTransactionResponse process(MerchantPaymentRequest input) throws ProcessMerchantPaymentException {
         cardRulesValidator.validateMerchantPaymentRequest(input);
         String idempotencyKey = resolveIdempotencyKey(input);
 
         var cached = cardAccessService.findTransactionByIdempotencyKey(idempotencyKey);
         if (cached.isPresent()) return CardMapper.toTransactionResponse(cached.get());
-        try {
-            CardTransactionResponse resp = executePayment(input, idempotencyKey);
-            auditPublisher.publishSuccess(
-                    "PROCESS_MERCHANT_PAYMENT",
-                    null,
-                    String.format("Card %s paid merchant %s amount=%s %s txnId=%s",
-                            tokenSuffix(input.getCardToken()), input.getMerchantId(),
-                            input.getAmount(), input.getCurrency(), resp.getTransactionId()));
-            return resp;
-        } catch (RuntimeException ex) {
-            auditPublisher.publishFailure(
-                    "PROCESS_MERCHANT_PAYMENT",
-                    null,
-                    String.format("Card %s payment to merchant %s failed: %s",
-                            tokenSuffix(input.getCardToken()), input.getMerchantId(), ex.getMessage()));
-            throw ex;
-        }
+
+        return executePayment(input, idempotencyKey);
     }
 
     private CardTransactionResponse executePayment(MerchantPaymentRequest input, String idempotencyKey) {
