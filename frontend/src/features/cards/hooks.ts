@@ -1,6 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
-import { useStubQuery } from '@lib/stub';
 import { useAuthStore } from '@stores/authStore';
 import type {
   MerchantPaymentRequest,
@@ -46,15 +45,16 @@ export function useIssueCard() {
 }
 
 /**
- * Card transaction history is declared on the Veld contract as
- * {@code GET} with a {@code @RequestBody} which browsers can't reliably
- * send; keep it stubbed until the contract is reshaped.
+ * Card transaction history. card-service exposes a browser-friendly
+ * GET endpoint with query-string filters at /api/card/{cardId}/transactions
+ * — that's what we hit here.
  */
-export function useCardTransactions(id: string | undefined, page = 0, _pageSize = 20) {
-  return useStubQuery<{ content: any[]; pageNumber: number; totalPages: number }>(
-    cardKeys.txs(id || '', page),
-    { content: [], pageNumber: 0, totalPages: 0 },
-  );
+export function useCardTransactions(id: string | undefined, page = 0, pageSize = 20) {
+  return useQuery({
+    queryKey: cardKeys.txs(id || '', page),
+    queryFn: () => cardsApi.listTransactions(id as string, { page, pageSize }),
+    enabled: Boolean(id),
+  });
 }
 
 export function useProcessMerchantPayment() {

@@ -4,6 +4,7 @@ import type {
   CardSummary,
   CardTransactionResponse,
   MerchantPaymentRequest,
+  PaginatedCardTransactionResponse,
   RefundCardTransactionRequest,
   VoidCardTransactionRequest,
 } from '@veld/types';
@@ -49,4 +50,17 @@ export const cardsApi = {
 
   voidTransaction: (payload: VoidCardTransactionRequest) =>
     http.post<CardTransactionResponse>(`${BASE}/voids`, payload).then((r) => r.data),
+
+  /**
+   * Card transaction history. The veld spec models this as GET-with-body
+   * which browsers can't reliably send, so card-service exposes a
+   * query-string variant on the same path that we hit here.
+   */
+  listTransactions: (
+    cardId: string,
+    params: { page?: number; pageSize?: number; status?: string; type?: string } = {},
+  ) =>
+    http
+      .get<PaginatedCardTransactionResponse>(`${BASE}/${cardId}/transactions`, { params })
+      .then((r) => r.data),
 };

@@ -5,11 +5,16 @@ import com.maayn.cardservice.entity.Card;
 import com.maayn.cardservice.mapper.CardMapper;
 import com.maayn.cardservice.repository.CardRepository;
 import com.maayn.cardservice.service.CardCreationService;
+import com.maayn.cardservice.service.CardTransactionHistoryService;
 import com.maayn.cardservice.util.DemoPanGenerator;
 import lombok.RequiredArgsConstructor;
 import maayn.veld.generated.models.card.CardNetwork;
 import maayn.veld.generated.models.card.CardSummary;
+import maayn.veld.generated.models.card.CardTransactionStatus;
+import maayn.veld.generated.models.card.CardTransactionType;
 import maayn.veld.generated.models.card.CardType;
+import maayn.veld.generated.models.card.GetCardTransactionsRequest;
+import maayn.veld.generated.models.card.PaginatedCardTransactionResponse;
 import maayn.veld.generated.models.card.PanRevealResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -36,6 +41,7 @@ public class CardIssueController {
     private final CardCreationService cardCreationService;
     private final CardRepository cardRepository;
     private final AuditPublisher auditPublisher;
+    private final CardTransactionHistoryService cardTransactionHistoryService;
 
     @PostMapping
     public ResponseEntity<CardSummary> issueCard(@RequestBody IssueCardRequest request) {
@@ -79,7 +85,26 @@ public class CardIssueController {
         return ResponseEntity.ok(cards);
     }
 
-
+    /**
+     * Browser-friendly transaction history. The auto-generated CardController
+     * declares this as {@code GET} with a {@code @RequestBody} which browsers
+     * (and CORS preflights) handle inconsistently — the frontend hook was
+     * stubbed because of it. This variant accepts the same filters as
+     * conventional query string parameters so the frontend can issue a plain
+     * {@code GET /api/card/{cardId}/transactions?page=0&pageSize=20} and get
+     * real data back.
+     */
+    @GetMapping("/{cardId}/transactions")
+    public ResponseEntity<PaginatedCardTransactionResponse> getCardTransactions(
+            @PathVariable String cardId,
+            @RequestParam(required = false) CardTransactionStatus status,
+            @RequestParam(required = false) CardTransactionType type,
+            @RequestParam(required = false, defaultValue = "0") Integer page,
+            @RequestParam(required = false, defaultValue = "20") Integer pageSize
+    ) throws Exception {
+        GetCardTransactionsRequest req = new GetCardTransactionsRequest(status, type, page, pageSize);
+        return ResponseEntity.ok(cardTransactionHistoryService.getTransactions(cardId, req));
+    }
 
     public record IssueCardRequest(
             UUID customerId,
