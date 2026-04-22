@@ -36,6 +36,17 @@ public class Card {
     private String lastFourDigits;
 
     /**
+     * ISO-4217 currency the card's underlying ledger account is denominated in.
+     * Captured at issuance from the linked account (debit) or from the
+     * provisioning request (credit) so merchant payments can target the
+     * correct ledger row without doing a synchronous lookup. Nullable for
+     * legacy rows created before this column existed; the payment path
+     * back-fills those on first use.
+     */
+    @Column(name = "currency", length = 3)
+    private String currency;
+
+    /**
      * Full demo PAN (digits only). Real systems tokenize this; we persist it so
      * the customer can reveal it in the UI for testing. Legacy rows may be null
      * — see {@link com.maayn.cardservice.util.DemoPanGenerator#syntheticLegacyPan}.

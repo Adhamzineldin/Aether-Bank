@@ -3,9 +3,11 @@ package com.maayn.cardservice.service;
 import com.maayn.cardservice.entity.Card;
 import com.maayn.cardservice.entity.CardTransaction;
 import com.maayn.cardservice.exception.TransactionGatewayException;
+import com.maayn.cardservice.gateway.AccountGateway;
 import com.maayn.cardservice.gateway.TransactionGateway;
 import com.maayn.cardservice.mapper.CardMapper;
 import com.maayn.cardservice.payment.PaymentFlowFactory;
+import com.maayn.cardservice.repository.CardRepository;
 import com.maayn.cardservice.repository.CardTransactionRepository;
 import com.maayn.cardservice.validator.CardRulesValidator;
 import lombok.RequiredArgsConstructor;
@@ -26,9 +28,11 @@ public class CardPaymentService {
     private final CardAccessService cardAccessService;
     private final CardRulesValidator cardRulesValidator;
     private final TransactionGateway transactionGateway;
+    private final AccountGateway accountGateway;
     private final CardTransactionFactory cardTransactionFactory;
     private final PaymentFlowFactory paymentFlowFactory;
     private final CardTransactionRepository cardTransactionRepository;
+    private final CardRepository cardRepository;
 
     @Transactional
     public CardTransactionResponse process(MerchantPaymentRequest input) throws ProcessMerchantPaymentException {
@@ -44,21 +48,52 @@ public class CardPaymentService {
         Card card = cardAccessService.getCardByToken(input.getCardToken());
         cardRulesValidator.validateCardForPayment(card, input.getCurrency(), input.getAmount());
 
-        TransactionResponse transfer = transferFunds(card, input, idempotencyKey);
+        // Always settle in the card's own ledger currency. The currency on
+        // the request is treated as a display hint from the merchant page;
+        // using card.currency guarantees a (accountId, currency) ledger row
+        // exists in transaction-service and avoids "wallets do not exist"
+        // errors when the merchant's currency differs from the card's.
+        String settlementCurrency = resolveSettlementCurrency(card, input.getCurrency());
+
+        TransactionResponse transfer = transferFunds(card, input, settlementCurrency, idempotencyKey);
         CardTransaction tx = cardTransactionFactory.createPurchase(
                 card, input.getMerchantId(), idempotencyKey,
-                transfer.getReferenceNumber(), input.getAmount(), input.getCurrency());
+                transfer.getReferenceNumber(), input.getAmount(), settlementCurrency);
 
         paymentFlowFactory.create(card).applyPostTransferEffects(card, input.getAmount());
         cardTransactionRepository.save(tx);
         return CardMapper.toTransactionResponse(tx);
     }
 
-    private TransactionResponse transferFunds(Card card, MerchantPaymentRequest input, String idempotencyKey) {
+    /**
+     * Returns the ISO currency of the card's underlying ledger account.
+     * Back-fills {@code card.currency} for legacy rows on first use so future
+     * payments skip the lookup.
+     */
+    private String resolveSettlementCurrency(Card card, String requestedCurrency) {
+        if (card.getCurrency() != null && !card.getCurrency().isBlank()) {
+            return card.getCurrency();
+        }
+        try {
+            String fetched = accountGateway.fetchAccountCurrency(card.getAccountId());
+            card.setCurrency(fetched);
+            cardRepository.save(card);
+            return fetched;
+        } catch (RuntimeException ignored) {
+            // Account-service may not know about credit-card accounts (they
+            // live only in the ledger); fall back to whatever the merchant
+            // requested. If the ledger row also doesn't exist for that
+            // currency the transfer call below surfaces a clearer error.
+            return cardRulesValidator.normalizeCurrency(requestedCurrency);
+        }
+    }
+
+    private TransactionResponse transferFunds(Card card, MerchantPaymentRequest input,
+                                              String settlementCurrency, String idempotencyKey) {
         try {
             return transactionGateway.transfer(
                     card.getAccountId(), SystemAccounts.CASH_VAULT_ID,
-                    input.getAmount(), input.getCurrency(), idempotencyKey, TransactionType.CARD_PAYMENT);
+                    input.getAmount(), settlementCurrency, idempotencyKey, TransactionType.CARD_PAYMENT);
         } catch (TransactionGatewayException ex) {
             throw mapGatewayError(ex);
         }

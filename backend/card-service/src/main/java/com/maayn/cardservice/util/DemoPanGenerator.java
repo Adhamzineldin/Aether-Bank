@@ -88,6 +88,18 @@ public final class DemoPanGenerator {
     }
 
     /**
+     * Public Luhn check used by callers that need to validate stored PANs
+     * (e.g. legacy rows persisted before the generator produced Luhn-valid
+     * values).
+     */
+    public static boolean isLuhnValid(String pan) {
+        if (pan == null) return false;
+        String digits = pan.replaceAll("\\D", "");
+        if (digits.length() < 13 || digits.length() > 19) return false;
+        return luhnValid(digits);
+    }
+
+    /**
      * Luhn mod-10: from the right, double every second digit (1-based position
      * from the right: 1 = no double, 2 = double, 3 = no double, …).
      */

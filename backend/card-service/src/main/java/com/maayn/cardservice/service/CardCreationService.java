@@ -29,7 +29,9 @@ public class CardCreationService {
     private final AccountGateway accountGateway;
 
     /**
-     * Debit card links to an existing account — verifies the account exists first.
+     * Debit card links to an existing account — verifies the account exists first
+     * and pulls the account's currency so future merchant payments target the
+     * correct ledger row.
      */
     @Transactional
     public Card createDebitCard(UUID accountId, UUID customerId, CardNetwork network) {
@@ -37,7 +39,10 @@ public class CardCreationService {
         Objects.requireNonNull(customerId, "Customer ID is required");
         Objects.requireNonNull(network, "Card network is required");
         accountGateway.verifyDebitAccountExists(accountId);
-        return cardRepository.save(buildBaseCard(accountId, customerId, CardType.DEBIT, network));
+        String accountCurrency = accountGateway.fetchAccountCurrency(accountId);
+        Card card = buildBaseCard(accountId, customerId, CardType.DEBIT, network);
+        card.setCurrency(accountCurrency);
+        return cardRepository.save(card);
     }
 
     /**
@@ -52,7 +57,9 @@ public class CardCreationService {
         if (annualInterestRate == null || annualInterestRate.compareTo(BigDecimal.ZERO) < 0) throw new IllegalArgumentException("Annual interest rate cannot be negative");
 
         UUID creditAccountId = accountGateway.provisionCreditAccount(creditLimit, currency);
-        Card card = cardRepository.save(buildBaseCard(creditAccountId, customerId, CardType.CREDIT, network));
+        Card baseCard = buildBaseCard(creditAccountId, customerId, CardType.CREDIT, network);
+        baseCard.setCurrency(currency);
+        Card card = cardRepository.save(baseCard);
         CreditCardDetailsEntity details = creditCardDetailsRepository.save(buildCreditDetails(card, creditLimit, annualInterestRate));
         card.setCreditDetails(details);
         return card;

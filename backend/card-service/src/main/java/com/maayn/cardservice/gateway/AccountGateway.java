@@ -36,6 +36,26 @@ public class AccountGateway {
         }
     }
 
+    /**
+     * Returns the ISO-4217 currency the linked account is denominated in.
+     * Used at debit-card issuance and as a back-fill for legacy card rows on
+     * the merchant payment path so transfers always target the correct
+     * {@code (accountId, currency)} ledger key.
+     */
+    public String fetchAccountCurrency(UUID accountId) {
+        try {
+            var resp = accountClient.account.getAccount(accountId.toString());
+            if (resp == null || resp.getAccount() == null || resp.getAccount().getCurrency() == null) {
+                throw new IllegalArgumentException("Account currency unavailable for: " + accountId);
+            }
+            return resp.getAccount().getCurrency();
+        } catch (RuntimeException ex) {
+            throw ex;
+        } catch (Exception ex) {
+            throw new IllegalArgumentException("Failed to fetch account currency: " + accountId, ex);
+        }
+    }
+
     public UUID provisionCreditAccount(BigDecimal creditLimit, String currency) {
         UUID accountId = UUID.randomUUID();
         publishAccountCreatedEvent(accountId, currency);

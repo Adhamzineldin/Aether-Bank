@@ -34,18 +34,42 @@ public class CardService implements ICardService {
             UUID uuid = UUID.fromString(cardId);
             Card card = cardRepository.findById(uuid)
                     .orElseThrow(() -> CardErrors.revealPan.notFound("Card not found: " + cardId));
-            
-            String pan = card.getPan() != null
-                    ? card.getPan()
-                    : DemoPanGenerator.syntheticLegacyPan(card.getId(), card.getCardNetwork(), card.getLastFourDigits());
-            
-            String cvv = card.getCvv() != null && !card.getCvv().isBlank()
-                    ? card.getCvv()
-                    : DemoPanGenerator.syntheticLegacyCvv(card.getId(), card.getCardNetwork());
-            
-            return new PanRevealResponse(pan, cvv);
+
+            backfillCredentialsIfNeeded(card);
+
+            return new PanRevealResponse(card.getPan(), card.getCvv());
         } catch (IllegalArgumentException e) {
             throw CardErrors.revealPan.notFound("Invalid card ID: " + cardId);
+        }
+    }
+
+    /**
+     * Legacy rows may have a {@code null} or non-Luhn-valid PAN (the synthetic
+     * fallback used to be generated on the fly per request and was not
+     * persisted). Materialise a fresh Luhn-valid PAN/CVV the first time we
+     * reveal so that:
+     * <ul>
+     *   <li>the public {@code <PaymentGateway/>} form's mod-10 check passes,</li>
+     *   <li>{@link com.maayn.cardservice.service.CardAccessService#getCardByToken}
+     *       can resolve the card by PAN on subsequent merchant payments,</li>
+     *   <li>repeated reveals return a stable value.</li>
+     * </ul>
+     * No-op when the stored values are already valid.
+     */
+    private void backfillCredentialsIfNeeded(Card card) {
+        boolean dirty = false;
+        if (card.getPan() == null || card.getPan().isBlank() || !DemoPanGenerator.isLuhnValid(card.getPan())) {
+            String fresh = DemoPanGenerator.generatePan(card.getCardNetwork());
+            card.setPan(fresh);
+            card.setLastFourDigits(DemoPanGenerator.lastFourFromPan(fresh));
+            dirty = true;
+        }
+        if (card.getCvv() == null || card.getCvv().isBlank()) {
+            card.setCvv(DemoPanGenerator.generateCvv(card.getCardNetwork()));
+            dirty = true;
+        }
+        if (dirty) {
+            cardRepository.save(card);
         }
     }
 
