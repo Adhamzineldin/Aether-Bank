@@ -45,3 +45,18 @@ logging:
   level:
     com.maayn.notificationservice: DEBUG
     org.springframework.data.mongodb: INFO
+
+# Recipient resolution. Both URLs are templated with placeholders the
+# notification-service substitutes at call time.
+#   - contact-lookup keyed by accountId  -> account-service joins to iam
+#   - user-contact keyed by userId       -> hits iam-service directly
+# Defaulted to the in-cluster URLs so docker-compose works out of the box;
+# overridable via env for other environments.
+notification:
+  contact-lookup:
+    url-template: ${NOTIFICATION_CONTACT_LOOKUP_URL_TEMPLATE:http://account-service:8081/api/accounts/{accountId}/contact}
+  user-contact:
+    url-template: ${NOTIFICATION_USER_CONTACT_URL_TEMPLATE:http://iam-service:8085/api/internal/users/{userId}/email}
+  email:
+    fallback-to: ${NOTIFICATION_EMAIL_FALLBACK_TO:}
+
