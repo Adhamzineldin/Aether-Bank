@@ -1,6 +1,7 @@
 package com.maayn.cardservice.service;
 
 import com.maayn.cardservice.audit.AuditPublisher;
+import com.maayn.cardservice.audit.Auditable;
 import com.maayn.cardservice.entity.Card;
 import com.maayn.cardservice.entity.CardTransaction;
 import com.maayn.cardservice.exception.TransactionGatewayException;

@@ -1,6 +1,7 @@
 package com.maayn.financialservice.service;
 
 import com.maayn.financialservice.audit.AuditPublisher;
+import com.maayn.financialservice.audit.Auditable;
 import com.maayn.financialservice.entity.MortgageApplicationDocument;
 import com.maayn.financialservice.events.FinancialEventPublisher;
 import com.maayn.financialservice.mappers.MortgageMapper;

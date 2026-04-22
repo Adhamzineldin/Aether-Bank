@@ -1,6 +1,7 @@
 package com.maayn.iamservice.service;
 
 import com.maayn.iamservice.audit.AuditPublisher;
+import com.maayn.iamservice.audit.Auditable;
 import com.maayn.iamservice.domain.entity.Role;
 import com.maayn.iamservice.domain.entity.User;
 import com.maayn.iamservice.repository.RoleRepository;
