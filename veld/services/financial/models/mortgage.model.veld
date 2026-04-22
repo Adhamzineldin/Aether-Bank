@@ -18,6 +18,7 @@ enum MortgageStatus {
 model MortgageApplication {
   id: uuid
   customerId: uuid
+  accountId: uuid
   propertyAddress: string
   propertyValue: decimal
   downPayment: decimal

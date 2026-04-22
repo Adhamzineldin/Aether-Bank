@@ -1,4 +1,4 @@
-// Card domain models
+ // Card domain models
 
 enum CardType {
   CREDIT,
@@ -64,6 +64,11 @@ model CreditCardDetails {
 model CardDetailsResponse {
   card: CardSummary
   creditDetails?: CreditCardDetails
+}
+
+model PanRevealResponse {
+  pan: string
+  cvv: string
 }
 
 model MerchantPaymentRequest {

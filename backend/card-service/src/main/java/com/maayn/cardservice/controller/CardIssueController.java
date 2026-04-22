@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import maayn.veld.generated.models.card.CardNetwork;
 import maayn.veld.generated.models.card.CardSummary;
 import maayn.veld.generated.models.card.CardType;
+import maayn.veld.generated.models.card.PanRevealResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -79,7 +80,6 @@ public class CardIssueController {
         return ResponseEntity.ok(new PanRevealResponse(digits, cvv));
     }
 
-    public record PanRevealResponse(String pan, String cvv) {}
 
     public record IssueCardRequest(
             UUID customerId,

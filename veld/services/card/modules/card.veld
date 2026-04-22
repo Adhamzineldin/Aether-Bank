@@ -15,6 +15,15 @@ module Card {
       Unauthorized:401
     ]
   }
+  action revealPan {
+    method: GET
+    path: /:cardId/pan
+    output: PanRevealResponse
+    errors: [
+      NotFound:404,
+      Unauthorized:401
+    ]
+  }
 
   action processMerchantPayment {
     method: POST
