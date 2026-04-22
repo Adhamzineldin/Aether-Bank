@@ -71,5 +71,17 @@ public class LoanService implements ILoanService {
         loan.setLoanStatus(LoanStatus.PENDING);
         loan.setCreatedAt(now);
         loan.setUpdatedAt(now);
+
+        // Seed disbursement-time fields from the application so the approval
+        // listener has everything it needs to actually move money.
+        if (loan.getPrincipalAmount() == null && loan.getRequestedAmount() != null) {
+            loan.setPrincipalAmount(loan.getRequestedAmount());
+        }
+        if (loan.getTenureMonths() == null && loan.getRequestedTenure() != null) {
+            loan.setTenureMonths(loan.getRequestedTenure());
+        }
+        if (loan.getCurrency() == null || loan.getCurrency().isBlank()) {
+            loan.setCurrency("USD");
+        }
     }
 }

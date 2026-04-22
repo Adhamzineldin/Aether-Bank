@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ListChecks, Check, X } from 'lucide-react';
+import { ListChecks, Check, X, ShieldAlert } from 'lucide-react';
 import { PageHeader } from '@shared/ui/PageHeader';
 import { Card, CardContent } from '@shared/ui/Card';
 import { Skeleton } from '@shared/ui/Skeleton';
@@ -15,13 +15,16 @@ import { fromNow } from '@shared/utils/date';
 import { useAuthStore } from '@stores/authStore';
 import { TaskActionInput, type ApprovalTask, type TaskDecision, type UUID } from '@veld/types';
 import { useMyTasks, useTaskAction } from '../hooks';
+import { canActOnWorkflowStep } from '../rbac';
 
 export default function WorkflowInboxPage() {
   const { data, isLoading } = useMyTasks();
+  const userRoles = useAuthStore((s) => s.user?.roles);
   const [decidingTask, setDecidingTask] = useState<ApprovalTask | null>(null);
   const [pendingDecision, setPendingDecision] = useState<TaskDecision>('APPROVED');
 
   const openDecision = (task: ApprovalTask, decision: TaskDecision) => {
+    if (!canActOnWorkflowStep(task.role, userRoles)) return;
     setDecidingTask(task);
     setPendingDecision(decision);
   };
@@ -50,6 +53,7 @@ export default function WorkflowInboxPage() {
               <TBody>
                 {data.map((t) => {
                   const isOpen = t.taskStatus !== 'COMPLETED';
+                  const canAct = canActOnWorkflowStep(t.role, userRoles);
                   return (
                     <TR key={t.id}>
                       <TD className="font-mono text-xs">{t.workflowId.slice(0, 8)}…</TD>
@@ -60,8 +64,8 @@ export default function WorkflowInboxPage() {
                       </TD>
                       <TD>{fromNow(t.createdAt)}</TD>
                       <TD>
-                        <div className="flex justify-end gap-2">
-                          {isOpen && (
+                        <div className="flex justify-end gap-2 items-center">
+                          {isOpen && canAct && (
                             <>
                               <Button
                                 size="sm"
@@ -80,6 +84,15 @@ export default function WorkflowInboxPage() {
                                 Reject
                               </Button>
                             </>
+                          )}
+                          {isOpen && !canAct && (
+                            <span
+                              className="inline-flex items-center gap-1 text-xs text-muted-fg"
+                              title={`Requires role: ${t.role}`}
+                            >
+                              <ShieldAlert className="h-3.5 w-3.5" />
+                              Needs {t.role}
+                            </span>
                           )}
                           <Link
                             to={ROUTES.workflowDetail(t.workflowId)}
@@ -116,7 +129,9 @@ interface DecideTaskModalProps {
 function DecideTaskModal({ task, decision, onClose }: DecideTaskModalProps) {
   const [comment, setComment] = useState('');
   const userId = useAuthStore((s) => s.user?.id) || '';
+  const userRoles = useAuthStore((s) => s.user?.roles);
   const action = useTaskAction(task?.id ?? '');
+  const canAct = canActOnWorkflowStep(task?.role, userRoles);
 
   // Close + clear the modal after a successful decision. useMutation's
   // onSuccess already fires the toast and invalidates the task list.
@@ -139,7 +154,7 @@ function DecideTaskModal({ task, decision, onClose }: DecideTaskModalProps) {
   const tone = decision === 'APPROVED' ? 'primary' : 'danger';
 
   const submit = () => {
-    if (!userId) return;
+    if (!userId || !canAct) return;
     action.mutate(
       new TaskActionInput({
         employeeId: userId as UUID,
@@ -176,7 +191,7 @@ function DecideTaskModal({ task, decision, onClose }: DecideTaskModalProps) {
             variant={tone as 'primary' | 'danger'}
             onClick={submit}
             loading={action.isPending}
-            disabled={!userId}
+            disabled={!userId || !canAct}
           >
             {verb}
           </Button>
@@ -184,6 +199,12 @@ function DecideTaskModal({ task, decision, onClose }: DecideTaskModalProps) {
       }
     >
       <div className="space-y-3">
+        {!canAct && (
+          <div className="rounded-md border border-warning/40 bg-warning/10 p-3 text-sm text-warning">
+            <ShieldAlert className="inline h-4 w-4 mr-1" />
+            You don't hold the required role ({task.role}) for this step.
+          </div>
+        )}
         <label className="text-sm font-medium">
           Comment {decision === 'REJECTED' ? '' : <span className="text-muted-fg font-normal">(optional)</span>}
         </label>

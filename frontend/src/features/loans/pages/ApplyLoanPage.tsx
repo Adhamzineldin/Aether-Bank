@@ -14,6 +14,7 @@ import { Skeleton } from '@shared/ui/Skeleton';
 import { EMPLOYMENT_STATUSES } from '@shared/constants/enums';
 import { ROUTES } from '@app/routes';
 import { useAuthStore } from '@stores/authStore';
+import { useMyAccounts } from '@features/accounts/hooks';
 import { useApplyLoan, useLoanProducts } from '../hooks';
 import type { Decimal, EmploymentStatus, LoanApplication, LoanType, UUID } from '@veld/types';
 
@@ -24,6 +25,7 @@ import type { Decimal, EmploymentStatus, LoanApplication, LoanType, UUID } from 
  */
 const schema = z.object({
   productId: z.string().uuid('Choose a product'),
+  accountId: z.string().uuid('Select a disbursement account'),
   requestedAmount: z.string(),
   requestedTenure: z.coerce.number().min(1),
   termYears: z.coerce.number().min(1),
@@ -40,6 +42,7 @@ export default function ApplyLoanPage() {
   const navigate = useNavigate();
   const customerId = useAuthStore((s) => s.user?.id) || '';
   const products = useLoanProducts();
+  const accounts = useMyAccounts();
   const apply = useApplyLoan();
 
   const { register, handleSubmit, setValue, watch, formState: { errors } } = useForm<V>({
@@ -62,12 +65,15 @@ export default function ApplyLoanPage() {
 
   const submit = (v: V) => {
     if (!selectedProduct) return;
+    const selectedAccount = accounts.data?.find((a) => a.id === v.accountId);
     const payload: LoanApplication = {
       id: crypto.randomUUID() as UUID,
       customerId: customerId as UUID,
+      accountId: v.accountId as UUID,
       productId: v.productId as UUID,
       loanType: selectedProduct.loanType as LoanType,
       requestedAmount: v.requestedAmount as Decimal,
+      currency: (selectedAccount?.currency || 'USD') as string,
       requestedTenure: v.requestedTenure,
       purpose: v.purpose,
       employmentStatus: v.employmentStatus as EmploymentStatus,
@@ -99,6 +105,17 @@ export default function ApplyLoanPage() {
                   {products.data?.map((p) => (
                     <option key={p.id} value={p.id}>
                       {p.name} · {(Number(p.baseAnnualRate) * 100).toFixed(2)}% APR
+                    </option>
+                  ))}
+                </Select>
+              </FormField>
+
+              <FormField label="Disbursement account" error={errors.accountId?.message} required>
+                <Select {...register('accountId')}>
+                  <option value="">Select the account to receive the funds…</option>
+                  {accounts.data?.map((a) => (
+                    <option key={a.id} value={a.id}>
+                      {a.accountType} · {a.accountNumber} ({a.currency})
                     </option>
                   ))}
                 </Select>

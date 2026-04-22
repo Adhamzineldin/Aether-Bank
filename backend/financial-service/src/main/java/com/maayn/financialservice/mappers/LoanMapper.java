@@ -17,7 +17,6 @@ public interface LoanMapper {
     @Mapping(target = "reviewedAt", ignore = true)
     @Mapping(target = "applicationStatus", ignore = true)
     @Mapping(target = "loanNumber", ignore = true)
-    @Mapping(target = "accountId", ignore = true)
     @Mapping(target = "applicationId", ignore = true)
     @Mapping(target = "principalAmount", ignore = true)
     @Mapping(target = "interestRate", ignore = true)

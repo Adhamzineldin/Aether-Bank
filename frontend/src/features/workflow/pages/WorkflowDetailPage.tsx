@@ -51,32 +51,36 @@ export default function WorkflowDetailPage() {
       <Card>
         <CardContent>
           <h3 className="mb-3 text-sm font-semibold">Steps</h3>
-          {!data.steps?.length ? (
-            <p className="text-sm text-muted-fg">No steps defined on this workflow.</p>
-          ) : (
-            <Table>
-              <THead>
-                <tr>
-                  <TH>#</TH>
-                  <TH>Role</TH>
-                  <TH>Assignee</TH>
-                  <TH>Status</TH>
-                  <TH>Decision</TH>
-                </tr>
-              </THead>
-              <TBody>
-                {data.steps.map((s: any, i: number) => (
-                  <TR key={i}>
-                    <TD>{i + 1}</TD>
-                    <TD><Badge>{s.role || '—'}</Badge></TD>
-                    <TD className="font-mono text-xs">{s.assignedTo ? String(s.assignedTo).slice(0, 8) : '—'}</TD>
-                    <TD><Badge tone={s.taskStatus === 'COMPLETED' ? 'success' : 'warning'}>{s.taskStatus || '—'}</Badge></TD>
-                    <TD>{s.decisionStatus || '—'}</TD>
-                  </TR>
-                ))}
-              </TBody>
-            </Table>
-          )}
+          {(() => {
+            const steps = (data as any).steps as any[] | undefined;
+            if (!steps?.length) {
+              return <p className="text-sm text-muted-fg">No steps defined on this workflow.</p>;
+            }
+            return (
+              <Table>
+                <THead>
+                  <tr>
+                    <TH>#</TH>
+                    <TH>Role</TH>
+                    <TH>Assignee</TH>
+                    <TH>Status</TH>
+                    <TH>Decision</TH>
+                  </tr>
+                </THead>
+                <TBody>
+                  {steps.map((s: any, i: number) => (
+                    <TR key={i}>
+                      <TD>{i + 1}</TD>
+                      <TD><Badge>{s.role || '—'}</Badge></TD>
+                      <TD className="font-mono text-xs">{s.assignedTo ? String(s.assignedTo).slice(0, 8) : '—'}</TD>
+                      <TD><Badge tone={s.taskStatus === 'COMPLETED' ? 'success' : 'warning'}>{s.taskStatus || '—'}</Badge></TD>
+                      <TD>{s.decisionStatus || '—'}</TD>
+                    </TR>
+                  ))}
+                </TBody>
+              </Table>
+            );
+          })()}
         </CardContent>
       </Card>
     </div>

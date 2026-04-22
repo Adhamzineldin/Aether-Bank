@@ -11,10 +11,12 @@ import { Button } from '@shared/ui/Button';
 import { EMPLOYMENT_STATUSES } from '@shared/constants/enums';
 import { ROUTES } from '@app/routes';
 import { useAuthStore } from '@stores/authStore';
+import { useMyAccounts } from '@features/accounts/hooks';
 import { useApplyMortgage } from '../hooks';
 import type { Decimal, EmploymentStatus, MortgageApplication, UUID } from '@veld/types';
 
 const schema = z.object({
+  accountId: z.string().uuid('Select a disbursement account'),
   propertyAddress: z.string().min(2),
   propertyValue: z.string(),
   downPayment: z.string(),
@@ -28,6 +30,7 @@ type V = z.infer<typeof schema>;
 
 export default function ApplyMortgagePage() {
   const customerId = useAuthStore((s) => s.user?.id) || '';
+  const accounts = useMyAccounts();
   const navigate = useNavigate();
   const apply = useApplyMortgage();
   const { register, handleSubmit, formState: { errors } } = useForm<V>({
@@ -39,6 +42,7 @@ export default function ApplyMortgagePage() {
     const payload: MortgageApplication = {
       id: crypto.randomUUID() as UUID,
       customerId: customerId as UUID,
+      accountId: v.accountId as UUID,
       propertyAddress: v.propertyAddress,
       propertyValue: v.propertyValue as Decimal,
       downPayment: v.downPayment as Decimal,
@@ -59,6 +63,16 @@ export default function ApplyMortgagePage() {
       <Card className="max-w-2xl">
         <CardContent>
           <form className="space-y-4" onSubmit={handleSubmit(submit)}>
+            <FormField label="Disbursement account" error={errors.accountId?.message} required>
+              <Select {...register('accountId')}>
+                <option value="">Select the account to receive the funds…</option>
+                {accounts.data?.map((a) => (
+                  <option key={a.id} value={a.id}>
+                    {a.accountType} · {a.accountNumber} ({a.currency})
+                  </option>
+                ))}
+              </Select>
+            </FormField>
             <FormField label="Property address" error={errors.propertyAddress?.message} required>
               <Input {...register('propertyAddress')} />
             </FormField>

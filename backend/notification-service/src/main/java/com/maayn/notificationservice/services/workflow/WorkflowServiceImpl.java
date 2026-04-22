@@ -13,7 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import maayn.veld.generated.errors.ApiException;
 import maayn.veld.generated.models.workflow.CreateWorkflowInput;
 import maayn.veld.generated.models.workflow.DecisionStatus;
-import maayn.veld.generated.models.workflow.StepAction;
+import maayn.veld.generated.models.shared.StepAction;
 import maayn.veld.generated.models.workflow.StepRole;
 import maayn.veld.generated.models.workflow.TaskActionInput;
 import maayn.veld.generated.models.workflow.TaskDecision;
@@ -274,24 +274,26 @@ public class WorkflowServiceImpl implements IWorkflowService {
     // ------------------------------------------------------------------
 
     private maayn.veld.generated.models.workflow.WorkflowInstance toSdk(WorkflowInstance e) {
-        return new maayn.veld.generated.models.workflow.WorkflowInstance(
-                e.getId(),
-                e.getTemplateId(),
-                e.getEntityType(),
-                e.getEntityId(),
-                parseWorkflowStatus(e.getStatus()),
-                e.getCurrentStep(),
-                toSdkSteps(e.getSteps()),
-                e.getVersion(),
-                e.getCreatedAt(),
-                e.getUpdatedAt()
-        );
+        maayn.veld.generated.models.workflow.WorkflowInstance dto =
+                new maayn.veld.generated.models.workflow.WorkflowInstance();
+        dto.setId(e.getId());
+        dto.setTemplateId(e.getTemplateId());
+        dto.setEntityType(e.getEntityType());
+        dto.setEntityId(e.getEntityId());
+        dto.setStatus(parseWorkflowStatus(e.getStatus()));
+        dto.setCurrentStep(e.getCurrentStep());
+        dto.setVersion(e.getVersion());
+        dto.setCreatedAt(e.getCreatedAt());
+        dto.setUpdatedAt(e.getUpdatedAt());
+        // Steps are no longer part of the WorkflowInstance contract; clients
+        // should query ApprovalTask endpoints for per-step details.
+        return dto;
     }
 
-    private List<maayn.veld.generated.models.workflow.WorkflowStep> toSdkSteps(List<WorkflowStep> steps) {
+    private List<maayn.veld.generated.models.shared.WorkflowStep> toSdkSteps(List<WorkflowStep> steps) {
         if (steps == null) return List.of();
         return steps.stream()
-                .map(s -> new maayn.veld.generated.models.workflow.WorkflowStep(
+                .map(s -> new maayn.veld.generated.models.shared.WorkflowStep(
                         s.getId(),
                         s.getStep(),
                         parseRole(s.getRole()),

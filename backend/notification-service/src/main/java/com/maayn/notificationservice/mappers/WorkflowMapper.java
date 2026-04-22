@@ -5,6 +5,8 @@ import com.maayn.notificationservice.documents.workflow.WorkflowInstanceDocument
 import com.maayn.notificationservice.documents.workflow.WorkflowStepDocument;
 import com.maayn.notificationservice.documents.workflow.WorkflowTemplateDocument;
 import maayn.veld.generated.models.workflow.*;
+import maayn.veld.generated.models.shared.StepAction;
+import maayn.veld.generated.models.shared.WorkflowStep;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
@@ -25,17 +27,22 @@ public class WorkflowMapper {
     public WorkflowInstance toModel(WorkflowInstanceDocument doc) {
         if (doc == null)
             return null;
-        return new WorkflowInstance(
-                doc.getId(),
-                doc.getTemplateId(),
-                doc.getEntityType(),
-                doc.getEntityId(),
-                doc.getStatus(),
-                doc.getCurrentStep(),
-                toModelSteps(doc.getSteps()),
-                doc.getVersion(),
-                doc.getCreatedAt(),
-                doc.getUpdatedAt());
+        WorkflowInstance instance = new WorkflowInstance();
+        instance.setId(doc.getId());
+        instance.setTemplateId(doc.getTemplateId());
+        instance.setTemplateVersion(doc.getTemplateVersion());
+        instance.setEntityType(doc.getEntityType());
+        instance.setEntityId(doc.getEntityId());
+        instance.setStatus(doc.getStatus());
+        instance.setCurrentStep(doc.getCurrentStep());
+        instance.setVersion(doc.getVersion());
+        instance.setCompletedBy(doc.getCompletedBy());
+        instance.setCreatedAt(doc.getCreatedAt());
+        instance.setUpdatedAt(doc.getUpdatedAt());
+        // Note: workflow steps are no longer part of the WorkflowInstance contract
+        // (commented out in the Veld model). Step details are exposed via the
+        // ApprovalTask endpoints instead.
+        return instance;
     }
 
     public List<WorkflowStepDocument> cloneStepsFromTemplate(List<WorkflowStepDocument> templateSteps) {

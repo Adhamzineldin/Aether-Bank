@@ -38,6 +38,16 @@ public class LoanApprovalListener {
             LoanApplicationDocument loan = loanRepository.findById(loanId)
                     .orElseThrow(() -> new RuntimeException("Loan not found: " + loanId));
 
+            if (loan.getAccountId() == null) {
+                throw new IllegalStateException("Loan " + loanId + " has no disbursement accountId; cannot disburse");
+            }
+            if (loan.getPrincipalAmount() == null || loan.getPrincipalAmount().signum() <= 0) {
+                throw new IllegalStateException("Loan " + loanId + " has no principal amount");
+            }
+            if (loan.getTenureMonths() == null || loan.getTenureMonths() <= 0) {
+                throw new IllegalStateException("Loan " + loanId + " has no tenure months");
+            }
+
             loan.setApplicationStatus(ApplicationStatus.APPROVED);
             loan.setLoanStatus(LoanStatus.APPROVED);
             loan.setReviewedAt(LocalDateTime.now());
@@ -55,6 +65,7 @@ public class LoanApprovalListener {
             loan.setDisbursementDate(LocalDateTime.now());
             loan.setStartDate(LocalDateTime.now().toLocalDate());
             loan.setEndDate(loan.getStartDate().plusMonths(loan.getTenureMonths()));
+            loan.setOutstandingBalance(loan.getPrincipalAmount());
             loan.setUpdatedAt(LocalDateTime.now());
             loanRepository.save(loan);
 
@@ -68,8 +79,8 @@ public class LoanApprovalListener {
             );
 
         } catch (Exception e) {
-            log.error("Failed to process loan approval event", e);
-            // TODO: Implement dead-letter queue for failed disbursements
+            log.error("Failed to process loan approval event: {}", event, e);
+            throw new RuntimeException("Loan approval handling failed", e);
         }
     }
 

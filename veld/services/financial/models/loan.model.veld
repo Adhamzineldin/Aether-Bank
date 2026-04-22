@@ -3,9 +3,11 @@ import "./common.model.veld"
 model LoanApplication {
   id: uuid
   customerId: uuid
+  accountId: uuid
   productId: uuid
   loanType: LoanType
   requestedAmount: decimal
+  currency?: string
   requestedTenure: int
   purpose: string
   employmentStatus: EmploymentStatus

@@ -11,6 +11,7 @@ public class LoanValidator {
 
     public void validateSubmission(LoanApplication application) {
         validateCustomer(application);
+        validateAccount(application);
         validateProduct(application);
         validateLoanType(application);
         validatePositiveAmount(application);
@@ -24,6 +25,14 @@ public class LoanValidator {
         if (application.getCustomerId() == null) {
             throw loanErrors.LoanSubmitErrors.missingField(
                     "Customer ID is required"
+            );
+        }
+    }
+
+    private void validateAccount(LoanApplication application) {
+        if (application.getAccountId() == null) {
+            throw loanErrors.LoanSubmitErrors.missingField(
+                    "Disbursement account ID is required"
             );
         }
     }
