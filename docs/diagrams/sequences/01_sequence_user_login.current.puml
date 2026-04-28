@@ -1,0 +1,62 @@
+@startuml
+' Auto-derived 2026-04-29 from iam-service auth controller + GatewayConfig.
+' Counterpart of: docs/diagrams/sequences/01_sequence_user_login.puml
+title Sequence 01 — User Login (current, JWT + RabbitMQ audit)
+
+skinparam sequenceArrowThickness 2
+skinparam participantFontStyle bold
+
+actor       Customer
+participant "React Frontend"   as FE
+participant "API Gateway\n(:9000)" as GW
+participant "iam-service\n(:8085)" as IAM
+database    "iam_db (Postgres)" as DBI
+participant "RabbitMQ"          as RMQ
+participant "audit-service"     as AUD
+database    "audit_db (Mongo)"  as DBA
+
+Customer -> FE  : enters username + password
+FE -> GW        : POST /api/auth/login\n{username, password}
+GW -> IAM       : forward (Eureka LB; **no JWT filter** on /api/auth/**)
+
+activate IAM
+IAM -> DBI      : SELECT users WHERE username
+DBI --> IAM     : user row + roles + permissions
+
+alt user is locked / inactive
+  IAM --> GW    : 401 / 423
+  GW --> FE     : error
+else password mismatch
+  IAM -> DBI    : UPDATE users SET failed_login_attempts++,\n  lockedUntil=+30m if >=5
+  IAM -> RMQ    : publish audit event\n{action=LOGIN_FAILED, status=FAILED}
+  IAM --> GW    : 401
+  GW --> FE     : error
+else MFA enabled
+  IAM -> DBI    : INSERT otp_codes (purpose=LOGIN, ttl)
+  IAM --> GW    : 200 {mfaRequired:true, challengeId}
+  Customer -> FE : enters OTP
+  FE -> GW      : POST /api/auth/login/verify-otp
+  GW -> IAM     : forward
+  IAM -> DBI    : check otp_codes (attempts < max, not used, not expired)
+else success
+  IAM -> IAM    : sign JWT (HS256, claim sub=userId, roles)
+  IAM -> DBI    : INSERT refresh_tokens (token_hash, deviceInfo, ip)
+  IAM -> DBI    : UPDATE users.last_login, reset failed_login_attempts
+  IAM -> RMQ    : publish audit event\n{serviceName=iam, action=LOGIN_SUCCESS}
+  IAM --> GW    : 200 {accessToken, refreshToken, user}
+  GW --> FE     : 200
+  FE --> Customer : token stored, dashboard
+end
+deactivate IAM
+
+RMQ -> AUD : audit.queue → SecurityAuditListener
+AUD -> DBA : INSERT security_logs
+
+note over GW
+  All later calls go through JwtAuthFilter:
+  - parses Bearer token with shared HMAC secret
+  - strips client-supplied X-User-Id / X-User-Roles
+  - injects verified userId + roles as headers
+end note
+@enduml
+

@@ -1,0 +1,70 @@
+@startuml
+' Auto-derived 2026-04-29 from transaction-service (LedgerCommandListener,
+' TransactionService, Outbox), notification-service TransferEventListener,
+' audit-service SecurityAuditListener.
+' Counterpart of: docs/diagrams/sequences/02_sequence_money_transfer.puml
+title Sequence 02 — Internal Money Transfer (current, RabbitMQ + Outbox + Saga)
+
+skinparam sequenceArrowThickness 2
+skinparam participantFontStyle bold
+
+actor       Customer
+participant "React Frontend"        as FE
+participant "API Gateway"           as GW
+participant "transaction-service"   as TX
+database    "transaction_db (PG)"   as DBT
+participant "RabbitMQ"              as RMQ
+participant "notification-service"  as NOTIF
+participant "audit-service"         as AUD
+database    "audit_db (Mongo)"      as DBA
+participant "SMTP (Gmail)"          as SMTP
+
+Customer -> FE : Transfer form\n{from, to, amount, currency, idempotencyKey}
+FE -> GW       : POST /api/transaction_service/.../transfer\nAuthorization: Bearer <JWT>
+GW -> GW       : JwtAuthFilter verifies JWT,\ninjects X-User-Id / X-User-Roles
+GW -> TX       : forward (Eureka LB)
+
+activate TX
+TX -> RMQ      : publish TransferRequest →\nsaga.commands.queue\n(idempotent on idempotencyKey)
+TX --> GW      : 202 Accepted {referenceNumber}
+GW --> FE      : 202
+FE --> Customer: "Transfer submitted"
+
+== Async (LedgerCommandListener) ==
+RMQ -> TX      : saga.commands.queue → handleExecuteTransferCommand
+TX -> DBT      : SELECT ledger_balance(source, currency) FOR UPDATE
+TX -> DBT      : SELECT ledger_balance(dest,   currency) FOR UPDATE
+alt insufficient funds / wallet missing
+  TX -> DBT      : INSERT transactions {status=FAILED, failure_reason}
+  TX -> DBT      : INSERT outbox_messages (TransferFailedEvent)
+  DBT --> TX     : COMMIT
+else ok
+  TX -> DBT      : UPDATE source.available_balance -= amount\n         dest.available_balance   += amount
+  TX -> DBT      : INSERT transactions {status=COMPLETED, version}
+  TX -> DBT      : INSERT outbox_messages (TransferSuccessEvent)
+  DBT --> TX     : COMMIT
+end
+
+TX -> RMQ      : OutboxPoller → publish TransferSuccess/Failed\n(routingKey transfer.success / transfer.failed)
+deactivate TX
+
+== Fan-out ==
+RMQ -> NOTIF : NOTIFICATION_TRANSFER_EVENTS_QUEUE
+activate NOTIF
+NOTIF -> NOTIF : TransferEventListener.onTransferEvent\nbranches on routing key
+NOTIF -> NOTIF : TransferAlertService.handleSuccess/Failure
+NOTIF -> SMTP  : send email (template rendered)
+NOTIF -> RMQ   : audit event {action=NOTIFICATION_EMAIL_SENT}
+deactivate NOTIF
+
+RMQ -> AUD   : audit.queue
+AUD -> DBA   : INSERT security_logs
+
+note over TX, DBT
+  Transactional Outbox pattern: business write
+  + outbox_messages row commit atomically.
+  A poller relays them to RabbitMQ later, so we
+  never lose events on broker outage.
+end note
+@enduml
+

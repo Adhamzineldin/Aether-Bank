@@ -1,0 +1,51 @@
+@startuml
+' Auto-derived 2026-04-29 from account-service BankAccountController +
+' AccountCreatedEvent publisher and transaction-service AccountEventListener.
+' New diagram (no plan counterpart) — captures the wallet-provisioning flow
+' that didn't exist in the original plan.
+title Sequence 06 — Account Opening & Ledger Wallet Provisioning (current, NEW)
+
+skinparam sequenceArrowThickness 2
+skinparam participantFontStyle bold
+
+actor       Customer
+participant "React Frontend"      as FE
+participant "API Gateway"         as GW
+participant "account-service"     as ACC
+database    "account_db (PG)"     as DBA
+participant "RabbitMQ"            as RMQ
+participant "transaction-service" as TX
+database    "transaction_db (PG)" as DBT
+participant "audit-service"       as AUD
+
+Customer -> FE : "Open account" form\n{customerId, accountType, currency}
+FE -> GW       : POST /api/accounts + JWT
+GW -> ACC      : forward
+
+activate ACC
+ACC -> DBA     : INSERT bank_accounts {accountNumber, status=ACTIVE, currency}
+ACC -> RMQ    : publish AccountCreatedEvent\n→ account.events.exchange / account.events.queue
+ACC --> GW    : 201 {accountId, accountNumber}
+deactivate ACC
+GW --> FE     : 201
+
+RMQ -> TX     : ACCOUNT_EVENTS_QUEUE → AccountEventListener.handleAccountCreated
+activate TX
+TX -> DBT     : check existsById(LedgerAccountId(accountId, currency))
+alt new wallet
+  TX -> DBT   : INSERT ledger_balance {available_balance=0, pending_holds=0}
+end
+TX -> RMQ     : audit {action=LEDGER_WALLET_INITIALIZED}
+deactivate TX
+
+RMQ -> AUD    : audit.queue → security_logs
+
+note over ACC, TX
+  No live balance is stored in account_db.
+  When the customer later asks for their balance,
+  account-service calls transaction-service via
+  Feign GET /api/transaction_service/ledger/{accountId}/{currency}/balance
+  (TransactionServiceClient).
+end note
+@enduml
+

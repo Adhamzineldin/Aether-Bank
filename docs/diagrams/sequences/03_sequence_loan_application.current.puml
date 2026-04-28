@@ -1,0 +1,76 @@
+@startuml
+' Auto-derived 2026-04-29 from financial-service (LoanQueryController,
+' LoanApplicationListener, LoanApprovalListener, TransactionGateway),
+' notification-service (SubmittedApplicationWorkflowListener), and
+' audit-service.
+' Counterpart of: docs/diagrams/sequences/03_sequence_loan_application.puml
+title Sequence 03 — Loan Application & Disbursement (current)
+
+skinparam sequenceArrowThickness 2
+skinparam participantFontStyle bold
+
+actor       Customer
+actor       Admin     as ADMIN
+participant "React Frontend"        as FE
+participant "API Gateway"           as GW
+participant "financial-service"     as FIN
+database    "financial_db (Mongo)"  as DBF
+participant "RabbitMQ"              as RMQ
+participant "notification-service\n(workflow engine)" as WF
+database    "notification_db (Mongo)" as DBW
+participant "transaction-service"   as TX
+database    "transaction_db (PG)"   as DBT
+participant "audit-service"         as AUD
+
+== 1. Submit application ==
+Customer -> FE   : Loan form\n{productId, amount, tenure, income, ...}
+FE -> GW         : POST /api/financial_service/loans/applications\n+ JWT
+GW -> FIN        : forward
+FIN -> DBF       : INSERT loan_applications\n{status=SUBMITTED, loanNumber}
+FIN -> RMQ       : publish ApplicationSubmittedEvent\n{entityType=LOAN, entityId}
+FIN --> FE       : 201 {applicationId, loanNumber}
+
+== 2. Workflow instance + approval task ==
+RMQ -> WF        : workflow submitted-applications listener
+WF -> DBW        : find active workflow_template (entityType=LOAN, version)
+WF -> DBW        : INSERT workflow_instances {status=IN_PROGRESS, currentStep=0}
+WF -> DBW        : INSERT approval_tasks (step, role, taskStatus=PENDING)
+WF -> RMQ        : audit event {action=WORKFLOW_STARTED}
+
+== 3. Admin reviews ==
+Admin -> FE      : Reviews pending tasks
+FE -> GW         : GET /api/workflow/tasks?role=...
+GW -> WF         : forward → approval_tasks query
+ADMIN -> FE      : approve / reject decision
+FE -> GW         : POST /api/workflow/tasks/{id}/decision\n{decision, comment}
+GW -> WF         : forward
+WF -> DBW        : UPDATE approval_tasks (decisionStatus, decidedBy, completedAt)
+alt last step approved
+  WF -> DBW      : UPDATE workflow_instances (status=COMPLETED)
+  WF -> RMQ      : publish loan.approved.queue {loanId}
+else rejected
+  WF -> RMQ      : publish loan.rejected event
+end
+
+== 4. Disbursement (LoanApprovalListener) ==
+RMQ -> FIN       : loan.approved.queue
+activate FIN
+FIN -> DBF       : UPDATE loan_applications.status=APPROVED, loanStatus=APPROVED
+FIN -> TX        : TransactionGateway.disburseLoan(\n  accountId, principal, currency)
+TX -> DBT        : credit ledger_balance(accountId, currency)
+TX -> DBT        : INSERT transactions {type=LOAN_DISBURSEMENT, status=COMPLETED}
+TX --> FIN       : 200 {transactionId}
+FIN -> DBF       : UPDATE loan_applications (disbursedAmount, disbursementDate, loanStatus=DISBURSED)
+FIN -> RMQ       : audit event {action=DISBURSE_LOAN, status=SUCCESS}
+deactivate FIN
+
+RMQ -> AUD       : audit.queue → security_logs
+
+note over WF
+  The same workflow engine handles
+  loan, mortgage and certificate
+  applications — entityType selects
+  which workflow_template applies.
+end note
+@enduml
+

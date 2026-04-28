@@ -1,0 +1,137 @@
+@startuml
+' =============================================================================
+' Auto-derived from current code on 2026-04-29.
+' Counterpart of: docs/diagrams/architecture/01_microservices_architecture.puml
+' Source of truth: backend/docker-compose.yml, each service's *Application.java,
+' GatewayConfig.java, RabbitMQ @RabbitListener / publisher classes,
+' application.yml files. Only services actually running are shown.
+' =============================================================================
+title Aether Bank — Current Microservices Architecture (as-built)
+
+top to bottom direction
+skinparam linetype ortho
+skinparam nodesep 45
+skinparam ranksep 55
+skinparam defaultTextAlignment center
+skinparam backgroundColor #FFFFFF
+skinparam component { BorderThickness 1.5 FontStyle bold FontSize 12 }
+skinparam database  { BorderThickness 1.5 FontSize 11 }
+skinparam package   { BorderColor #90A4AE BackgroundColor #FAFAFA FontStyle bold FontSize 13 }
+
+' ── Clients ───────────────────────────────────────────────────────────────
+package "Clients" {
+  actor "Customer / Admin / SuperAdmin" as USERS
+  actor "External Merchant"             as MERCH
+  component "React Frontend\n(Vite, Port 3000)"      as FE  #FFECB3
+  component "Embedded Payment Gateway\n(packages/payment-gateway, React lib)" as PG #FFE0B2
+}
+
+' ── Edge / Discovery ──────────────────────────────────────────────────────
+package "Edge & Discovery" {
+  component "API Gateway\nSpring Cloud Gateway MVC\nPort 9000"   as GW     #C8E6C9
+  component "Eureka Server\nPort 8761 (host 8860)"               as EUREKA #A5D6A7
+}
+
+' ── Messaging ─────────────────────────────────────────────────────────────
+package "Messaging" {
+  component "RabbitMQ\nPort 5672 / Mgmt 15672"                   as RMQ    #FFE082
+}
+
+' ── Microservices (actual ports from docker-compose) ──────────────────────
+package "Microservices" {
+  component "iam-service\nPort 8085"           as IAM   #E8F5E9
+  component "account-service\nPort 8081"       as ACC   #FFF8E1
+  component "transaction-service\nPort 8082"   as TX    #FCE4EC
+  component "financial-service\nPort 8083"     as FIN   #EDE7F6
+  component "card-service\nPort 8084"          as CARD  #E0F7FA
+  component "notification-service\nPort 8086 → 3030\n(workflow + notifications)" as NOTIF #FFF3E0
+  component "audit-service\nPort 8087"         as AUD   #F3E5F5
+}
+
+' ── Databases ─────────────────────────────────────────────────────────────
+package "Databases  (one PostgreSQL cluster + one MongoDB cluster)" {
+  database "PostgreSQL 15\nbank-postgres\nhost 5433 → 5432"   as PG_HOST #FFF9C4 {
+    database "iam_db"          as DB_IAM
+    database "account_db"      as DB_ACC
+    database "transaction_db"  as DB_TX
+    database "card_db"         as DB_CARD
+  }
+  database "MongoDB 6\nbank-mongodb\nhost 27018 → 27017"      as MG_HOST #FFF9C4 {
+    database "financial_db"    as DB_FIN
+    database "notification_db" as DB_NOTIF
+    database "audit_db"        as DB_AUD
+  }
+  component "mongo-express UI\nPort 8091 → 8081"             as MEXP   #ECEFF1
+}
+
+' ── External / Mail ───────────────────────────────────────────────────────
+package "External" {
+  component "SMTP (Gmail)\nsmtp.gmail.com:587" as SMTP #ECEFF1
+}
+
+' ── Connections ───────────────────────────────────────────────────────────
+USERS  --> FE
+FE     --> PG  : embeds
+FE     --> GW  : HTTP/JSON  (Bearer JWT)
+MERCH  --> PG  : checkout
+
+' Gateway public route (no JWT)
+GW --> IAM : /api/auth/**
+
+' Gateway JWT-protected routes (JwtAuthFilter + Eureka LB)
+GW --> ACC   : /api/accounts/**\n/api/customers/**\n/api/accounts_service/**
+GW --> CARD  : /api/card/**
+GW --> FIN   : /api/financial_service/**
+GW --> NOTIF : /api/notification/**\n/api/workflow/**
+GW --> AUD   : /api/audit/**
+GW --> TX    : /api/transaction_service/**
+
+' Service discovery
+IAM   .up.> EUREKA
+ACC   .up.> EUREKA
+TX    .up.> EUREKA
+FIN   .up.> EUREKA
+CARD  .up.> EUREKA
+NOTIF .up.> EUREKA
+AUD   .up.> EUREKA
+GW    .up.> EUREKA
+
+' Synchronous Feign / HTTP calls actually wired in code
+ACC  --> TX    : Feign GET\n/api/transaction_service/ledger/{accountId}/{ccy}/balance
+CARD --> ACC   : Veld SDK AccountClient
+CARD --> TX    : Veld SDK TransactionClient (debit/credit)
+NOTIF --> ACC  : GET /api/accounts/{id}/contact
+NOTIF --> IAM  : GET /api/internal/users/{userId}/email
+FIN  --> TX    : TransactionGateway (loan/cert/mortgage disbursement)
+
+' RabbitMQ — publishers
+ACC   --> RMQ : AccountCreatedEvent
+TX    --> RMQ : TransferSuccess / TransferFailed (outbox)
+FIN   --> RMQ : loan / certificate / mortgage events,\nfinancial audit events
+CARD  --> RMQ : card audit events
+IAM   --> RMQ : login / security audit events
+NOTIF --> RMQ : workflow approval events
+
+' RabbitMQ — consumers
+RMQ --> TX    : account.events.queue\n(provisions ledger wallet)
+RMQ --> TX    : saga.commands.queue\n(LedgerCommandListener)
+RMQ --> NOTIF : transfer events queue (success/failed)
+RMQ --> NOTIF : workflow submitted-application events
+RMQ --> FIN   : loan.approved.queue, certificate.approval.queue,\nmortgage.approval.queue
+RMQ --> AUD   : audit.queue (all services)
+
+' Datastores
+IAM   --> DB_IAM
+ACC   --> DB_ACC
+TX    --> DB_TX
+CARD  --> DB_CARD
+FIN   --> DB_FIN
+NOTIF --> DB_NOTIF
+AUD   --> DB_AUD
+MEXP  ..> MG_HOST
+
+' Outbound mail
+NOTIF --> SMTP : transactional emails
+
+@enduml
+

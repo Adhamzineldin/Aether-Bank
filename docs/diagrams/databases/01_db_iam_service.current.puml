@@ -1,0 +1,118 @@
+@startuml
+' Auto-derived from iam-service JPA entities on 2026-04-29.
+' Counterpart of: docs/diagrams/databases/01_db_iam_service.puml
+' Source: backend/iam-service/src/main/java/com/maayn/iamservice/domain/entity/*
+title DB 01 — IAM Service (PostgreSQL: iam_db) — current
+
+skinparam linetype ortho
+skinparam classBackgroundColor #E8F5E9
+skinparam classBorderColor #2E7D32
+skinparam classHeaderBackgroundColor #A5D6A7
+skinparam classFontStyle bold
+skinparam classAttributeFontSize 11
+
+entity "users" as USERS {
+  * id                    : UUID         <<PK>>
+  --
+  * username              : VARCHAR(100) <<UNIQUE>>
+  * email                 : VARCHAR(255) <<UNIQUE>>
+  * password_hash         : VARCHAR(255)
+    full_name             : VARCHAR(255)
+    phone_number          : VARCHAR(20)
+  * is_active             : BOOLEAN
+  * is_email_verified     : BOOLEAN
+  * failed_login_attempts : INT
+    last_failed_login     : TIMESTAMP
+    locked_until          : TIMESTAMP
+  * mfa_enabled           : BOOLEAN
+    mfa_secret            : VARCHAR(255)
+  * created_at            : TIMESTAMP
+  * updated_at            : TIMESTAMP
+    last_login            : TIMESTAMP
+}
+
+entity "roles" as ROLES {
+  * id          : SERIAL      <<PK>>
+  --
+  * name        : VARCHAR(50) <<UNIQUE>>
+    description : TEXT
+  * created_at  : TIMESTAMP
+  * updated_at  : TIMESTAMP
+}
+
+entity "permissions" as PERMS {
+  * id          : SERIAL       <<PK>>
+  --
+  * name        : VARCHAR(100) <<UNIQUE>>
+    description : TEXT
+  * resource    : VARCHAR(100)
+  * action      : VARCHAR(50)
+  * created_at  : TIMESTAMP
+}
+
+entity "user_roles" as USER_ROLES {
+  * user_id : UUID <<PK,FK>>
+  * role_id : INT  <<PK,FK>>
+}
+
+entity "role_permissions" as ROLE_PERMS {
+  * role_id       : INT <<PK,FK>>
+  * permission_id : INT <<PK,FK>>
+}
+
+entity "refresh_tokens" as REFRESH {
+  * id          : UUID         <<PK>>
+  --
+  * user_id     : UUID         <<FK>>
+  * token_hash  : VARCHAR(512) <<UNIQUE>>
+  * expires_at  : TIMESTAMP
+  * is_revoked  : BOOLEAN
+    revoked_at  : TIMESTAMP
+    device_info : VARCHAR(500)
+    ip_address  : VARCHAR(45)
+    user_agent  : TEXT
+  * created_at  : TIMESTAMP
+    last_used   : TIMESTAMP
+}
+
+entity "otp_codes" as OTP {
+  * id            : UUID        <<PK>>
+  --
+  * user_id       : UUID        <<FK>>
+  * code          : VARCHAR(10)
+  * purpose       : VARCHAR(50)
+  * expires_at    : TIMESTAMP
+  * is_used       : BOOLEAN
+    used_at       : TIMESTAMP
+  * attempt_count : INT
+  * max_attempts  : INT
+  * created_at    : TIMESTAMP
+}
+
+entity "audit_logs" as AUDIT {
+  * id             : UUID         <<PK>>
+  --
+    user_id        : UUID
+  * action         : VARCHAR(100)
+    entity_type    : VARCHAR(100)
+    entity_id      : VARCHAR(255)
+    old_value      : TEXT
+    new_value      : TEXT
+    ip_address     : VARCHAR(45)
+    user_agent     : TEXT
+    request_method : VARCHAR(10)
+    request_path   : VARCHAR(500)
+    status         : VARCHAR(50)
+    status_code    : INT
+  * created_at     : TIMESTAMP
+}
+
+USERS  ||--o{ USER_ROLES : "has"
+ROLES  ||--o{ USER_ROLES : "granted to"
+ROLES  ||--o{ ROLE_PERMS : "owns"
+PERMS  ||--o{ ROLE_PERMS : "granted to"
+USERS  ||--o{ REFRESH    : "issues"
+USERS  ||--o{ OTP        : "generates"
+USERS  ||..o{ AUDIT      : "subject of"
+@enduml
+

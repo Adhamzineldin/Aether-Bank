@@ -1,0 +1,95 @@
+@startuml
+' Auto-derived from notification-service Mongo @Document classes on 2026-04-29.
+' Counterpart of: docs/diagrams/databases/06_db_workflow_service.puml
+' The plan had separate Notification + Workflow services. Reality: a single
+' notification-service (Mongo `notification_db`) owns BOTH notification
+' delivery (templates + items) and the workflow / approval engine.
+title DB 06 — Notification Service (MongoDB: notification_db) — current
+
+skinparam linetype ortho
+skinparam classBackgroundColor #FFF3E0
+skinparam classBorderColor #E65100
+skinparam classHeaderBackgroundColor #FFCC80
+skinparam classFontStyle bold
+skinparam classAttributeFontSize 11
+
+entity "notification_templates" as NT {
+  * _id : UUID
+  --
+    event_type     : STRING
+    channel        : STRING
+    title_template : STRING
+    body_template  : STRING
+    version        : INT
+    is_active      : BOOL
+    created_at, updated_at : DATETIME
+}
+
+entity "notification_items" as NI {
+  * _id : UUID
+  --
+    user_id          : UUID
+    type             : STRING (NotificationType)
+    channel          : STRING (NotificationChannel)
+    event_type       : STRING (NotificationEventType)
+    correlation_id   : UUID
+    template_id      : UUID
+    template_version : INT
+    title, message   : STRING
+    status           : STRING (NotificationStatus)
+    retry_count      : INT
+    processed_at, sent_at : DATETIME
+    failed_reason    : STRING
+    created_at       : DATETIME
+}
+
+entity "workflow_templates" as WT {
+  * _id : UUID
+  --
+    entity_type : STRING   <<idx>>
+    version     : INT      <<idx>>  // (entity_type, version) UNIQUE
+    condition   : STRING (free-form)
+    steps[]     : EMBEDDED WorkflowStep { id, step, role, action }
+    is_active   : BOOL
+    description : STRING
+    created_by  : UUID
+    created_at, updated_at : DATETIME
+}
+
+entity "workflow_instances" as WI {
+  * _id : UUID
+  --
+    template_id      : UUID
+    template_version : INT
+    entity_type      : STRING       <<idx>>
+    entity_id        : UUID         <<idx>>  // (entity_type, entity_id) UNIQUE
+    status           : STRING (WorkflowStatus) <<idx>>
+    status_reason    : STRING
+    current_step     : INT
+    steps[]          : EMBEDDED WorkflowStep
+    version          : INT (@Version)
+    completed_at     : DATETIME
+    completed_by     : UUID
+    created_at, updated_at : DATETIME
+}
+
+entity "approval_tasks" as AT {
+  * _id : UUID
+  --
+    workflow_id      : UUID  <<idx>>
+    step             : INT
+    role             : STRING (StepRole)
+    assigned_to      : UUID
+    task_status      : STRING (TaskStatus)
+    decision_status  : STRING (DecisionStatus)
+    decided_by       : UUID
+    decision_at      : DATETIME
+    decision_comment : STRING
+    created_at, completed_at : DATETIME
+}
+
+NT ||..o{ NI : "template_id"
+WT ||..o{ WI : "template_id"
+WI ||--o{ AT : "approval steps"
+@enduml
+

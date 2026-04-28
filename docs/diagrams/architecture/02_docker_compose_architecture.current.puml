@@ -1,0 +1,85 @@
+@startuml
+' =============================================================================
+' Auto-derived from backend/docker-compose.yml on 2026-04-29.
+' Counterpart of: docs/diagrams/architecture/02_docker_compose_architecture.puml
+' =============================================================================
+title Aether Bank — Current Docker Compose Deployment (project: aether-bank-backend)
+
+top to bottom direction
+skinparam componentStyle rectangle
+skinparam defaultTextAlignment center
+skinparam backgroundColor #FFFFFF
+skinparam ArrowColor #455A64
+skinparam ArrowThickness 1.5
+skinparam component { FontStyle bold FontSize 11 }
+skinparam database  { BackgroundColor #FFF9C4 BorderColor #F9A825 FontSize 10 }
+skinparam package   { FontStyle bold BackgroundColor #FAFAFA BorderColor #90A4AE }
+
+package "docker-compose.yml — network: bank-network (bridge)" {
+
+  package "Infrastructure" #E8F5E9 {
+    database  "bank-postgres\npostgres:15-alpine\nhost 5433 → 5432\nvolume: postgres_data"  as PG_C
+    database  "bank-mongodb\nmongo:6.0\nhost 27018 → 27017\nvolume: mongodb_data"           as MG_C
+    component "bank-mongo-express\nmongo-express:latest\nhost 8091 → 8081"                   as MEXP_C #FFE0B2
+    component "bank-rabbitmq\nrabbitmq:3-management\nhost 5672 / 15672\nvolume: rabbitmq_data" as RMQ_C #FFE082
+    component "bank-eureka\neureka-server (custom)\nhost 8860 → 8761"                        as EUREKA_C #C8E6C9
+    component "bank-api-gateway\napi-gateway (custom)\nhost 9000"                            as GW_C     #C8E6C9
+  }
+
+  package "Microservices" #E3F2FD {
+    component "bank-iam\niam-service\nhost 8085"                  as IAM_C
+    component "bank-account\naccount-service\nhost 8081"          as ACC_C
+    component "bank-transaction\ntransaction-service\nhost 8082"  as TX_C
+    component "bank-financial\nfinancial-service\nhost 8083"      as FIN_C
+    component "bank-card\ncard-service\nhost 8084"                as CARD_C
+    component "bank-notification\nnotification-service\nhost 8086 → 3030" as NOTIF_C
+    component "bank-audit\naudit-service\nhost 8087"              as AUD_C
+  }
+
+  package "Frontend" #FCE4EC {
+    component "bank-frontend\nnginx (built React)\nhost 3000 → 80" as FE_C #F8BBD0
+  }
+}
+
+' depends_on (service_healthy unless noted)
+EUREKA_C <-- GW_C    : depends_on (healthy)
+EUREKA_C <-- IAM_C   : depends_on (healthy)
+EUREKA_C <-- ACC_C   : depends_on (healthy)
+EUREKA_C <-- TX_C    : depends_on (healthy)
+EUREKA_C <-- FIN_C   : depends_on (healthy)
+EUREKA_C <-- CARD_C  : depends_on (healthy)
+EUREKA_C <-- NOTIF_C : depends_on (healthy)
+EUREKA_C <-- AUD_C   : depends_on (healthy)
+
+PG_C <-- IAM_C   : depends_on (healthy)
+PG_C <-- ACC_C   : depends_on (healthy)
+PG_C <-- TX_C    : depends_on (healthy)
+PG_C <-- CARD_C  : depends_on (healthy)
+
+MG_C <-- FIN_C   : depends_on (healthy)
+MG_C <-- NOTIF_C : depends_on (healthy)
+MG_C <-- AUD_C   : depends_on (healthy)
+MG_C <-- MEXP_C  : depends_on
+
+RMQ_C <-- ACC_C
+RMQ_C <-- TX_C
+RMQ_C <-- CARD_C
+RMQ_C <-- FIN_C
+RMQ_C <-- NOTIF_C
+RMQ_C <-- AUD_C
+
+GW_C  <-- FE_C   : depends_on
+FE_C  --> GW_C   : browser → host:9000
+
+note bottom of FE_C
+  All containers join the `bank-network` bridge.
+  Init script `init-databases.sql` creates the
+  Postgres databases iam_db, account_db,
+  transaction_db, card_db, workflow_db on first
+  Postgres startup.
+  No Config Server, no Kafka, no Zookeeper —
+  the old plan included them but they are not
+  part of the running stack.
+end note
+@enduml
+

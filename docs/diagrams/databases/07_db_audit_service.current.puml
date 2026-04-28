@@ -1,0 +1,34 @@
+@startuml
+' Auto-derived from audit-service Mongo @Document on 2026-04-29.
+' New diagram — the old plan had no audit DB ERD.
+' Source: backend/audit-service/src/main/java/com/maayn/auditservice/entity/AuditLog.java
+title DB 07 — Audit Service (MongoDB: audit_db) — current (NEW vs plan)
+
+skinparam linetype ortho
+skinparam classBackgroundColor #F3E5F5
+skinparam classBorderColor #6A1B9A
+skinparam classHeaderBackgroundColor #CE93D8
+skinparam classFontStyle bold
+skinparam classAttributeFontSize 11
+
+entity "security_logs" as SL {
+  * _id             : STRING (Mongo ObjectId / UUID hex)
+  --
+    service_name    : STRING  // emitter: iam, account, transaction, card, financial, notification
+    action          : STRING  // free-form verb (LOGIN_SUCCESS, OPEN_ACCOUNT, ISSUE_CARD,
+                             //   DISBURSE_LOAN, PROCESS_MERCHANT_PAYMENT, NOTIFICATION_EMAIL_SENT, ...)
+    status          : STRING  // SUCCESS / FAILED / etc.
+    details         : STRING
+    user_identifier : UUID
+    timestamp       : DATETIME (yyyy-MM-dd'T'HH:mm:ss)
+}
+
+note right of SL
+  Single collection. Kept as free-form strings on
+  purpose: SecurityAuditListener consumes audit events
+  as Map<String,Object> from RabbitMQ `audit.queue`,
+  so any service can publish new action verbs without
+  an SDK regen. Never NACKs malformed messages.
+end note
+@enduml
+

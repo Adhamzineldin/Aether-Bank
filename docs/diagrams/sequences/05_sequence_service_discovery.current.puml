@@ -1,0 +1,46 @@
+@startuml
+' Auto-derived 2026-04-29 from each *Application.java + application.yml
+' (eureka.client.service-url) and api-gateway GatewayConfig.lb("...").
+' Counterpart of: docs/diagrams/sequences/05_sequence_service_discovery.puml
+title Sequence 05 — Service Discovery & Routing (current)
+
+skinparam sequenceArrowThickness 2
+skinparam participantFontStyle bold
+
+participant "Microservice\n(@EnableDiscoveryClient)" as SVC
+participant "Eureka Server\n(:8761, host :8860)"     as EUREKA
+participant "API Gateway\n(Spring Cloud Gateway MVC, :9000)" as GW
+actor       Client
+participant "Downstream Service\n(e.g. transaction-service)" as DS
+
+== Boot ==
+SVC -> EUREKA : POST /eureka/apps/{APP_NAME}\nregister instance (host, port, status=UP)
+loop every 30s
+  SVC -> EUREKA : heartbeat (renew lease)
+end
+
+GW -> EUREKA  : pull registry (BlockingLoadBalancer)
+EUREKA --> GW : map { service-id → [instances] }
+
+== Request ==
+Client -> GW  : HTTPS request to /api/<route>/**
+GW -> GW      : RouterFunction match (GatewayConfig)
+GW -> GW      : JwtAuthFilter (verify HS256, inject\nX-User-Id / X-User-Roles, strip spoof)
+GW -> GW      : LoadBalancerFilterFunctions.lb(serviceId)\npicks next instance
+GW -> DS      : forward HTTP call to chosen instance
+DS --> GW     : response
+GW --> Client : response
+
+note over GW, EUREKA
+  Routes (all behind JwtAuthFilter except /api/auth/**):
+  - iam-service        : /api/auth/**
+  - account-service    : /api/accounts/**, /api/customers/**,
+                         /api/accounts_service/**
+  - card-service       : /api/card/**
+  - financial-service  : /api/financial_service/**
+  - notification-service: /api/notification/**, /api/workflow/**
+  - audit-service      : /api/audit/**
+  - transaction-service: /api/transaction_service/**
+end note
+@enduml
+

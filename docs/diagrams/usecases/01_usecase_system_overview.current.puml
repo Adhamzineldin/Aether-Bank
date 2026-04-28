@@ -1,0 +1,151 @@
+@startuml
+' Auto-derived 2026-04-29 from frontend/src/features/* + backend controllers
+' (BankAccountController, TransactionHistoryController, generated
+' TransactionController/CardController/LendingController/FXController,
+' WorkflowTemplateController, UserManagementController, AuditController).
+' Counterpart of: docs/diagrams/usecases/01_usecase_system_overview.puml
+title Aether Bank — Use Case Overview (current, as-built)
+
+top to bottom direction
+skinparam actorStyle awesome
+skinparam usecaseBackgroundColor #E3F2FD
+skinparam usecaseBorderColor #1565C0
+skinparam packageBackgroundColor #FAFAFA
+skinparam packageBorderColor #90A4AE
+
+actor Customer  as C
+actor Admin     as A
+actor SuperAdmin as SA
+actor "External\nMerchant" as M
+actor "System\nScheduler"  as S
+
+rectangle "Aether Bank" {
+
+  package "Authentication (iam-service)" {
+    usecase "Register"               as UC_REG
+    usecase "Login"                  as UC_LOGIN
+    usecase "Verify OTP / MFA"       as UC_OTP
+    usecase "Refresh Token"          as UC_REF
+    usecase "Reset Password"         as UC_RESET
+    usecase "Lookup user (internal)" as UC_INT
+  }
+
+  package "Accounts (account-service)" {
+    usecase "Open Account"           as UC_OPEN
+    usecase "View Accounts"          as UC_VIEW
+    usecase "Close Account"          as UC_CLOSE
+    usecase "Get Account Contact"    as UC_CONTACT
+    usecase "Update Account Status"  as UC_STATUS
+  }
+
+  package "Transactions / Ledger (transaction-service)" {
+    usecase "Transfer Money"         as UC_TX
+    usecase "View Ledger Balance"    as UC_BAL
+    usecase "View Transaction History" as UC_HIST
+  }
+
+  package "Cards (card-service)" {
+    usecase "Issue Debit Card"       as UC_DC
+    usecase "Issue Credit Card"      as UC_CC
+    usecase "List My Cards"          as UC_LCARDS
+    usecase "Reveal PAN (demo)"      as UC_REVEAL
+    usecase "Pay with Card"          as UC_PAY
+    usecase "View Card Transactions" as UC_CTX
+  }
+
+  package "Financial products (financial-service)" {
+    usecase "Apply for Loan"         as UC_LOAN
+    usecase "Apply for Mortgage"     as UC_MORT
+    usecase "Open Certificate of Deposit" as UC_CD
+    usecase "Open Investment Account / Hold Assets" as UC_INV
+    usecase "Browse Loan Products"   as UC_LP
+    usecase "FX Rate Query"          as UC_FX
+  }
+
+  package "Notifications & Workflow (notification-service)" {
+    usecase "Receive Email Notification" as UC_NOTIF
+    usecase "Manage Notification Templates" as UC_NTPL
+    usecase "Manage Workflow Templates" as UC_WTPL
+    usecase "Approve / Reject Application" as UC_APPROVE
+    usecase "View My Approval Tasks" as UC_TASKS
+  }
+
+  package "Audit (audit-service)" {
+    usecase "View Audit / Security Logs" as UC_AUDIT
+  }
+
+  package "Admin (iam UserManagementController)" {
+    usecase "List / Lookup Users"    as UC_LISTU
+    usecase "Manage Roles"           as UC_ROLES
+    usecase "Disable / Enable User"  as UC_DISA
+  }
+}
+
+' Customer
+C --> UC_REG
+C --> UC_LOGIN
+C --> UC_OTP
+C --> UC_RESET
+C --> UC_REF
+C --> UC_OPEN
+C --> UC_VIEW
+C --> UC_CLOSE
+C --> UC_TX
+C --> UC_BAL
+C --> UC_HIST
+C --> UC_DC
+C --> UC_CC
+C --> UC_LCARDS
+C --> UC_REVEAL
+C --> UC_PAY
+C --> UC_CTX
+C --> UC_LOAN
+C --> UC_MORT
+C --> UC_CD
+C --> UC_INV
+C --> UC_LP
+C --> UC_FX
+C --> UC_NOTIF
+
+' Admin
+A --> UC_LOGIN
+A --> UC_TASKS
+A --> UC_APPROVE
+A --> UC_NTPL
+A --> UC_WTPL
+A --> UC_AUDIT
+A --> UC_LISTU
+A --> UC_STATUS
+
+' SuperAdmin (PreAuthorize SUPERADMIN-only mutation in UserManagementController)
+SA --> UC_LISTU
+SA --> UC_ROLES
+SA --> UC_DISA
+
+' External merchant
+M --> UC_PAY
+
+' System scheduler (poll loops, outbox dispatcher, accrual jobs)
+S --> UC_NOTIF
+S --> UC_HIST
+
+' Includes / extends
+UC_LOGIN  ..> UC_OTP     : <<extend>>  (when mfaEnabled)
+UC_LOGIN  ..> UC_REF     : <<extend>>
+UC_TX     ..> UC_NOTIF   : <<extend>>  (RabbitMQ → notification-service)
+UC_PAY    ..> UC_NOTIF   : <<extend>>
+UC_LOAN   ..> UC_APPROVE : <<include>>
+UC_MORT   ..> UC_APPROVE : <<include>>
+UC_CD     ..> UC_APPROVE : <<include>>
+UC_APPROVE ..> UC_NOTIF  : <<extend>>
+UC_OPEN   ..> UC_BAL     : <<include>>  (provisions ledger wallet via RabbitMQ)
+UC_CONTACT ..> UC_INT    : <<include>>  (account-service joins iam internal lookup)
+
+note bottom of UC_INT
+  /api/internal/users/{userId}/email is
+  service-to-service (not exposed to Customer)
+  and is consumed by notification-service to
+  resolve emails for transfer alerts.
+end note
+@enduml
+

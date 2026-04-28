@@ -1,0 +1,49 @@
+@startuml
+' Auto-derived from account-service JPA entities on 2026-04-29.
+' Counterpart of: docs/diagrams/databases/02_db_account_service.puml
+' Source: backend/account-service/src/main/java/com/maayn/accountservice/entity/*
+title DB 02 — Account Service (PostgreSQL: account_db) — current
+
+skinparam linetype ortho
+skinparam classBackgroundColor #FFF8E1
+skinparam classBorderColor #F57F17
+skinparam classHeaderBackgroundColor #FFE082
+skinparam classFontStyle bold
+skinparam classAttributeFontSize 11
+
+entity "bank_accounts" as ACC {
+  * id              : UUID        <<PK>>
+  --
+  * account_number  : VARCHAR(20) <<UNIQUE>>
+  * customer_id     : UUID
+  * account_type    : VARCHAR(20) <<enum AccountType>>
+  * status          : VARCHAR(20) <<enum AccountStatus>>
+  * currency        : CHAR(3)
+  * opened_date     : DATE
+    closed_date     : DATE
+  * created_at      : TIMESTAMP
+  * updated_at      : TIMESTAMP
+}
+
+entity "customers" as CUST {
+  * id         : BIGSERIAL    <<PK>>
+  --
+  * first_name : VARCHAR
+  * last_name  : VARCHAR
+  * email      : VARCHAR      <<UNIQUE>>
+    address    : VARCHAR
+  * status     : VARCHAR (default 'ACTIVE')
+}
+
+note right of ACC
+  customer_id is a UUID issued by IAM
+  service (User.id). There is **no FK**
+  to customers — the legacy `customers`
+  table is independent and is keyed by
+  BIGINT id, kept for legacy paths only.
+  Live balances do NOT live here; they
+  are owned by transaction_service
+  (ledger_balance table).
+end note
+@enduml
+

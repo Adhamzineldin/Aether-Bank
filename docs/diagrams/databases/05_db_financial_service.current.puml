@@ -1,0 +1,191 @@
+@startuml
+' Auto-derived from financial-service Mongo @Document classes on 2026-04-29.
+' Counterpart of: docs/diagrams/databases/04_db_lending_service.puml
+' Source: backend/financial-service/src/main/java/com/maayn/financialservice/entity/*
+' Plan had a separate "lending-service" with its own DB. Reality:
+' financial-service consolidates loans, mortgages, certificates of deposit
+' and investment accounts into a single MongoDB database `financial_db`.
+title DB 05 — Financial Service (MongoDB: financial_db) — current
+
+skinparam linetype ortho
+skinparam classBackgroundColor #EDE7F6
+skinparam classBorderColor #4527A0
+skinparam classHeaderBackgroundColor #B39DDB
+skinparam classFontStyle bold
+skinparam classAttributeFontSize 11
+
+entity "loan_product_definitions" as LPD {
+  * _id                  : UUID
+  --
+  * code                 : STRING <<UNIQUE>>
+    name                 : STRING
+    loan_type            : STRING
+    interest_method      : STRING
+    rate_mode            : STRING
+    repayment_method     : STRING
+    base_annual_rate     : DECIMAL128
+    monthly_fee          : DECIMAL128
+    penalty_rate         : DECIMAL128
+    default/min/max_tenure_months : INT
+    min/max_principal    : DECIMAL128
+    variable_rate_index_code : STRING
+    active               : BOOL
+}
+
+entity "loan_applications" as LAP {
+  * _id                  : UUID
+  --
+    customer_id          : UUID  <<idx>>
+    product_id           : UUID  <<idx>>
+    loan_type            : STRING
+    requested_amount     : DECIMAL128
+    requested_tenure     : INT
+    purpose              : STRING
+    employment_status    : STRING
+    annual_income        : DECIMAL128
+    application_status   : STRING (default SUBMITTED)
+    submitted_at / reviewed_at : DATETIME
+    remarks              : STRING
+    loan_number          : STRING <<UNIQUE>>
+    account_id           : UUID
+    application_id       : UUID
+    principal_amount     : DECIMAL128
+    interest_rate        : DECIMAL128
+    interest_type        : STRING
+    tenure_months        : INT
+    emi_amount           : DECIMAL128
+    outstanding_balance  : DECIMAL128
+    disbursed_amount     : DECIMAL128
+    repayment_frequency  : STRING
+    loan_status          : STRING
+    start_date / end_date : DATE
+    disbursement_date    : DATETIME
+    currency             : STRING (default USD)
+    created_at/updated_at: DATETIME
+}
+
+entity "loan_accounts" as LAC {
+  * _id                  : UUID
+  --
+    customer_id          : UUID
+    loan_number          : STRING <<UNIQUE>>
+    application_id       : UUID
+    product_code         : STRING
+    loan_type            : STRING
+    principal / outstanding_principal / accrued_interest : DECIMAL128
+    annual_rate          : DECIMAL128
+    interest_method      : STRING
+    rate_mode            : STRING
+    repayment_method     : STRING
+    monthly_fee / penalty_rate : DECIMAL128
+    tenure_months        : INT
+    start_date / maturity_date / next_due_date : DATE
+    status               : STRING (LoanLifecycleStatus)
+    schedule_lines[]     : EMBEDDED LoanScheduleLine
+    rate_history[]       : EMBEDDED RateChange
+    last_accrued_date    : DATE
+    created_at/updated_at: DATETIME
+}
+
+entity "certificate_product_definitions" as CPD {
+  * _id : UUID
+  --
+  * code : STRING <<UNIQUE>>
+    name, interest_method, payout_method, liquidity_method, rate_behavior_method : STRING
+    base_annual_rate, penalty_rate, min/max_principal : DECIMAL128
+    payout_interval_days, term_days : INT
+    index_code : STRING
+    active : BOOL
+}
+
+entity "certificate_applications" as CAP {
+  * _id : UUID
+  --
+    customer_id, account_id : UUID
+    certificate_number : STRING <<UNIQUE>>
+    principal, interest_rate, current_value, matured_amount, interest_earned : DECIMAL128
+    term_days : INT
+    auto_renew : BOOL
+    application_status : STRING (default SUBMITTED)
+    submitted_at, reviewed_at, open_date, maturity_date : DATETIME
+    remarks, certificate_status : STRING
+    currency : STRING (default USD)
+    created_at, updated_at : DATETIME
+}
+
+entity "certificate_accounts" as CAC {
+  * _id : UUID
+  --
+    customer_id, application_id : UUID
+    certificate_number : STRING <<UNIQUE>>
+    product_code : STRING
+    principal, accrued_interest, annual_rate, penalty_rate : DECIMAL128
+    interest_method, payout_method, liquidity_method, rate_behavior_method : STRING
+    term_days, payout_interval_days : INT
+    issue_date, maturity_date, last_accrued_date : DATE
+    status : STRING (CertificateLifecycleStatus)
+    payout_lines[] : EMBEDDED PayoutLine
+    rate_history[] : EMBEDDED RateChange
+    created_at, updated_at : DATETIME
+}
+
+entity "mortgage_applications" as MAP {
+  * _id : UUID
+  --
+    customer_id : UUID
+    property_address : STRING
+    property_value, down_payment, requested_amount, annual_income : DECIMAL
+    term_years : INT
+    employment_status : STRING
+    credit_score : INT
+    application_status : STRING
+    submitted_at, reviewed_at : DATETIME
+    remarks : STRING
+    mortgage_number : STRING
+    account_id : UUID
+    principal_amount, interest_rate, monthly_payment, outstanding_balance, disbursed_amount : DECIMAL
+    term_months : INT
+    mortgage_status : STRING
+    start_date, end_date : DATE
+    disbursement_date, created_at, updated_at : DATETIME
+    currency : STRING
+}
+
+entity "investment_accounts" as IAC {
+  * _id : UUID
+  --
+    account_number : STRING
+    customer_id, linked_account_id : UUID
+    status : STRING (PENDING/ACTIVE/SUSPENDED/CLOSED)
+    total_value : DECIMAL
+    currency : STRING
+    opened_date, closed_date, created_at, updated_at : DATETIME
+}
+
+entity "asset_holdings" as AH {
+  * _id : UUID
+  --
+    investment_account_id : UUID
+    symbol : STRING
+    asset_type : STRING (STOCK/MUTUAL_FUND/ETF/BOND)
+    quantity, average_purchase_price, current_price, total_value, unrealized_gain_loss : DECIMAL
+    purchase_date, updated_at : DATETIME
+}
+
+entity "ledger_entries" as LE {
+  * _id : UUID
+  --
+    source_type, event_type, debit_account, credit_account : STRING
+    source_id : UUID
+    amount : DECIMAL128
+    currency, description : STRING
+    created_at : DATETIME
+}
+
+LPD ||..o{ LAP : "product_id"
+LAP ||..|| LAC : "applicationId → loan account"
+CPD ||..o{ CAP : "product_code"
+CAP ||..|| CAC : "applicationId → certificate account"
+IAC ||--o{ AH  : "holds"
+@enduml
+

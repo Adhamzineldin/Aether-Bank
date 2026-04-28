@@ -1,0 +1,45 @@
+@startuml
+' Auto-derived 2026-04-29 from card-service CardIssueController +
+' CardCreationService + Veld AccountClient.
+' New diagram (no plan counterpart) — captures the issuance flow.
+title Sequence 07 — Card Issuance (current, NEW)
+
+skinparam sequenceArrowThickness 2
+skinparam participantFontStyle bold
+
+actor       Customer
+participant "React Frontend"  as FE
+participant "API Gateway"     as GW
+participant "card-service"    as CARD
+database    "card_db (PG)"    as DBC
+participant "account-service" as ACC
+participant "RabbitMQ"        as RMQ
+participant "audit-service"   as AUD
+
+Customer -> FE : "Issue card" form\n{customerId, cardType, cardNetwork,\n  accountId(if DEBIT), currency, creditLimit(if CREDIT)}
+FE -> GW       : POST /api/card + JWT
+GW -> CARD     : forward (CardIssueController.issueCard)
+
+activate CARD
+alt CREDIT card
+  CARD -> CARD : CardCreationService.createCreditCard(\n  customerId, network, creditLimit, apr, currency)
+  CARD -> DBC  : INSERT cards (type=CREDIT, status=ISSUED, last4, pan, cvv, token)
+  CARD -> DBC  : INSERT credit_card_details (limit, available_credit=limit, balance=0, apr, billingCycleDay)
+else DEBIT card
+  CARD -> ACC  : Veld AccountClient.getAccount(accountId)
+  ACC --> CARD : {currency, status, ownerCustomerId}
+  alt account not active / wrong owner
+    CARD --> GW : 422
+  else
+    CARD -> DBC : INSERT cards (type=DEBIT, status=ISSUED, currency, accountId)
+  end
+end
+CARD -> RMQ   : audit event {action=ISSUE_CARD, status=SUCCESS}
+CARD --> GW   : 201 {CardSummary: id, last4, type, network, status, expiry}
+deactivate CARD
+GW --> FE     : 201
+FE --> Customer : new card details + reveal-PAN button
+
+RMQ -> AUD    : audit.queue → security_logs
+@enduml
+

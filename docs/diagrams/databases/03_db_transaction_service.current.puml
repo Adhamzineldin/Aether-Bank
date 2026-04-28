@@ -1,0 +1,72 @@
+@startuml
+' Auto-derived from transaction-service JPA entities on 2026-04-29.
+' Counterpart of: docs/diagrams/databases/03_db_ledger_service.puml
+' Source: backend/transaction-service/src/main/java/com/maayn/transactionservice/entity/*
+title DB 03 — Transaction Service (PostgreSQL: transaction_db) — current
+note as N1
+  Plan called this "Ledger Service" with its own DB.
+  Reality: a single **transaction-service** owns both the
+  ledger balances and the transaction log, in `transaction_db`.
+end note
+
+skinparam linetype ortho
+skinparam classBackgroundColor #FCE4EC
+skinparam classBorderColor #880E4F
+skinparam classHeaderBackgroundColor #F48FB1
+skinparam classFontStyle bold
+skinparam classAttributeFontSize 11
+
+entity "transactions" as TX {
+  * id                     : UUID         <<PK>>
+  --
+    source_account_id      : UUID
+    destination_account_id : UUID
+  * amount                 : NUMERIC
+  * transaction_type       : VARCHAR <<enum TransactionType>>
+  * status                 : VARCHAR <<enum TransactionStatus>>
+  * idempotency_key        : VARCHAR <<UNIQUE>>
+  * reference_number       : VARCHAR <<UNIQUE>>
+  * currency               : VARCHAR(3)
+    source_currency        : VARCHAR(3)
+    destination_currency   : VARCHAR(3)
+    destination_amount     : NUMERIC
+    exchange_rate          : NUMERIC
+  * created_at             : TIMESTAMP
+  * updated_at             : TIMESTAMP
+    failure_reason         : VARCHAR(500)
+  * version                : BIGINT     <<@Version>>
+}
+
+entity "ledger_balance" as LED {
+  * account_id        : UUID    <<PK, embedded>>
+  * currency          : CHAR(3) <<PK, embedded>>
+  --
+  * available_balance : NUMERIC (default 0)
+  * pending_holds     : NUMERIC (default 0)
+  * version           : BIGINT  <<@Version>>
+}
+
+entity "outbox_messages" as OUT {
+  * id          : UUID        <<PK>>
+  --
+  * exchange    : VARCHAR
+  * routing_key : VARCHAR
+  * payload     : TEXT
+  * created_at  : TIMESTAMP
+}
+
+note right of LED
+  Composite PK = (account_id, currency).
+  One row per (account, currency) wallet —
+  multi-currency accounts get multiple rows.
+  Provisioned by AccountEventListener when
+  account-service publishes AccountCreatedEvent.
+end note
+
+note right of OUT
+  Transactional outbox: written in the same
+  DB transaction as the business change, then
+  dispatched to RabbitMQ by a poller.
+end note
+@enduml
+

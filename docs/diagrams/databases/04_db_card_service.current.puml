@@ -1,0 +1,70 @@
+@startuml
+' Auto-derived from card-service JPA entities on 2026-04-29.
+' Counterpart of: docs/diagrams/databases/05_db_card_service.puml
+' Source: backend/card-service/src/main/java/com/maayn/cardservice/entity/*
+title DB 04 — Card Service (PostgreSQL: card_db) — current
+
+skinparam linetype ortho
+skinparam classBackgroundColor #E0F7FA
+skinparam classBorderColor #006064
+skinparam classHeaderBackgroundColor #80DEEA
+skinparam classFontStyle bold
+skinparam classAttributeFontSize 11
+
+entity "cards" as CARD {
+  * id               : UUID         <<PK>>
+  --
+  * account_id       : UUID
+  * customer_id      : UUID
+  * card_token       : VARCHAR(128) <<UNIQUE>>
+  * last_four_digits : CHAR(4)
+    currency         : CHAR(3)
+    pan              : VARCHAR(19)
+    cvv              : VARCHAR(4)
+  * card_type        : VARCHAR(32) <<enum CardType>>
+  * card_network     : VARCHAR(32) <<enum CardNetwork>>
+  * status           : VARCHAR(32) <<enum CardStatus>>
+  * expiry_month     : INT
+  * expiry_year      : INT
+  * issued_at        : TIMESTAMP
+    activated_at     : TIMESTAMP
+    blocked_at       : TIMESTAMP
+    block_reason     : VARCHAR
+}
+
+entity "credit_card_details" as CCD {
+  * id                    : UUID    <<PK>>
+  --
+  * card_id               : UUID    <<FK,UNIQUE>>
+  * credit_limit          : NUMERIC(19,2)
+  * available_credit      : NUMERIC(19,2)
+  * current_balance       : NUMERIC(19,2)
+  * minimum_payment       : NUMERIC(19,2)
+    payment_due_date      : DATE
+  * annual_interest_rate  : NUMERIC(10,4)
+  * billing_cycle_day     : INT
+    last_statement_date   : DATE
+}
+
+entity "card_transactions" as CTX {
+  * id                       : UUID         <<PK>>
+  --
+  * card_id                  : UUID         <<FK>>
+    merchant_id              : UUID
+    auth_code                : VARCHAR(32)
+    ledger_reference         : VARCHAR(64)
+    original_transaction_id  : UUID
+    idempotency_key          : VARCHAR(120) <<UNIQUE>>
+  * amount                   : NUMERIC(19,2)
+  * currency                 : CHAR(3)
+  * amount_in_base_currency  : NUMERIC(19,2)
+    exchange_rate            : NUMERIC(19,6)
+  * status                   : VARCHAR(32) <<enum CardTransactionStatus>>
+  * type                     : VARCHAR(32) <<enum CardTransactionType>>
+  * processed_at             : TIMESTAMP
+}
+
+CARD ||--o| CCD : "1:1 (only credit cards)"
+CARD ||--o{ CTX : "history"
+@enduml
+

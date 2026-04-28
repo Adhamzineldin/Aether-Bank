@@ -1,0 +1,77 @@
+@startuml
+' Auto-derived 2026-04-29 from card-service (CardIssueController, generated
+' CardController, CardPaymentService) + Veld SDK clients to account-service
+' and transaction-service + packages/payment-gateway React lib.
+' Counterpart of: docs/diagrams/sequences/04_sequence_card_payment.puml
+title Sequence 04 — Card Payment via Embedded Payment Gateway (current)
+
+skinparam sequenceArrowThickness 2
+skinparam participantFontStyle bold
+
+actor       "External Merchant" as MERCH
+actor       Customer
+participant "Embedded\nPayment Gateway\n(React lib)" as PG
+participant "React Frontend"      as FE
+participant "API Gateway"         as GW
+participant "card-service"        as CARD
+database    "card_db (PG)"        as DBC
+participant "transaction-service" as TX
+database    "transaction_db (PG)" as DBT
+participant "RabbitMQ"            as RMQ
+participant "notification-service" as NOTIF
+participant "audit-service"       as AUD
+
+MERCH -> PG  : presents amount, currency, orderId
+Customer -> PG : enters PAN / expiry / CVV (or scans QR)
+PG -> FE     : payment intent (component event)
+FE -> GW     : POST /api/card/payments\n{cardToken or PAN, amount, currency, merchantId, idempotencyKey}\nAuthorization: Bearer <JWT>
+GW -> CARD   : forward (Eureka LB)
+
+activate CARD
+CARD -> DBC  : SELECT cards WHERE pan/cardToken
+alt card not active / blocked / expired
+  CARD --> GW : 422 / 403
+  GW --> PG   : error → "Card declined"
+else credit card
+  CARD -> DBC : SELECT credit_card_details (available_credit)
+  alt insufficient credit
+    CARD --> GW : 422
+  else
+    CARD -> DBC : UPDATE credit_card_details (available_credit -=, current_balance +=)
+    CARD -> DBC : INSERT card_transactions {status=APPROVED, type=PURCHASE}
+  end
+else debit card
+  CARD -> TX  : Veld TransactionClient.debit(\n  accountId, currency, amount, idempotencyKey)
+  TX -> DBT   : SELECT ledger_balance FOR UPDATE
+  alt insufficient funds
+    TX --> CARD : 422
+    CARD -> DBC : INSERT card_transactions {status=DECLINED}
+  else
+    TX -> DBT  : UPDATE balance, INSERT transactions, INSERT outbox_messages
+    TX --> CARD: 200 {ledgerReference}
+    CARD -> DBC: INSERT card_transactions {status=APPROVED, ledger_reference}
+  end
+end
+CARD -> RMQ  : audit event {action=PROCESS_MERCHANT_PAYMENT}
+CARD --> GW  : 200 {authCode, transactionId, status}
+deactivate CARD
+GW --> FE    : 200
+FE --> PG    : success / failure
+PG --> Customer : receipt
+PG --> MERCH : webhook / callback
+
+RMQ -> NOTIF : transfer.success (for debit) / card payment notification
+NOTIF -> RMQ : audit event {NOTIFICATION_EMAIL_SENT}
+RMQ -> AUD   : audit.queue → security_logs
+
+note over PG
+  packages/payment-gateway is a reusable
+  React component library bundled into the
+  frontend. It supports CardPaymentForm,
+  BankTransferForm, QRCodePayment and a
+  DigitalWalletButton. It does NOT have
+  its own backend — it submits through the
+  same JWT-protected /api/card/** route.
+end note
+@enduml
+
