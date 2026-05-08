@@ -1,0 +1,167 @@
+-- Aether Bank OCL specification
+-- Phase 1 starter constraint set
+--
+-- This file is documentation-first OCL aligned to the current Spring Boot
+-- and React implementation. It formalizes the existing business rules and
+-- selected architectural assumptions already present in the codebase.
+
+package AetherBank
+
+-- ============================================================
+-- BankAccount constraints
+-- ============================================================
+
+context BankAccount
+inv BA_01_ClosedAccountsHaveClosedDate:
+    self.status = AccountStatus::CLOSED implies not self.closedDate.oclIsUndefined()
+
+context BankAccount
+inv BA_02_OnlyClosedAccountsMayHaveClosedDate:
+    self.status <> AccountStatus::CLOSED implies self.closedDate.oclIsUndefined()
+
+context BankAccount
+inv BA_03_OpenedDateRequired:
+    not self.openedDate.oclIsUndefined()
+
+context BankAccount
+inv BA_04_CurrencyLooksISO3:
+    self.currency.size() = 3 and self.currency = self.currency.toUpper()
+
+context BankAccount
+inv BA_05_AccountNumberRequired:
+    not self.accountNumber.oclIsUndefined() and self.accountNumber.size() > 0
+
+-- ============================================================
+-- Account operation contracts
+-- ============================================================
+
+-- Conceptual pre/postconditions for service operations.
+-- These are mapped to executable checks in BankAccountService.
+--
+-- The real code resolves the account by `accountId` and fetches balance from the
+-- transaction service. For a cleaner OCL contract, the conceptual model exposes
+-- those resolved values directly as operation inputs.
+
+context BankAccountService::closeAccount(account : BankAccount, balance : Real, request : CloseAccountRequest)
+pre BA_06_AccountMustNotAlreadyBeClosed:
+    account.status <> AccountStatus::CLOSED
+
+context BankAccountService::closeAccount(account : BankAccount, balance : Real, request : CloseAccountRequest)
+pre BA_07_PositiveBalanceRequiresTransferTarget:
+    balance > 0 implies not request.transferToAccountId.oclIsUndefined()
+
+context BankAccountService::closeAccount(account : BankAccount, balance : Real, request : CloseAccountRequest)
+post BA_08_StatusBecomesClosed:
+    account.status = AccountStatus::CLOSED
+
+context BankAccountService::closeAccount(account : BankAccount, balance : Real, request : CloseAccountRequest)
+post BA_09_ClosedDateAssigned:
+    not account.closedDate.oclIsUndefined()
+
+context BankAccountService::updateAccountStatus(account : BankAccount, request : UpdateAccountStatusRequest)
+pre BA_10_ClosedAccountsCannotChangeStatus:
+    account.status <> AccountStatus::CLOSED
+
+context BankAccountService::updateAccountStatus(account : BankAccount, request : UpdateAccountStatusRequest)
+pre BA_11_StatusMayNotBeSetDirectlyToClosed:
+    request.status <> AccountStatus::CLOSED
+
+context BankAccountService::updateAccountStatus(account : BankAccount, request : UpdateAccountStatusRequest)
+pre BA_12_PendingMayOnlyBecomeActive:
+    account.status = AccountStatus::PENDING implies request.status = AccountStatus::ACTIVE
+
+context BankAccountService::openAccount(request : OpenAccountRequest)
+pre BA_13_CustomerIdRequired:
+    not request.customerId.oclIsUndefined()
+
+context BankAccountService::openAccount(request : OpenAccountRequest)
+pre BA_14_AccountTypeRequired:
+    not request.accountType.oclIsUndefined()
+
+context BankAccountService::openAccount(request : OpenAccountRequest)
+pre BA_15_RequestCurrencyLooksISO3:
+    request.currency.size() = 3 and request.currency = request.currency.toUpper()
+
+-- ============================================================
+-- Transaction constraints
+-- ============================================================
+
+context Transaction
+inv TX_01_PositiveAmount:
+    self.amount > 0
+
+context Transaction
+inv TX_02_DifferentSourceAndDestination:
+    self.sourceAccountId <> self.destinationAccountId
+
+context Transaction
+inv TX_03_CurrencyRequired:
+    not self.currency.oclIsUndefined() and self.currency.size() = 3
+
+context Transaction
+inv TX_04_ReferenceNumberRequired:
+    not self.referenceNumber.oclIsUndefined() and self.referenceNumber.size() > 0
+
+context Transaction
+inv TX_05_IdempotencyKeyRequired:
+    not self.idempotencyKey.oclIsUndefined() and self.idempotencyKey.size() > 0
+
+context Transaction
+inv TX_06_FxTransfersNeedSourceCurrency:
+    self.sourceCurrency <> self.destinationCurrency implies not self.sourceCurrency.oclIsUndefined()
+
+context Transaction
+inv TX_07_FxTransfersNeedDestinationCurrency:
+    self.sourceCurrency <> self.destinationCurrency implies not self.destinationCurrency.oclIsUndefined()
+
+context Transaction
+inv TX_08_FxTransfersNeedDestinationAmount:
+    self.sourceCurrency <> self.destinationCurrency implies self.destinationAmount > 0
+
+context Transaction
+inv TX_09_FxTransfersNeedExchangeRate:
+    self.sourceCurrency <> self.destinationCurrency implies self.exchangeRate > 0
+
+-- ============================================================
+-- Ledger constraints
+-- ============================================================
+
+context LedgerBalance
+inv LB_01_AvailableBalanceNonNegative:
+    self.availableBalance >= 0
+
+context LedgerBalance
+inv LB_02_PendingHoldsNonNegative:
+    self.pendingHolds >= 0
+
+context LedgerBalance
+inv LB_03_CurrencyRequired:
+    not self.id.currency.oclIsUndefined() and self.id.currency.size() = 3
+
+context LedgerBalance
+inv LB_04_AccountIdRequired:
+    not self.id.accountId.oclIsUndefined()
+
+-- ============================================================
+-- UI / mirrored constraints
+-- ============================================================
+
+-- These constraints are mirrored in the frontend transfer form.
+-- They are not the authoritative business rule layer, but they help enforce
+-- the same model expectations before the request reaches the backend.
+
+context TransferForm
+inv UI_01_SourceAccountRequired:
+    not self.sourceAccountId.oclIsUndefined()
+
+context TransferForm
+inv UI_02_DestinationRequired:
+    not self.destination.oclIsUndefined() and self.destination.size() >= 4
+
+context TransferForm
+inv UI_03_AmountMustBePositive:
+    self.amount > 0
+
+endpackage
+
+

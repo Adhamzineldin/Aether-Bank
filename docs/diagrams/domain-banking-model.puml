@@ -1,0 +1,154 @@
+@startuml
+' Phase 1: banking domain model for OCL constraints
+
+hide circle
+skinparam classAttributeIconSize 0
+skinparam shadowing false
+skinparam monochrome true
+
+package "Account Service" {
+  class BankAccount {
+    +id: UUID
+    +accountNumber: String
+    +customerId: UUID
+    +accountType: AccountType
+    +status: AccountStatus
+    +currency: String
+    +openedDate: LocalDate
+    +closedDate: LocalDate
+    +createdAt: LocalDateTime
+    +updatedAt: LocalDateTime
+  }
+
+  enum AccountStatus {
+    PENDING
+    ACTIVE
+    FROZEN
+    CLOSED
+  }
+
+  enum AccountType {
+    CHECKING
+    SAVINGS
+    INVESTMENT
+  }
+
+  class OpenAccountRequest {
+    +customerId: UUID
+    +accountType: AccountType
+    +currency: String
+    +initialDeposit: BigDecimal
+  }
+
+  class CloseAccountRequest {
+    +reason: String
+    +transferToAccountId: UUID
+  }
+
+  class UpdateAccountStatusRequest {
+    +status: AccountStatus
+    +reason: String
+  }
+
+  class BankAccountService {
+    +openAccount(request)
+    +closeAccount(accountId, request)
+    +updateAccountStatus(accountId, request)
+  }
+}
+
+package "Transaction Service" {
+  class Transaction {
+    +id: UUID
+    +sourceAccountId: UUID
+    +destinationAccountId: UUID
+    +amount: BigDecimal
+    +transactionType: TransactionType
+    +status: TransactionStatus
+    +idempotencyKey: String
+    +referenceNumber: String
+    +currency: String
+    +sourceCurrency: String
+    +destinationCurrency: String
+    +destinationAmount: BigDecimal
+    +exchangeRate: BigDecimal
+    +failureReason: String
+  }
+
+  class TransactionService {
+    +transfer(request)
+    +getAccountTransactions(accountId, input)
+  }
+
+  class TransactionValidator {
+    +validateTransfer(transaction)
+  }
+
+  class LedgerBalance {
+    +id: LedgerAccountId
+    +availableBalance: BigDecimal
+    +pendingHolds: BigDecimal
+    +credit(amount)
+    +debit(amount)
+  }
+
+  class LedgerAccountId {
+    +accountId: UUID
+    +currency: String
+  }
+
+  class LedgerService {
+    +getAccountBalance(accountId, currency)
+    +executeTransferMath(sourceId, destId, amount, currency)
+    +executeFxTransferMath(sourceId, sourceCurrency, sourceAmount, destId, destCurrency, destAmount)
+  }
+}
+
+package "Frontend" {
+  class TransferForm {
+    +sourceAccountId: UUID
+    +destination: String
+    +amount: Decimal
+    +type: TransactionType
+  }
+}
+
+BankAccount --> AccountStatus
+BankAccount --> AccountType
+OpenAccountRequest --> AccountType
+UpdateAccountStatusRequest --> AccountStatus
+BankAccountService ..> BankAccount
+BankAccountService ..> OpenAccountRequest
+BankAccountService ..> CloseAccountRequest
+BankAccountService ..> UpdateAccountStatusRequest
+
+TransactionService ..> Transaction
+TransactionService ..> TransactionValidator
+TransactionValidator ..> Transaction
+LedgerBalance *-- LedgerAccountId
+LedgerService ..> LedgerBalance
+TransferForm ..> TransactionService : submits transfer
+BankAccount "1" .. "many" Transaction : source/destination account ids
+
+note right of BankAccount
+  OCL focus:
+  - BA_01 closedDate required when CLOSED
+  - BA_04 currency looks ISO3
+  - BA_12 pending -> active only
+end note
+
+note right of Transaction
+  OCL focus:
+  - TX_01 amount > 0
+  - TX_02 source != destination
+  - TX_06..TX_09 FX consistency
+end note
+
+note right of LedgerBalance
+  OCL focus:
+  - LB_01 availableBalance >= 0
+  - LB_02 pendingHolds >= 0
+end note
+
+@enduml
+

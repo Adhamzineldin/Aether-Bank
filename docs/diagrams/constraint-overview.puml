@@ -1,0 +1,67 @@
+@startuml
+' Phase 2: where OCL constraints map into the running system
+
+left to right direction
+skinparam shadowing false
+skinparam monochrome true
+skinparam packageStyle rectangle
+
+rectangle "Formal Specification" as Spec {
+  artifact "docs/ocl/banking-domain.ocl" as OCL
+  artifact "docs/ocl/traceability-matrix.md" as Matrix
+}
+
+package "Account Rules" {
+  rectangle "BA_01..BA_15\nBankAccount + lifecycle rules" as BA
+}
+
+package "Transaction Rules" {
+  rectangle "TX_01..TX_09\nTransfer + FX rules" as TX
+}
+
+package "Ledger Rules" {
+  rectangle "LB_01..LB_04\nLedger consistency rules" as LB
+}
+
+package "UI Mirroring" {
+  rectangle "UI_01..UI_03\nTransfer form checks" as UI
+}
+
+package "Backend Enforcement" {
+  component "BankAccountService\ncloseAccount()\nupdateAccountStatus()\nopenAccount()" as BASvc
+  component "OpenAccountRequest\nBean Validation" as OpenDto
+  component "TransactionService\nprepareTransaction()\ntransfer()" as TxSvc
+  component "TransactionValidator\nvalidateTransfer()" as TxVal
+  component "LedgerBalance\ncredit()/debit()" as LedgerEntity
+  component "LedgerService\nexecuteTransferMath()\nexecuteFxTransferMath()" as LedgerSvc
+}
+
+package "Frontend Enforcement" {
+  component "TransferPage.tsx\nZod schema + resolve flow" as TransferPage
+}
+
+OCL --> BA
+OCL --> TX
+OCL --> LB
+OCL --> UI
+
+BA --> BASvc
+BA --> OpenDto
+TX --> TxSvc
+TX --> TxVal
+LB --> LedgerEntity
+LB --> LedgerSvc
+UI --> TransferPage
+
+Matrix ..> BASvc
+Matrix ..> TxVal
+Matrix ..> LedgerEntity
+Matrix ..> TransferPage
+
+note bottom of Spec
+  OCL is used here as the formal definition of the rule.
+  Java and TypeScript remain the executable enforcement layers.
+end note
+
+@enduml
+
