@@ -1,0 +1,157 @@
+@startuml
+title Sequence 08 — Account Lifecycle (OCL Constraints: Close & Status Update)
+
+skinparam sequenceArrowThickness 2
+skinparam sequenceGroupBorderColor #1565C0
+skinparam participantBackgroundColor #BBDEFB
+skinparam participantBorderColor #1565C0
+skinparam participantFontStyle bold
+skinparam sequenceLifeLineBorderColor #64B5F6
+skinparam noteBorderColor #FBC02D
+skinparam noteBackgroundColor #FFFDE7
+skinparam responseMessageBelowArrow true
+
+actor        Customer
+participant  "React Frontend"              as FE
+participant  "API Gateway"                 as GW
+participant  "Account Service"             as ACC
+database     "PostgreSQL (Account DB)"     as DB
+
+note over FE, ACC
+  OCL Constraints on Account Service Operations
+  This sequence demonstrates pre- and post-conditions
+  for closeAccount and updateAccountStatus.
+end note
+
+== SCENARIO A: Close Account ==
+
+Customer -> FE : Request close account
+FE -> GW : POST /api/accounts/{id}/close\n{ reason, transferToAccountId }
+
+GW -> ACC : Forward close request
+
+activate ACC
+
+note over ACC
+  OCL: BA_06_AccountMustNotAlreadyBeClosed (pre)
+  - Check: account.status ≠ CLOSED
+  - If violated → 400 Bad Request
+end note
+
+ACC -> DB : SELECT * FROM bank_accounts WHERE id=?
+
+alt Status Already CLOSED
+    DB --> ACC : status = CLOSED
+    ACC --> GW : 400 Bad Request
+    GW --> FE : 400
+    FE --> Customer : "Account is already closed"
+    
+else Status is ACTIVE or FROZEN
+    
+    note over ACC
+      OCL: BA_07_PositiveBalanceRequiresTransferTarget (pre)
+      - Check: if balance > 0, then transferToAccountId must be provided
+    end note
+    
+    ACC -> ACC : Fetch balance from TransactionService
+    
+    alt Balance > 0 AND transferToAccountId is NULL
+        ACC --> GW : 400 Bad Request
+        GW --> FE : 400
+        FE --> Customer : "Account has balance; provide transferToAccountId"
+        
+    else (balance = 0) OR (transferToAccountId provided)
+        
+        note over ACC, DB
+          OCL: BA_08_StatusBecomesClosed (post)
+          OCL: BA_09_ClosedDateAssigned (post)
+          - Update account.status = CLOSED
+          - Set account.closedDate = TODAY
+        end note
+        
+        ACC -> DB : BEGIN TRANSACTION
+        ACC -> DB : UPDATE bank_accounts\n  SET status='CLOSED', closedDate=NOW()\n  WHERE id=?
+        DB --> ACC : COMMIT OK
+        
+        ACC --> GW : 200 OK { status: CLOSED, closedDate: 2026-05-08 }
+        GW --> FE : 200 OK
+        FE --> Customer : "Account closed successfully"
+    end
+end
+
+deactivate ACC
+
+== SCENARIO B: Update Account Status ==
+
+Customer -> FE : Request change account status
+FE -> GW : PATCH /api/accounts/{id}/status\n{ status: ACTIVE|FROZEN, reason }
+
+GW -> ACC : Forward status update request
+
+activate ACC
+
+note over ACC
+  OCL: BA_10_ClosedAccountsCannotChangeStatus (pre)
+  - Check: account.status ≠ CLOSED
+  - Cannot mutate a closed account
+end note
+
+ACC -> DB : SELECT * FROM bank_accounts WHERE id=?
+
+alt Account Already CLOSED
+    DB --> ACC : status = CLOSED
+    ACC --> GW : 400 Bad Request
+    GW --> FE : 400
+    FE --> Customer : "Cannot change status of a closed account"
+    
+else Account is PENDING, ACTIVE, or FROZEN
+    
+    note over ACC
+      OCL: BA_11_StatusMayNotBeSetDirectlyToClosed (pre)
+      - Check: request.status ≠ CLOSED
+      - Must use closeAccount() endpoint instead
+    end note
+    
+    alt Requested Status is CLOSED
+        ACC --> GW : 400 Bad Request
+        GW --> FE : 400
+        FE --> Customer : "Use closeAccount endpoint to close an account"
+        
+    else Requested Status is ACTIVE or FROZEN
+        
+        note over ACC
+          OCL: BA_12_PendingMayOnlyBecomeActive (pre)
+          - If current status = PENDING:
+          -   Then requested status must = ACTIVE
+          - Otherwise → 400 Bad Request
+        end note
+        
+        alt Current Status = PENDING AND Requested Status ≠ ACTIVE
+            ACC --> GW : 400 Bad Request
+            GW --> FE : 400
+            FE --> Customer : "Pending account can only be activated"
+            
+        else Valid Transition
+            ACC -> DB : BEGIN TRANSACTION
+            ACC -> DB : UPDATE bank_accounts\n  SET status=?\n  WHERE id=?
+            DB --> ACC : COMMIT OK
+            
+            ACC --> GW : 200 OK { status: <new_status> }
+            GW --> FE : 200 OK
+            FE --> Customer : "Account status updated"
+        end
+    end
+end
+
+deactivate ACC
+
+note over ACC, DB
+  Key OCL Invariants Enforced:
+  - BA_06: Closed accounts immutable
+  - BA_07: Balance closure guard
+  - BA_08..BA_09: Close operation atomicity
+  - BA_10..BA_12: Status transition rules
+end note
+
+@enduml
+

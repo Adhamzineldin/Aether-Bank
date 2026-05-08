@@ -1,5 +1,5 @@
 @startuml
-title Sequence 02 — Internal Money Transfer (Event-Driven)
+title Sequence 02 — Internal Money Transfer (Event-Driven + OCL Constraints)
 
 skinparam sequenceArrowThickness 2
 skinparam sequenceGroupBorderColor #880E4F
@@ -18,9 +18,16 @@ participant  "IAM Service"                 as IAM
 participant  "Account Service"             as ACC
 participant  "Ledger & Transaction Service" as LEDGER
 database     "PostgreSQL (Ledger DB)"      as DB
-participant  "Kafka"                       as KAFKA
+participant  "RabbitMQ"                    as RABBIT
 participant  "Notification Service"        as NOTIF
 participant  "Audit Service"               as AUDIT
+
+note over FE
+  OCL: UI_01, UI_02, UI_03 (form validation)
+  - UI_01: sourceAccountId required
+  - UI_02: destination min 4 chars
+  - UI_03: amount > 0
+end note
 
 Customer -> FE : Fill transfer form\n{ fromAccount, toAccount, amount }
 FE -> GW       : POST /api/transactions/transfer\nAuthorization: Bearer <JWT>
@@ -32,6 +39,11 @@ GW -> LEDGER : Forward transfer request
 
 activate LEDGER
 
+note over LEDGER
+  OCL: TX_01 (amount > 0), TX_02 (source ≠ dest)
+  TransactionValidator.validateTransfer() checks both
+end note
+
 LEDGER -> ACC : GET /internal/accounts/{fromAccountId}
 ACC --> LEDGER : { balance, status, ownerId }
 
@@ -41,6 +53,13 @@ alt Account Frozen or Closed
     FE  --> Customer : "Account is frozen or closed"
 
 else Account Active
+    LEDGER -> LEDGER : OCL: TX_01, TX_02 — validate amount > 0 & source ≠ dest
+    
+    note over LEDGER
+      OCL: LB_01_AvailableBalanceNonNegative
+      Check balance >= amount to prevent negative
+    end note
+    
     LEDGER -> LEDGER : Check balance >= amount
 
     alt Insufficient Funds
@@ -50,6 +69,12 @@ else Account Active
 
     else Sufficient Funds
         LEDGER -> DB : BEGIN TRANSACTION
+        
+        note over LEDGER, DB
+          OCL: LB_01 — Ledger.debit() enforces:
+          availableBalance - amount >= 0 (or throw)
+        end note
+        
         LEDGER -> DB : UPDATE balance − amount (fromAccount)
         LEDGER -> DB : UPDATE balance + amount (toAccount)
         LEDGER -> DB : INSERT transaction record { status: COMPLETED }
@@ -64,10 +89,10 @@ else Account Active
         else Commit Success
             DB --> LEDGER : COMMIT OK
 
-            LEDGER -> KAFKA : Publish TransferCompletedEvent\n{ txId, fromAccount, toAccount, amount, timestamp }
+            LEDGER -> RABBIT : Publish TransferCompletedEvent\n{ txId, fromAccount, toAccount, amount, timestamp }
 
-            KAFKA -> NOTIF : Consume TransferCompletedEvent
-            KAFKA -> AUDIT : Consume TransferCompletedEvent
+            RABBIT -> NOTIF : Consume TransferCompletedEvent
+            RABBIT -> AUDIT : Consume TransferCompletedEvent
 
             NOTIF -> Customer : SMS / Email: "Transfer of $X completed"
             AUDIT -> AUDIT    : Write audit log entry

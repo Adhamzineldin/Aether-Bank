@@ -41,6 +41,7 @@ These diagrams support the formal OCL specification in `docs/ocl/`.
 
 | New file | Counterpart of | Δ vs the plan |
 |---|---|---|
+| `sequences/02_sequence_money_transfer.puml` | _(updated with OCL)_ | **Now annotated with OCL constraints**: UI_01..UI_03 (frontend form), TX_01, TX_02 (transfer rules), LB_01 (ledger non-negativity). Shows where each constraint is validated in the flow. |
 | `sequences/01_sequence_user_login.current.puml` | `01_sequence_user_login.puml` | JWT (HS256, shared secret with gateway). Lockout after 5 failed attempts. MFA branch (otp_codes table). RabbitMQ-based audit trail. |
 | `sequences/02_sequence_money_transfer.current.puml` | `02_sequence_money_transfer.puml` | RabbitMQ (not Kafka). Saga pattern: gateway 202s immediately, `LedgerCommandListener` consumes from `saga.commands.queue`, ledger update + transactional outbox. Notifications + audit fan out from RabbitMQ. |
 | `sequences/03_sequence_loan_application.current.puml` | `03_sequence_loan_application.puml` | financial-service owns the application doc; notification-service runs the **workflow engine** (workflow_instances + approval_tasks) and emits `loan.approved.queue`. financial-service then calls transaction-service via TransactionGateway to disburse. |
@@ -48,6 +49,7 @@ These diagrams support the formal OCL specification in `docs/ocl/`.
 | `sequences/05_sequence_service_discovery.current.puml` | `05_sequence_service_discovery.puml` | Spring Cloud Gateway **MVC** (servlet, not reactive). JwtAuthFilter strips spoofed `X-User-Id` / `X-User-Roles` and re-injects them from verified claims. Real route table included. |
 | `sequences/06_sequence_account_opening.current.puml` | _(new)_ | Captures wallet provisioning: `AccountCreatedEvent` → RabbitMQ → transaction-service `AccountEventListener` inserts `ledger_balance` row. |
 | `sequences/07_sequence_card_issuance.current.puml` | _(new)_ | CardIssueController flow: credit cards self-contained in card_db; debit cards validate the linked account via Veld AccountClient. |
+| `sequences/08_sequence_account_lifecycle.puml` | _(new — OCL)_ | **Account Close and Status Update** operations with full OCL pre/post-condition annotations. Shows BA_06..BA_12 constraint checks: immutability of closed accounts, balance guards, pending→active transitions, etc. |
 
 ## Use Cases
 
