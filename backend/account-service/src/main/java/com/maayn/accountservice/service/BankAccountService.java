@@ -159,6 +159,7 @@ public class BankAccountService {
 
     @Transactional
     @Auditable(action = "UPDATE_ACCOUNT_STATUS", value = "Update account status")
+    // OCL: BA_10_ClosedAccountsCannotChangeStatus, BA_11_StatusMayNotBeSetDirectlyToClosed, BA_12_PendingMayOnlyBecomeActive
     public AccountResponse updateAccountStatus(UUID accountId, UpdateAccountStatusRequest request) {
         log.info("Updating status for account: {} to {}", accountId, request.getStatus());
 
@@ -211,14 +212,17 @@ public class BankAccountService {
     }
 
     private void validateStatusTransition(AccountStatus currentStatus, AccountStatus newStatus) {
+        // OCL: BA_10_ClosedAccountsCannotChangeStatus
         if (currentStatus == AccountStatus.CLOSED) {
             throw new InvalidAccountStatusException("Cannot change status of a closed account");
         }
 
+        // OCL: BA_11_StatusMayNotBeSetDirectlyToClosed
         if (newStatus == AccountStatus.CLOSED) {
             throw new InvalidAccountStatusException("Use closeAccount endpoint to close an account");
         }
 
+        // OCL: BA_12_PendingMayOnlyBecomeActive
         // Allow ACTIVE <-> FROZEN
         // PENDING can go to ACTIVE only
         if (currentStatus == AccountStatus.PENDING && newStatus != AccountStatus.ACTIVE) {

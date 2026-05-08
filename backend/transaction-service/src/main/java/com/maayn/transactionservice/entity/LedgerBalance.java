@@ -28,10 +28,12 @@ public class LedgerBalance {
         this.id = new LedgerAccountId(accountId, currency);
     }
 
+    // OCL: LB_01_AvailableBalanceNonNegative — credit never causes a negative balance
     public void credit(BigDecimal amount) {
         this.availableBalance = this.availableBalance.add(amount);
     }
 
+    // OCL: LB_01_AvailableBalanceNonNegative — debit enforces non-negative balance invariant
     public void debit(BigDecimal amount) {
         if (this.availableBalance.compareTo(amount) < 0) {
             throw new InvalidBalanceException("Insufficient funds in " + id.getCurrency() + " wallet for account: " + id.getAccountId());

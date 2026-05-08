@@ -24,6 +24,10 @@ import type { TransferRequest, TransactionType, UUID, Decimal } from '@veld/type
  * or a raw UUID. We resolve account numbers via the account-service lookup
  * endpoint before submitting — nobody should ever type a UUID in production.
  */
+
+// OCL: UI_01_SourceAccountRequired — sourceAccountId must be a valid UUID
+// OCL: UI_02_DestinationRequired   — destination must be at least 4 characters
+// OCL: UI_03_AmountMustBePositive  — amount must be > 0
 const schema = z.object({
   sourceAccountId: z.string().uuid('Choose a source account'),
   destination: z.string().min(4, 'Account number or IBAN required'),

@@ -7,6 +7,17 @@ The originals stay as the historical "plan"; these are the truth.
 > Format: PlantUML (same as the originals). Render with `plantuml` or any
 > PlantUML viewer.
 
+## OCL Domain Diagrams (Phase 1–2, added 2026-05-08)
+
+These diagrams support the formal OCL specification in `docs/ocl/`.
+
+| File | Purpose |
+|---|---|
+| `domain-banking-model.puml` | Class/domain model used as the OCL context. Shows `BankAccount`, `Transaction`, `LedgerBalance`, enums, DTOs, and services. OCL rule annotations appear in the notes on each class. |
+| `constraint-overview.puml` | Deployment-style map showing how each OCL rule group (`BA_*`, `TX_*`, `LB_*`, `UI_*`) traces to backend and frontend enforcement points. |
+
+---
+
 ## Architecture
 
 | New file | Counterpart of | Δ vs the plan |
