@@ -338,8 +338,6 @@ services:
     volumes:
       # Let's Encrypt certs issued on the EC2 host
       - /etc/letsencrypt:/etc/letsencrypt:ro
-      # ACME challenge directory for cert renewal
-      - /var/www/certbot:/var/www/certbot:ro
     depends_on:
       - api-gateway
     networks:
