@@ -334,6 +334,7 @@ services:
     restart: always
     ports:
       - "80:80"
+      - "443:80"
     depends_on:
       - api-gateway
     networks:
