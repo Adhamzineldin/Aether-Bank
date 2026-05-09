@@ -114,7 +114,7 @@ backend/**/*.class
 coverage/
 .coverage
 .nyc_output/
-generated 
+
 
 
 /veld/.veld.lock.json

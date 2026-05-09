@@ -11,7 +11,12 @@ WORKDIR /app
 # "file:" link resolves correctly inside the container.
 COPY packages/payment-gateway /packages/payment-gateway
 
+# Build the local package so its dist/*.d.ts exists even on fresh clones.
+WORKDIR /packages/payment-gateway
+RUN npm install && npm run build
+
 # Copy frontend package manifests first for better layer caching
+WORKDIR /app
 COPY frontend/package*.json /app/
 
 # Install dependencies (resolves the file: dependency above)
