@@ -1,0 +1,31 @@
+{
+  "name": "@veld/generated",
+  "version": "0.0.0",
+  "private": true,
+  "main": "./index.ts",
+  "types": "./index.ts",
+  "exports": {
+    ".": "./index.ts",
+    "./types": "./types/index.ts",
+    "./types/*": "./types/*.ts",
+    "./interfaces/*": "./interfaces/*.ts",
+    "./errors": "./errors/index.ts",
+    "./errors/*": "./errors/*.ts",
+    "./client": "./client/api.ts",
+    "./client/*": "./client/*.ts",
+    "./middleware": "./middleware/IMiddleware.ts",
+    "./middleware/*": "./middleware/*.ts",
+    "./routes/card.routes": "./routes/card.routes.ts",
+    "./routes/authentication.routes": "./routes/authentication.routes.ts",
+    "./routes/account.routes": "./routes/account.routes.ts",
+    "./routes/certificate.routes": "./routes/certificate.routes.ts",
+    "./routes/fx.routes": "./routes/fx.routes.ts",
+    "./routes/investment.routes": "./routes/investment.routes.ts",
+    "./routes/loan.routes": "./routes/loan.routes.ts",
+    "./routes/mortgage.routes": "./routes/mortgage.routes.ts",
+    "./routes/notification.routes": "./routes/notification.routes.ts",
+    "./routes/workflow.routes": "./routes/workflow.routes.ts",
+    "./routes/ledger.routes": "./routes/ledger.routes.ts",
+    "./routes/transaction.routes": "./routes/transaction.routes.ts"
+  }
+}

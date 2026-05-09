@@ -1,0 +1,40 @@
+{
+  "name": "@veld/hooks",
+  "version": "0.0.0",
+  "private": true,
+  "types": "./index.ts",
+  "exports": {
+    ".": "./index.ts",
+    "./cardHooks": "./cardHooks.ts",
+    "./authenticationHooks": "./authenticationHooks.ts",
+    "./accountHooks": "./accountHooks.ts",
+    "./certificateHooks": "./certificateHooks.ts",
+    "./fxHooks": "./fxHooks.ts",
+    "./investmentHooks": "./investmentHooks.ts",
+    "./loanHooks": "./loanHooks.ts",
+    "./mortgageHooks": "./mortgageHooks.ts",
+    "./notificationHooks": "./notificationHooks.ts",
+    "./workflowHooks": "./workflowHooks.ts",
+    "./ledgerHooks": "./ledgerHooks.ts",
+    "./transactionHooks": "./transactionHooks.ts",
+    "./core": "./core/index.ts",
+    "./core/cardHooks": "./core/cardHooks.ts",
+    "./core/authenticationHooks": "./core/authenticationHooks.ts",
+    "./core/accountHooks": "./core/accountHooks.ts",
+    "./core/certificateHooks": "./core/certificateHooks.ts",
+    "./core/fxHooks": "./core/fxHooks.ts",
+    "./core/investmentHooks": "./core/investmentHooks.ts",
+    "./core/loanHooks": "./core/loanHooks.ts",
+    "./core/mortgageHooks": "./core/mortgageHooks.ts",
+    "./core/notificationHooks": "./core/notificationHooks.ts",
+    "./core/workflowHooks": "./core/workflowHooks.ts",
+    "./core/ledgerHooks": "./core/ledgerHooks.ts",
+    "./core/transactionHooks": "./core/transactionHooks.ts"
+  },
+  "peerDependencies": {
+    "@tanstack/react-query": ">=5.0.0"
+  },
+  "peerDependenciesMeta": {
+    "@tanstack/react-query": { "optional": true }
+  }
+}

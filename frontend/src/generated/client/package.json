@@ -1,0 +1,23 @@
+{
+  "name": "@veld/client",
+  "version": "0.0.0",
+  "private": true,
+  "types": "./api.ts",
+  "exports": {
+    ".": "./api.ts",
+    "./types": "./types.ts",
+    "./errors": "./errors.ts",
+    "./cardApi": "./cardApi.ts",
+    "./authenticationApi": "./authenticationApi.ts",
+    "./accountApi": "./accountApi.ts",
+    "./certificateApi": "./certificateApi.ts",
+    "./fxApi": "./fxApi.ts",
+    "./investmentApi": "./investmentApi.ts",
+    "./loanApi": "./loanApi.ts",
+    "./mortgageApi": "./mortgageApi.ts",
+    "./notificationApi": "./notificationApi.ts",
+    "./workflowApi": "./workflowApi.ts",
+    "./ledgerApi": "./ledgerApi.ts",
+    "./transactionApi": "./transactionApi.ts"
+  }
+}
